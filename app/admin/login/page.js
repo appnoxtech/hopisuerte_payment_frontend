@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
+import Link from 'next/link';
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('');
@@ -70,6 +71,9 @@ export default function AdminLogin() {
                     >
                         {loading ? 'Authenticating...' : 'Sign In'}
                     </button>
+                    <div className="text-center mt-4 pt-4 border-t border-slate-700">
+                        <Link href="/admin/register" className="text-sm text-slate-400 hover:text-blue-400">Don&apos;t have an account? Register</Link>
+                    </div>
                 </form>
             </div>
         </div>

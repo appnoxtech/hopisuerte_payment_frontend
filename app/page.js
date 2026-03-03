@@ -1,165 +1,101 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-import CheckoutForm from '../components/CheckoutForm';
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_placeholder');
+import React from 'react';
+import Link from 'next/link';
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [customer, setCustomer] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    notes: ''
-  });
-  const [clientSecret, setClientSecret] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Fetch products from backend
-    api.get('/products')
-      .then(res => {
-        setProducts(res.data);
-        if (res.data.length > 0) setSelectedProduct(res.data[0]);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching products", err);
-        setLoading(false);
-      });
-  }, []);
-
-  const handleStartPayment = async (e) => {
-    e.preventDefault();
-    if (!selectedProduct) return;
-
-    try {
-      const res = await api.post('/payments/intent', {
-        product_id: selectedProduct.id,
-        customer_name: customer.name,
-        customer_email: customer.email,
-        customer_phone: customer.phone,
-        notes: customer.notes
-      });
-      setClientSecret(res.data.clientSecret);
-    } catch (err) {
-      console.error("Error creating payment intent", err);
-      alert("Failed to start payment process. Please check your connection.");
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="container" style={{ textAlign: 'center', marginTop: '10rem' }}>
-        <h2 style={{ color: 'var(--text-muted)' }}>Loading experience...</h2>
-      </div>
-    );
-  }
-
   return (
-    <main className="container">
-      <div style={{ textAlign: 'center', marginBottom: '3rem', marginTop: '2rem' }}>
-        <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>HopiSuerte Payments</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem' }}>Standalone payment portal for local applications and freelancers.</p>
-      </div>
-
-      <div className="payment-card">
-        {!clientSecret ? (
-          <form onSubmit={handleStartPayment}>
-            <h2 style={{ marginBottom: '1.5rem' }}>1. Choose a Plan</h2>
-            <div className="product-selector">
-              {products.map(product => (
-                <div
-                  key={product.id}
-                  className={`product-item ${selectedProduct?.id === product.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedProduct(product)}
-                >
-                  <div className="product-name">{product.name}</div>
-                  <div className="product-price">
-                    {product.amount}
-                    <span className="product-currency">{product.currency}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <h2 style={{ marginBottom: '1.5rem' }}>2. Your Information</h2>
-            <div className="input-group">
-              <label className="label">Full Name</label>
-              <input
-                className="input"
-                type="text"
-                placeholder="John Doe"
-                required
-                value={customer.name}
-                onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-              />
-            </div>
-            <div className="input-group">
-              <label className="label">Email Address</label>
-              <input
-                className="input"
-                type="email"
-                placeholder="john@example.com"
-                required
-                value={customer.email}
-                onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-              />
-            </div>
-            <div className="input-group">
-              <label className="label">Phone Number (Optional)</label>
-              <input
-                className="input"
-                type="tel"
-                placeholder="+1 234 567 890"
-                value={customer.phone}
-                onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-              />
-            </div>
-            <div className="input-group">
-              <label className="label">Notes / Instructions</label>
-              <textarea
-                className="input"
-                rows="3"
-                placeholder="Any special requests?"
-                value={customer.notes}
-                onChange={(e) => setCustomer({ ...customer, notes: e.target.value })}
-              />
-            </div>
-
-            <button type="submit" className="btn" style={{ marginTop: '1rem', background: 'var(--secondary)' }}>
-              Continue to Payment
-            </button>
-          </form>
-        ) : (
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-              <h2>3. Secure Payment</h2>
-              <button
-                onClick={() => setClientSecret(null)}
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.875rem' }}
-              >
-                ← Back
-              </button>
-            </div>
-            <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
-              Paying <strong>{selectedProduct.amount} {selectedProduct.currency}</strong> for <strong>{selectedProduct.name}</strong>
-            </p>
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm amount={selectedProduct.amount} currency={selectedProduct.currency} />
-            </Elements>
+    <main className="min-h-screen bg-[#0f172a] text-white">
+      {/* Navigation */}
+      <nav className="border-b border-slate-700/50 backdrop-blur-xl sticky top-0 z-50">
+        <div className="container px-6 py-6 flex items-center justify-between mx-auto">
+          <h1 className="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+            HopiSuerte Payments
+          </h1>
+          <div className="flex items-center space-x-6">
+            <Link href="/admin/login" className="text-sm font-semibold text-slate-400 hover:text-white transition-all">
+              Sign In
+            </Link>
+            <Link
+              href="/admin/register"
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-sm font-bold rounded-xl transition-all shadow-lg shadow-blue-900/20"
+            >
+              Start Now
+            </Link>
           </div>
-        )}
-      </div>
+        </div>
+      </nav>
 
-      <footer style={{ textAlign: 'center', marginTop: '4rem', padding: '2rem', borderTop: '1px solid var(--card-border)', color: 'var(--text-muted)' }}>
-        &copy; 2026 HopiSuerte Solutions. All rights reserved.
+      {/* Hero Section */}
+      <section className="container px-6 py-24 md:py-32 flex flex-col items-center text-center mx-auto">
+        <div className="max-w-4xl space-y-8">
+          <div className="inline-block px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-blue-400 text-xs font-bold uppercase tracking-widest animate-pulse">
+            Standalone Freelance Payment Portal
+          </div>
+          <h2 className="text-5xl md:text-7xl font-black leading-tight">
+            Receive Secure Payments <br />
+            <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent italic">
+              Lightning Fast.
+            </span>
+          </h2>
+          <p className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            HopiSuerte Payments gives you a dedicated URL to share with clients. No complex integrations, just a clean payment experience that gets you paid.
+          </p>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 pt-6">
+            <Link
+              href="/admin/register"
+              className="w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 text-lg font-bold rounded-2xl transition-all shadow-xl shadow-blue-900/30 text-center"
+            >
+              Create Your Free Account
+            </Link>
+            <Link
+              href="/admin/login"
+              className="w-full md:w-auto px-10 py-4 bg-slate-800 hover:bg-slate-700 text-lg font-bold rounded-2xl transition-all border border-slate-700 text-center"
+            >
+              Merchant Dashboard
+            </Link>
+          </div>
+        </div>
+
+        {/* Feature Grid */}
+        <div className="grid md:grid-cols-3 gap-8 mt-32 w-full">
+          {[
+            {
+              title: 'Custom Payment URLs',
+              desc: 'Get a unique link (u/your-name) to share with clients for instant Checkout.',
+              icon: '🔗'
+            },
+            {
+              title: 'Global Payments',
+              desc: 'Accept payments in any currency via Stripe, including iDEAL and cards.',
+              icon: '🌍'
+            },
+            {
+              title: 'Real-time Tracking',
+              desc: 'A dedicated dashboard to manage your products and track every transaction.',
+              icon: '📊'
+            }
+          ].map((feature, i) => (
+            <div key={i} className="p-8 bg-[#1e293b] rounded-3xl border border-slate-700/50 hover:border-blue-500/30 transition-all text-left">
+              <div className="text-4xl mb-6">{feature.icon}</div>
+              <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+              <p className="text-slate-400">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-700/50 mt-20">
+        <div className="container px-6 py-12 mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-slate-500 text-sm">
+            &copy; 2026 HopiSuerte Solutions. Built for freelancers.
+          </p>
+          <div className="flex space-x-8">
+            <Link href="/terms" className="text-sm text-slate-500 hover:text-white transition-all">Terms</Link>
+            <Link href="/privacy" className="text-sm text-slate-500 hover:text-white transition-all">Privacy</Link>
+          </div>
+        </div>
       </footer>
     </main>
   );
 }
+

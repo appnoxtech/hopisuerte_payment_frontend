@@ -12,7 +12,7 @@ export default function AdminLayout({ children }) {
     const pathname = usePathname();
 
     useEffect(() => {
-        if (pathname === '/admin/login') {
+        if (pathname === '/admin/login' || pathname === '/admin/register') {
             setLoading(false);
             return;
         }
@@ -48,7 +48,7 @@ export default function AdminLayout({ children }) {
         );
     }
 
-    if (pathname === '/admin/login') {
+    if (pathname === '/admin/login' || pathname === '/admin/register') {
         return <>{children}</>;
     }
 
@@ -73,6 +73,12 @@ export default function AdminLayout({ children }) {
                         className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin/products' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
                     >
                         Manage Products
+                    </Link>
+                    <Link
+                        href="/admin/profile"
+                        className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin/profile' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
+                    >
+                        Profile Settings
                     </Link>
                 </nav>
                 <div className="p-4 border-t border-slate-700">
