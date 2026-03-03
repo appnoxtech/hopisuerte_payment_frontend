@@ -42,8 +42,8 @@ export default function AdminLayout({ children }) {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0f172a] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
             </div>
         );
     }
@@ -53,42 +53,42 @@ export default function AdminLayout({ children }) {
     }
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-white flex">
+        <div className="min-h-screen bg-black text-white flex">
             {/* Sidebar */}
-            <aside className="w-64 bg-[#1e293b] border-r border-slate-700 flex flex-col">
+            <aside className="w-64 bg-neutral-900 border-r border-neutral-800 flex flex-col">
                 <div className="p-6">
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
                         HopiSuerte Admin
                     </h2>
                 </div>
                 <nav className="flex-1 px-4 space-y-2 mt-4">
                     <Link
                         href="/admin"
-                        className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
+                        className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin' ? 'bg-yellow-400 text-black font-bold' : 'hover:bg-neutral-800 text-neutral-400 hover:text-white'}`}
                     >
                         Transactions
                     </Link>
                     <Link
                         href="/admin/products"
-                        className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin/products' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
+                        className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin/products' ? 'bg-yellow-400 text-black font-bold' : 'hover:bg-neutral-800 text-neutral-400 hover:text-white'}`}
                     >
                         Manage Products
                     </Link>
                     <Link
                         href="/admin/profile"
-                        className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin/profile' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
+                        className={`block px-4 py-3 rounded-xl transition-all ${pathname === '/admin/profile' ? 'bg-yellow-400 text-black font-bold' : 'hover:bg-neutral-800 text-neutral-400 hover:text-white'}`}
                     >
                         Profile Settings
                     </Link>
                 </nav>
-                <div className="p-4 border-t border-slate-700">
+                <div className="p-4 border-t border-neutral-800">
                     <div className="flex items-center space-x-3 mb-4 px-2">
-                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold">
+                        <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-black text-xs">
                             {user?.name?.[0] || 'A'}
                         </div>
                         <div className="text-sm">
                             <p className="font-semibold text-white truncate">{user?.name}</p>
-                            <p className="text-slate-400 text-xs truncate">{user?.email}</p>
+                            <p className="text-neutral-500 text-xs truncate">{user?.email}</p>
                         </div>
                     </div>
                     <button
@@ -101,7 +101,7 @@ export default function AdminLayout({ children }) {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto p-8">
+            <main className="flex-1 overflow-y-auto p-8 bg-black">
                 {children}
             </main>
         </div>

@@ -3,17 +3,17 @@
 
 
 :root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --secondary: #ec4899;
-  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-  --card-bg: rgba(255, 255, 255, 0.03);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --input-bg: rgba(255, 255, 255, 0.05);
-  --input-border: rgba(255, 255, 255, 0.1);
-  --success: #10b981;
+  --primary: #facc15;
+  --primary-hover: #eab308;
+  --secondary: #fbbf24;
+  --bg-gradient: radial-gradient(circle at top left, #171717 0%, #000000 100%);
+  --card-bg: #111111;
+  --card-border: #262626;
+  --text-main: #ffffff;
+  --text-muted: #a3a3a3;
+  --input-bg: #0a0a0a;
+  --input-border: #262626;
+  --success: #22c55e;
   --error: #ef4444;
 }
 
@@ -83,64 +83,76 @@ h3 {
 .input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.1);
 }
 
 .btn {
   display: inline-block;
   width: 100%;
-  padding: 1rem;
+  padding: 1.25rem;
   background: var(--primary);
-  color: white;
+  color: #000000;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 10px 15px -3px rgba(250, 204, 21, 0.1);
 }
 
 .btn:hover {
   background: var(--primary-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(250, 204, 21, 0.2);
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  background: #262626;
+  color: #525252;
   cursor: not-allowed;
+  transform: none;
 }
 
 .product-selector {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
 }
 
 .product-item {
   background: var(--card-bg);
-  border: 2px solid var(--card-border);
-  border-radius: 16px;
-  padding: 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .product-item.selected {
   border-color: var(--primary);
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(250, 204, 21, 0.05);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 .product-name {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
 }
 
 .product-price {
-  font-size: 1.25rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 900;
   color: var(--primary);
+  font-family: 'Outfit', sans-serif;
+  font-style: italic;
 }
 
 .product-currency {

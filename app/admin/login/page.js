@@ -28,51 +28,53 @@ export default function AdminLogin() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
-            <div className="max-w-md w-full p-8 bg-[#1e293b] rounded-2xl shadow-2xl border border-slate-700">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-white mb-2">HopiSuerte Admin</h1>
-                    <p className="text-slate-400">Secure Payment Management</p>
+        <div className="min-h-screen flex items-center justify-center bg-black">
+            <div className="max-w-md w-full p-10 bg-neutral-900 rounded-3xl shadow-2xl border border-neutral-800">
+                <div className="text-center mb-10">
+                    <h1 className="text-3xl font-black bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-2">HopiSuerte Admin</h1>
+                    <p className="text-neutral-500 text-sm uppercase tracking-widest font-bold">Secure Access</p>
                 </div>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 text-red-500 rounded-lg text-sm text-center">
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 text-red-500 rounded-xl text-sm text-center font-medium">
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
+                        <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Email Address</label>
                         <input
                             type="email"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 bg-[#0f172a] border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            className="w-full px-4 py-4 bg-black border border-neutral-800 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-400/50 transition-all placeholder:text-neutral-700"
                             placeholder="admin@hopisuerte.com"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                        <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Password</label>
                         <input
                             type="password"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 bg-[#0f172a] border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                            className="w-full px-4 py-4 bg-black border border-neutral-800 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-400/50 transition-all placeholder:text-neutral-700"
                             placeholder="••••••••"
                         />
                     </div>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-900/20"
+                        className="w-full py-4 px-4 bg-yellow-400 hover:bg-yellow-500 disabled:bg-neutral-800 text-black font-black rounded-2xl transition-all shadow-xl shadow-yellow-900/10 uppercase tracking-widest"
                     >
                         {loading ? 'Authenticating...' : 'Sign In'}
                     </button>
-                    <div className="text-center mt-4 pt-4 border-t border-slate-700">
-                        <Link href="/admin/register" className="text-sm text-slate-400 hover:text-blue-400">Don&apos;t have an account? Register</Link>
+                    <div className="text-center mt-6 pt-6 border-t border-neutral-800">
+                        <Link href="/admin/register" className="text-sm text-neutral-500 hover:text-yellow-400 font-bold transition-all">
+                            Need an account? <span className="underline decoration-yellow-400/30 underline-offset-4">Register here</span>
+                        </Link>
                     </div>
                 </form>
             </div>
