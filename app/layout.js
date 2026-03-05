@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "HopiSuerte | Premium Payment Solutions",
-  description: "Receive payments globally with our secure and sleek payment platform designed for modern freelancers.",
+  title: "HopiSuerte | Secure Payment Links & Merchant Dashboard",
+  description: "Create payment links, accept global payments, and track transactions in real-time through HopiSuerte's secure and scalable fintech platform.",
 };
 
 export default function RootLayout({ children }) {

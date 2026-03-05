@@ -21,62 +21,78 @@ export default function AdminLogin() {
             localStorage.setItem('auth_token', response.data.access_token);
             router.push('/admin');
         } catch (err) {
-            setError('Invalid credentials or server error.');
+            setError('Invalid email or password. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black">
-            <div className="max-w-md w-full p-10 bg-neutral-900 rounded-3xl shadow-2xl border border-neutral-800">
+        <div className="min-h-screen flex items-center justify-center p-6 bg-black relative overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[500px] bg-yellow-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+            <div className="w-full max-w-md glass-card p-10 relative z-10 animate-fade-in-up border-white/5">
                 <div className="text-center mb-10">
-                    <h1 className="text-3xl font-black bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-2">HopiSuerte Admin</h1>
-                    <p className="text-neutral-500 text-sm uppercase tracking-widest font-bold">Secure Access</p>
+                    <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h1 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">Admin Login</h1>
+                    <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em]">Sign in to manage your payments</p>
                 </div>
 
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 text-red-500 rounded-xl text-sm text-center font-medium">
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-xs font-bold flex items-center gap-3">
+                        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div>
-                        <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <label className="block text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2 ml-1">Email Address</label>
                         <input
                             type="email"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-4 bg-black border border-neutral-800 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-400/50 transition-all placeholder:text-neutral-700"
-                            placeholder="admin@hopisuerte.com"
+                            className="saas-input py-3.5 px-6 text-base font-bold"
+                            placeholder="admin@example.com"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Password</label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Password</label>
+                            <Link href="/admin/forgot-password" size="sm" className="text-[9px] text-yellow-500/80 hover:text-yellow-400 transition-colors font-black uppercase tracking-widest">
+                                Forgot?
+                            </Link>
+                        </div>
                         <input
                             type="password"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-4 bg-black border border-neutral-800 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-400/50 transition-all placeholder:text-neutral-700"
+                            className="saas-input py-3.5 px-6 text-base font-bold"
                             placeholder="••••••••"
                         />
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full py-4 px-4 bg-yellow-400 hover:bg-yellow-500 disabled:bg-neutral-800 text-black font-black rounded-2xl transition-all shadow-xl shadow-yellow-900/10 uppercase tracking-widest"
-                    >
-                        {loading ? 'Authenticating...' : 'Sign In'}
-                    </button>
-                    <div className="text-center mt-6 pt-6 border-t border-neutral-800">
-                        <Link href="/admin/register" className="text-sm text-neutral-500 hover:text-yellow-400 font-bold transition-all">
-                            Need an account? <span className="underline decoration-yellow-400/30 underline-offset-4">Register here</span>
-                        </Link>
+                    <div className="pt-4">
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="saas-btn-primary w-full py-4 text-[10px] uppercase font-black tracking-[0.2em]"
+                        >
+                            {loading ? 'Authenticating...' : 'Sign In'}
+                        </button>
                     </div>
                 </form>
+
+                <div className="text-center mt-10 pt-8 border-t border-white/5">
+                    <p className="text-[10px] text-zinc-600 font-bold tracking-widest uppercase">
+                        HopiSuerte Admin Interface
+                    </p>
+                </div>
             </div>
         </div>
     );

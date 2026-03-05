@@ -1,24 +1,64 @@
+import Link from 'next/link';
+
 export default function PrivacyPage() {
     return (
-        <div className="min-h-screen bg-black text-white p-20 max-w-4xl mx-auto leading-relaxed">
-            <h1 className="text-4xl font-black italic mb-8">Privacy Policy</h1>
-            <p className="mb-6 text-neutral-300">
-                Your privacy is important to us. Here’s how we handle your data.
-            </p>
-            <h2 className="text-2xl font-bold mt-10 mb-4 text-yellow-400">1. Data Collection</h2>
-            <p className="mb-6 text-neutral-500">
-                We collect your name, email, and transaction details to facilitate the payment flow. We do NOT store payment info (Stripe handles it).
-            </p>
-            <h2 className="text-2xl font-bold mt-10 mb-4 text-yellow-400">2. Cookies</h2>
-            <p className="mb-6 text-neutral-500">
-                We use cookies to maintain your login session. No tracking cookies are used for marketing purposes.
-            </p>
-            <h2 className="text-2xl font-bold mt-10 mb-4 text-yellow-400">3. Third Parties</h2>
-            <p className="mb-6 text-neutral-500">
-                We share your payment data with Stripe only to process your transaction. We do not sell your personal data to any advertisers.
-            </p>
-            <div className="mt-20 pt-10 border-t border-neutral-800">
-                <a href="/" className="text-yellow-500 hover:text-yellow-400 font-bold uppercase tracking-wider transition-all">← Back to Home</a>
+        <div className="min-h-screen bg-black text-white p-8 md:p-24 relative overflow-hidden">
+            {/* Ambient background */}
+            <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-yellow-400/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+            <div className="max-w-3xl mx-auto relative z-10 animate-fade-in">
+                <div className="flex items-center gap-4 mb-16">
+                    <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center">
+                        <span className="text-yellow-500 font-black text-2xl">P</span>
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-black uppercase tracking-tighter italic">Privacy Policy</h1>
+                        <p className="text-zinc-500 text-[10px] uppercase font-black tracking-[0.2em] mt-1">Information Security v1.0</p>
+                    </div>
+                </div>
+
+                <div className="glass-card p-10 space-y-12">
+                    <section>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-yellow-500 mb-4 flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                            01. Information Collection
+                        </h2>
+                        <p className="text-zinc-400 leading-relaxed font-medium">
+                            We collect essential business information (name, email) and transaction details required to provide our payment services.
+                            Sensitive financial data is processed exclusively by Stripe and is not stored on our servers.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-yellow-500 mb-4 flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                            02. Cookies and Storage
+                        </h2>
+                        <p className="text-zinc-400 leading-relaxed font-medium">
+                            Our platform uses secure local storage and identifiers to manage your session and provide a consistent user experience.
+                            We do not use tracking technologies for advertising or third-party marketing.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-yellow-500 mb-4 flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                            03. Data Security
+                        </h2>
+                        <p className="text-zinc-400 leading-relaxed font-medium">
+                            We prioritize the security of your data through strict access controls and encryption.
+                            We do not sell user data. Information is only shared with authorized payment providers
+                            to facilitate transaction processing.
+                        </p>
+                    </section>
+                </div>
+
+                <div className="mt-16 pt-8 border-t border-white/5">
+                    <Link href="/" className="saas-btn-secondary inline-flex items-center gap-3 px-8 py-3 text-[10px] font-black uppercase tracking-widest">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Back to Home
+                    </Link>
+                </div>
             </div>
         </div>
     );
