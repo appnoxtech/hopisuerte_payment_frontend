@@ -1,5 +1,5 @@
 /**
- * Shared validation utilities for HopiSuerte authentication forms.
+ * Shared validation utilities for Paysigur authentication forms.
  */
 
 /**

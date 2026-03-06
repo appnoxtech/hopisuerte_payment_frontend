@@ -190,7 +190,7 @@ export default function AdminLayout({ children }) {
                                     fontStyle: 'italic'
                                 }}
                             >
-                                H
+                                P
                             </span>
 
                         </div>
@@ -203,7 +203,7 @@ export default function AdminLayout({ children }) {
                                     fontSize: 18
                                 }}
                             >
-                                HopiSuerte
+                                Paysigur
                             </h2>
 
                             <p

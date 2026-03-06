@@ -173,7 +173,7 @@ export default function AdminLogin() {
                                 setEmail(e.target.value);
                                 setFieldErrors(prev => ({ ...prev, email: '' }));
                             }}
-                            placeholder="admin@example.com"
+                            placeholder="admin@paysigur.com"
                             style={{
                                 width: '100%',
                                 padding: '14px 24px',
@@ -308,7 +308,7 @@ export default function AdminLogin() {
                         letterSpacing: '0.2em',
                         textTransform: 'uppercase'
                     }}>
-                        HopiSuerte Admin Interface
+                        Paysigur Admin Interface
                     </p>
                 </div>
             </div>

@@ -73,7 +73,7 @@ export default function SuperAdminForgotPassword() {
                             value={email}
                             onChange={(e) => { setEmail(e.target.value); setFieldError(''); }}
                             className={`saas-input text-base ${fieldError ? 'border-red-500/40 focus:ring-red-500/20' : ''}`}
-                            placeholder="admin@hopisuerte.com"
+                            placeholder="admin@paysigur.com"
                         />
                         {fieldError && (
                             <p className="text-red-400 text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider">{fieldError}</p>
@@ -109,7 +109,7 @@ export default function SuperAdminForgotPassword() {
             </div>
             {/* Bottom branding */}
             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-center">
-                <p className="text-neutral-700 text-[10px] font-black uppercase tracking-[0.3em]">HopiSuerte Platform</p>
+                <p className="text-neutral-700 text-[10px] font-black uppercase tracking-[0.3em]">Paysigur Platform</p>
             </div>
         </div>
     );

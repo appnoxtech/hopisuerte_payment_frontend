@@ -24,7 +24,7 @@ export default function TermsPage() {
                             01. Agreement to Terms
                         </h2>
                         <p className="text-zinc-400 leading-relaxed font-medium">
-                            By using HopiSuerte Payments, you agree to comply with and be bound by these Terms of Service.
+                            By using Paysigur Payments, you agree to comply with and be bound by these Terms of Service.
                             Our platform provides payment processing tools for merchants. Users assume full responsibility
                             for their business operations and interactions with customers.
                         </p>
@@ -37,7 +37,7 @@ export default function TermsPage() {
                         </h2>
                         <p className="text-zinc-400 leading-relaxed font-medium">
                             All financial transactions are processed securely through the Stripe payment gateway.
-                            HopiSuerte does not store sensitive credit card or banking information.
+                            Paysigur does not store sensitive credit card or banking information.
                             Any disputes related to payments are subject to the policies of the respective payment provider.
                         </p>
                     </section>

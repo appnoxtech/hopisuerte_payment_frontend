@@ -242,7 +242,7 @@ export default function SuperAdminLogin() {
                             <input
                                 type="email"
                                 value={email}
-                                placeholder="admin@hopisuerte.com"
+                                placeholder="admin@paysigur.com"
                                 onChange={(e) => {
                                     setEmail(e.target.value);
                                     setFieldErrors(prev => ({ ...prev, email: '' }));
@@ -392,7 +392,7 @@ export default function SuperAdminLogin() {
                             textTransform: 'uppercase'
                         }}
                     >
-                        HopiSuerte Platform
+                        Paysigur Platform
                     </p>
                 </div>
 

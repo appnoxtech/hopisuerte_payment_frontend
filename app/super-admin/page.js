@@ -52,7 +52,7 @@ export default function SuperAdminDashboard() {
 
             link.setAttribute(
                 'download',
-                `hopisuerte_report_${new Date().toISOString().split('T')[0]}.csv`
+                `paysigur_report_${new Date().toISOString().split('T')[0]}.csv`
             );
 
             document.body.appendChild(link);

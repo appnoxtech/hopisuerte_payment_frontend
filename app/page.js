@@ -97,7 +97,7 @@ export default function Home() {
                   fontStyle: "italic",
                 }}
               >
-                H
+                P
               </span>
             </div>
 
@@ -110,7 +110,7 @@ export default function Home() {
                   fontStyle: "italic",
                 }}
               >
-                HopiSuerte
+                Paysigur
               </span>
               <span
                 style={{
@@ -382,7 +382,7 @@ export default function Home() {
         }}
       >
         <p style={{ fontSize: 12 }}>
-          © 2026 HopiSuerte • All Rights Reserved
+          © 2026 Paysigur • All Rights Reserved
         </p>
       </footer>
     </main>
