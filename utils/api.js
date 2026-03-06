@@ -9,9 +9,21 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    // If the request already has an explicit Authorization header, don't overwrite it.
+    // This is critical for super-admin requests that pass their own token.
+    if (config.headers.Authorization) {
+        return config;
+    }
+
+    if (typeof window !== 'undefined') {
+        // Check for super_admin_token first, then fall back to auth_token
+        const superAdminToken = localStorage.getItem('super_admin_token');
+        const authToken = localStorage.getItem('auth_token');
+        const token = superAdminToken || authToken;
+
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
     }
     return config;
 });

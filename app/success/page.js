@@ -4,40 +4,193 @@ import Link from 'next/link';
 
 export default function SuccessPage() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black p-6 relative overflow-hidden">
-            {/* Ambient background */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[400px] bg-green-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div
+            style={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#000',
+                padding: '24px',
+                position: 'relative',
+                overflow: 'hidden',
+                fontFamily: 'sans-serif'
+            }}
+        >
+            <style>{`
+                @keyframes fadeIn {
+                    from {opacity:0; transform: translateY(10px);}
+                    to {opacity:1; transform: translateY(0);}
+                }
 
-            <div className="w-full max-w-md glass-card p-10 relative z-10 text-center animate-fade-in">
-                <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center justify-center text-green-500 mx-auto mb-8 shadow-inner animate-bounce-subtle">
-                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                @keyframes pulse {
+                    0%,100% {opacity:1;}
+                    50% {opacity:0.4;}
+                }
+
+                @keyframes bounceSubtle {
+                    0%,100% {transform: translateY(0);}
+                    50% {transform: translateY(-6px);}
+                }
+            `}</style>
+
+            {/* Ambient background */}
+            <div
+                style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100%',
+                    maxWidth: '42rem',
+                    height: '400px',
+                    background: 'rgba(34,197,94,0.1)',
+                    borderRadius: '9999px',
+                    filter: 'blur(100px)',
+                    pointerEvents: 'none'
+                }}
+            />
+
+            <div
+                style={{
+                    width: '100%',
+                    maxWidth: '28rem',
+                    padding: '40px',
+                    position: 'relative',
+                    zIndex: 10,
+                    textAlign: 'center',
+                    borderRadius: '16px',
+                    background: 'rgba(255,255,255,0.03)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    animation: 'fadeIn 0.6s ease'
+                }}
+            >
+                <div
+                    style={{
+                        width: '80px',
+                        height: '80px',
+                        background: 'rgba(34,197,94,0.1)',
+                        border: '1px solid rgba(34,197,94,0.2)',
+                        borderRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#22c55e',
+                        margin: '0 auto 32px auto',
+                        boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.4)',
+                        animation: 'bounceSubtle 2s infinite'
+                    }}
+                >
+                    <svg
+                        style={{ width: '40px', height: '40px' }}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="3"
+                            d="M5 13l4 4L19 7"
+                        />
                     </svg>
                 </div>
 
-                <h1 className="text-3xl font-black text-white mb-4 uppercase tracking-tight">Payment Verified</h1>
-                <p className="text-zinc-500 text-sm mb-10 leading-relaxed font-medium">
+                <h1
+                    style={{
+                        fontSize: '30px',
+                        fontWeight: 900,
+                        color: '#fff',
+                        marginBottom: '16px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '-0.02em'
+                    }}
+                >
+                    Payment Verified
+                </h1>
+
+                <p
+                    style={{
+                        color: '#71717a',
+                        fontSize: '14px',
+                        marginBottom: '40px',
+                        lineHeight: '1.6',
+                        fontWeight: 500
+                    }}
+                >
                     Transaction completed successfully. A digital receipt has been dispatched to your inbox, and the merchant has been notified of the settlement.
                 </p>
 
-                <div className="space-y-4">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <button
                         onClick={() => window.close()}
-                        className="saas-btn-primary w-full py-4 text-sm"
+                        style={{
+                            width: '100%',
+                            padding: '16px',
+                            fontSize: '14px',
+                            borderRadius: '12px',
+                            border: 'none',
+                            background: '#22c55e',
+                            color: '#000',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                        }}
                     >
                         Securely Close Window
                     </button>
+
                     <Link
                         href="/"
-                        className="block py-4 text-xs text-zinc-500 hover:text-white transition-colors font-bold uppercase tracking-widest border border-white/5 rounded-xl hover:bg-white/5"
+                        style={{
+                            display: 'block',
+                            padding: '16px',
+                            fontSize: '12px',
+                            color: '#71717a',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.15em',
+                            border: '1px solid rgba(255,255,255,0.05)',
+                            borderRadius: '12px',
+                            textDecoration: 'none'
+                        }}
                     >
                         Return to Hub
                     </Link>
                 </div>
 
-                <div className="mt-10 pt-8 border-t border-white/5 flex items-center justify-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Transaction Finalized</span>
+                <div
+                    style={{
+                        marginTop: '40px',
+                        paddingTop: '32px',
+                        borderTop: '1px solid rgba(255,255,255,0.05)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px'
+                    }}
+                >
+                    <div
+                        style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: '#22c55e',
+                            animation: 'pulse 1.5s infinite'
+                        }}
+                    />
+
+                    <span
+                        style={{
+                            fontSize: '10px',
+                            fontWeight: 900,
+                            color: '#52525b',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2em'
+                        }}
+                    >
+                        Transaction Finalized
+                    </span>
                 </div>
             </div>
         </div>

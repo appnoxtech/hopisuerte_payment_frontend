@@ -13,15 +13,20 @@ export default function SuperAdminLogin() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
+
     const router = useRouter();
 
     const validateFields = () => {
         const errors = { email: '', password: '' };
+
         errors.email = validateEmail(email);
+
         if (!password || password.trim() === '') {
             errors.password = 'Please enter your password.';
         }
+
         setFieldErrors(errors);
+
         return !errors.email && !errors.password;
     };
 
@@ -32,11 +37,16 @@ export default function SuperAdminLogin() {
         if (!validateFields()) return;
 
         setLoading(true);
+
         try {
             const response = await api.post('/super-admin/login', { email, password });
+
             localStorage.setItem('super_admin_token', response.data.access_token);
+
             router.push('/super-admin');
+
         } catch (err) {
+
             if (err.response?.status === 403) {
                 setError('Access denied. Super Admin privileges required.');
             } else if (err.response?.status === 401) {
@@ -44,148 +54,348 @@ export default function SuperAdminLogin() {
             } else {
                 setError('Server error. Please try again later.');
             }
+
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -left-40 w-80 h-80 bg-yellow-500/5 rounded-full blur-3xl" />
-                <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-yellow-600/5 rounded-full blur-3xl" />
+        <div
+            style={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#000',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
+        >
+
+            {/* Background blur circles */}
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '-160px',
+                        left: '-160px',
+                        width: '320px',
+                        height: '320px',
+                        background: 'rgba(234,179,8,0.05)',
+                        borderRadius: '50%',
+                        filter: 'blur(80px)'
+                    }}
+                />
+
+                <div
+                    style={{
+                        position: 'absolute',
+                        bottom: '-160px',
+                        right: '-160px',
+                        width: '380px',
+                        height: '380px',
+                        background: 'rgba(202,138,4,0.05)',
+                        borderRadius: '50%',
+                        filter: 'blur(80px)'
+                    }}
+                />
+
             </div>
 
-            {/* Grid pattern overlay */}
-            <div className="absolute inset-0 opacity-[0.03]"
+            {/* Grid overlay */}
+            <div
                 style={{
-                    backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
+                    position: 'absolute',
+                    inset: 0,
+                    opacity: 0.03,
+                    backgroundImage:
+                        'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
                     backgroundSize: '60px 60px'
                 }}
             />
 
-            <div className="relative max-w-md w-full mx-4">
-                {/* Secure Badge */}
-                <div className="flex justify-center mb-8">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-yellow-500/10 border border-yellow-500/20 rounded-full">
-                        <svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                        <span className="text-yellow-400 text-xs font-bold uppercase tracking-widest">Secure Portal</span>
+            <div style={{ position: 'relative', width: '100%', maxWidth: 450, margin: '0 16px' }}>
+
+                {/* Secure badge */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '6px 14px',
+                            background: 'rgba(234,179,8,0.1)',
+                            border: '1px solid rgba(234,179,8,0.2)',
+                            borderRadius: 50
+                        }}
+                    >
+                        <span
+                            style={{
+                                color: '#facc15',
+                                fontSize: 11,
+                                fontWeight: 700,
+                                letterSpacing: 2,
+                                textTransform: 'uppercase'
+                            }}
+                        >
+                            Secure Portal
+                        </span>
                     </div>
+
                 </div>
 
-                <div className="glass-card p-10 relative overflow-hidden border-white/5">
-                    {/* Yellow accent line at top */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-b-full" />
+                <div
+                    style={{
+                        background: 'rgba(24,24,27,0.85)',
+                        border: '1px solid rgba(255,255,255,0.05)',
+                        padding: 40,
+                        borderRadius: 16,
+                        position: 'relative'
+                    }}
+                >
 
-                    <div className="text-center mb-10">
-                        {/* Shield icon */}
-                        <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shadow-inner">
-                            <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                        </div>
-                        <h1 className="text-3xl font-black bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-2 tracking-tight uppercase italic">
+                    {/* Accent line */}
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: 96,
+                            height: 4,
+                            borderBottomLeftRadius: 50,
+                            borderBottomRightRadius: 50,
+                            background: 'linear-gradient(to right,#facc15,#ca8a04)'
+                        }}
+                    />
+
+                    {/* Heading */}
+                    <div style={{ textAlign: 'center', marginBottom: 40 }}>
+
+                        <h1
+                            style={{
+                                fontSize: 30,
+                                fontWeight: 900,
+                                background: 'linear-gradient(to right,#facc15,#ca8a04)',
+                                WebkitBackgroundClip: 'text',
+                                color: 'transparent',
+                                textTransform: 'uppercase',
+                                fontStyle: 'italic'
+                            }}
+                        >
                             Super Admin
                         </h1>
-                        <p className="text-zinc-500 text-[10px] uppercase tracking-widest font-bold">Management Portal</p>
+
+                        <p
+                            style={{
+                                color: '#71717a',
+                                fontSize: 10,
+                                fontWeight: 700,
+                                letterSpacing: 2,
+                                textTransform: 'uppercase'
+                            }}
+                        >
+                            Management Portal
+                        </p>
+
                     </div>
 
                     {error && (
-                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-sm font-bold flex items-center gap-3">
-                            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                            </svg>
+                        <div
+                            style={{
+                                marginBottom: 20,
+                                padding: 14,
+                                background: 'rgba(239,68,68,0.1)',
+                                border: '1px solid rgba(239,68,68,0.2)',
+                                color: '#ef4444',
+                                borderRadius: 10,
+                                fontSize: 14,
+                                fontWeight: 700
+                            }}
+                        >
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-6" noValidate>
-                        <div>
-                            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 pl-1">Admin Email</label>
+                    <form onSubmit={handleLogin} noValidate>
+
+                        {/* Email */}
+                        <div style={{ marginBottom: 20 }}>
+
+                            <label
+                                style={{
+                                    display: 'block',
+                                    fontSize: 10,
+                                    fontWeight: 800,
+                                    color: '#71717a',
+                                    marginBottom: 6,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 2
+                                }}
+                            >
+                                Admin Email
+                            </label>
+
                             <input
-                                id="super-admin-email"
                                 type="email"
                                 value={email}
-                                onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({ ...prev, email: '' })); }}
-                                className={`saas-input text-base ${fieldErrors.email ? 'border-red-500/40 focus:ring-red-500/20' : ''}`}
                                 placeholder="admin@hopisuerte.com"
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    setFieldErrors(prev => ({ ...prev, email: '' }));
+                                }}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 14px',
+                                    borderRadius: 10,
+                                    border: fieldErrors.email ? '1px solid red' : '1px solid #333',
+                                    background: '#111',
+                                    color: '#fff'
+                                }}
                             />
+
                             {fieldErrors.email && (
-                                <p className="text-red-400 text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider">{fieldErrors.email}</p>
+                                <p style={{ color: '#f87171', fontSize: 11, marginTop: 6 }}>
+                                    {fieldErrors.email}
+                                </p>
                             )}
+
                         </div>
-                        <div>
-                            <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 pl-1">Password</label>
-                            <div className="relative">
+
+                        {/* Password */}
+                        <div style={{ marginBottom: 24 }}>
+
+                            <label
+                                style={{
+                                    display: 'block',
+                                    fontSize: 10,
+                                    fontWeight: 800,
+                                    color: '#71717a',
+                                    marginBottom: 6,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 2
+                                }}
+                            >
+                                Password
+                            </label>
+
+                            <div style={{ position: 'relative' }}>
+
                                 <input
-                                    id="super-admin-password"
-                                    type={showPassword ? "text" : "password"}
+                                    type={showPassword ? 'text' : 'password'}
                                     value={password}
-                                    onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({ ...prev, password: '' })); }}
-                                    className={`saas-input text-base pr-12 ${fieldErrors.password ? 'border-red-500/40 focus:ring-red-500/20' : ''}`}
                                     placeholder="••••••••"
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        setFieldErrors(prev => ({ ...prev, password: '' }));
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 14px',
+                                        borderRadius: 10,
+                                        border: fieldErrors.password ? '1px solid red' : '1px solid #333',
+                                        background: '#111',
+                                        color: '#fff'
+                                    }}
                                 />
+
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-yellow-500 transition-colors p-1"
+                                    style={{
+                                        position: 'absolute',
+                                        right: 12,
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        border: 'none',
+                                        background: 'transparent',
+                                        cursor: 'pointer',
+                                        color: '#aaa'
+                                    }}
                                 >
-                                    {showPassword ? (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                    ) : (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                                        </svg>
-                                    )}
+                                    👁
                                 </button>
+
                             </div>
+
                             {fieldErrors.password && (
-                                <p className="text-red-400 text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider">{fieldErrors.password}</p>
+                                <p style={{ color: '#f87171', fontSize: 11, marginTop: 6 }}>
+                                    {fieldErrors.password}
+                                </p>
                             )}
+
                         </div>
 
-                        <div className="pt-4 space-y-6">
-                            <button
-                                id="super-admin-login-btn"
-                                type="submit"
-                                disabled={loading}
-                                className="saas-btn-primary w-full py-4 text-sm font-black uppercase tracking-widest shadow-lg active:scale-[0.98] transition-all"
+                        {/* Login button */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            style={{
+                                width: '100%',
+                                padding: '14px',
+                                borderRadius: 12,
+                                border: 'none',
+                                fontWeight: 800,
+                                letterSpacing: 2,
+                                textTransform: 'uppercase',
+                                background: 'linear-gradient(to right,#facc15,#ca8a04)',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {loading ? 'Logging in...' : 'Login'}
+                        </button>
+
+                        <div style={{ textAlign: 'center', marginTop: 20 }}>
+                            <Link
+                                href="/super-admin/forgot-password"
+                                style={{
+                                    fontSize: 11,
+                                    color: '#a1a1aa',
+                                    textDecoration: 'none',
+                                    fontWeight: 700,
+                                    letterSpacing: 1
+                                }}
                             >
-                                {loading ? (
-                                    <span className="flex items-center justify-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                                        Logging in...
-                                    </span>
-                                ) : (
-                                    'Login'
-                                )}
-                            </button>
-
-                            <div className="text-center">
-                                <Link href="/super-admin/forgot-password" className="text-[10px] text-zinc-500 hover:text-yellow-400 transition-colors font-bold uppercase tracking-widest">
-                                    Trouble signing in? Reset Password
-                                </Link>
-                            </div>
+                                Trouble signing in? Reset Password
+                            </Link>
                         </div>
+
                     </form>
 
-                    <div className="mt-8 pt-8 border-t border-white/5 text-center">
-                        <p className="text-[10px] text-zinc-600 font-bold tracking-widest uppercase leading-relaxed">
-                            Access is restricted to authorized<br />platform administrators.
-                        </p>
+                    <div
+                        style={{
+                            marginTop: 30,
+                            paddingTop: 20,
+                            borderTop: '1px solid rgba(255,255,255,0.05)',
+                            textAlign: 'center',
+                            fontSize: 10,
+                            color: '#52525b',
+                            letterSpacing: 2,
+                            fontWeight: 700
+                        }}
+                    >
+                        Access is restricted to authorized platform administrators.
                     </div>
+
                 </div>
 
-                {/* Bottom branding */}
-                <div className="text-center mt-6">
-                    <p className="text-neutral-700 text-[10px] font-black uppercase tracking-[0.3em]">HopiSuerte Platform</p>
+                <div style={{ textAlign: 'center', marginTop: 16 }}>
+                    <p
+                        style={{
+                            color: '#444',
+                            fontSize: 10,
+                            fontWeight: 900,
+                            letterSpacing: 5,
+                            textTransform: 'uppercase'
+                        }}
+                    >
+                        HopiSuerte Platform
+                    </p>
                 </div>
+
             </div>
         </div>
     );

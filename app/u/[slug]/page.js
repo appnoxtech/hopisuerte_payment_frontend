@@ -10,215 +10,439 @@ import CheckoutForm from '@/components/CheckoutForm';
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_placeholder');
 
 export default function UserPaymentPage() {
+
     const { slug } = useParams();
+
     const [user, setUser] = useState(null);
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
+
     const [customer, setCustomer] = useState({
         name: '',
         email: '',
         phone: '',
         notes: ''
     });
+
     const [clientSecret, setClientSecret] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
+
         if (!slug) return;
 
         api.get(`/u/${slug}`)
             .then(res => {
+
                 setUser(res.data.user);
                 setProducts(res.data.products);
-                if (res.data.products.length > 0) setSelectedProduct(res.data.products[0]);
+
+                if (res.data.products.length > 0) {
+                    setSelectedProduct(res.data.products[0]);
+                }
+
                 setLoading(false);
+
             })
-            .catch(err => {
+            .catch(() => {
+
                 setError('User not found or has no active products.');
                 setLoading(false);
+
             });
+
     }, [slug]);
 
+
+
     const handleStartPayment = async (e) => {
+
         e.preventDefault();
+
         if (!selectedProduct) return;
+
         setSubmitting(true);
 
         try {
+
             const res = await api.post('/payments/intent', {
+
                 product_id: selectedProduct.id,
                 customer_name: customer.name,
                 customer_email: customer.email,
                 customer_phone: customer.phone,
                 notes: customer.notes
+
             });
+
             setClientSecret(res.data.clientSecret);
-        } catch (err) {
+
+        } catch {
+
             alert("Failed to start payment process.");
+
         } finally {
+
             setSubmitting(false);
+
         }
+
     };
 
-    if (loading) return <div className="text-center mt-20 text-slate-400">Loading payment profile...</div>;
-    if (error) return <div className="text-center mt-20 text-red-500">{error}</div>;
+
+
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', marginTop: 80, color: '#94a3b8' }}>
+                Loading payment profile...
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div style={{ textAlign: 'center', marginTop: 80, color: '#ef4444' }}>
+                {error}
+            </div>
+        );
+    }
+
+
 
     return (
-        <main className="min-h-screen bg-black relative overflow-hidden flex flex-col items-center justify-center p-6">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[400px] bg-yellow-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-            <div className="w-full max-w-2xl relative z-10 animate-fade-in-up">
-                <div className="text-center mb-10">
-                    <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                        <span className="text-4xl font-black text-yellow-500">{user?.name?.charAt(0) || 'H'}</span>
+        <main
+            style={{
+                minHeight: '100vh',
+                background: '#000',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 24
+            }}
+        >
+
+            {/* glow background */}
+
+            <div
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '100%',
+                    maxWidth: 900,
+                    height: 400,
+                    background: 'rgba(250,204,21,0.1)',
+                    borderRadius: '50%',
+                    filter: 'blur(100px)',
+                    pointerEvents: 'none'
+                }}
+            />
+
+
+            <div style={{ width: '100%', maxWidth: 720, position: 'relative', zIndex: 10 }}>
+
+
+                {/* header */}
+
+                <div style={{ textAlign: 'center', marginBottom: 40 }}>
+
+                    <div
+                        style={{
+                            width: 80,
+                            height: 80,
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: 24,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '0 auto 24px auto'
+                        }}
+                    >
+
+                        <span style={{ fontSize: 40, fontWeight: 900, color: '#facc15' }}>
+                            {user?.name?.charAt(0) || 'H'}
+                        </span>
+
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-white mb-2">
+
+
+                    <h1
+                        style={{
+                            fontSize: 42,
+                            fontWeight: 900,
+                            letterSpacing: -1,
+                            textTransform: 'uppercase',
+                            color: '#fff',
+                            marginBottom: 8
+                        }}
+                    >
                         {user?.name}
                     </h1>
-                    <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest">Global Payment Gateway</p>
+
+                    <p
+                        style={{
+                            color: '#71717a',
+                            fontSize: 13,
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: 2
+                        }}
+                    >
+                        Global Payment Gateway
+                    </p>
+
                 </div>
 
-                <div className="glass-card p-10 mt-8">
+
+
+                <div
+                    style={{
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: 24,
+                        padding: 40
+                    }}
+                >
+
+
+
                     {!clientSecret ? (
-                        <form onSubmit={handleStartPayment} className="space-y-8">
-                            <div>
-                                <h2 className="text-lg font-black text-white uppercase tracking-tight flex items-center mb-6">
-                                    <span className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-xs text-black mr-3 shadow-[0_0_15px_rgba(250,204,21,0.5)]">1</span>
+
+                        <form onSubmit={handleStartPayment}>
+
+
+
+                            {/* product selection */}
+
+                            <div style={{ marginBottom: 40 }}>
+
+                                <h2
+                                    style={{
+                                        fontSize: 18,
+                                        fontWeight: 900,
+                                        color: '#fff',
+                                        textTransform: 'uppercase',
+                                        marginBottom: 20,
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}
+                                >
+
+                                    <span
+                                        style={{
+                                            width: 32,
+                                            height: 32,
+                                            background: '#facc15',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: 12,
+                                            color: '#000',
+                                            marginRight: 12
+                                        }}
+                                    >
+                                        1
+                                    </span>
+
                                     Select Product
+
                                 </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
+                                <div
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: '1fr 1fr',
+                                        gap: 16
+                                    }}
+                                >
+
                                     {products.map(product => (
+
                                         <div
                                             key={product.id}
-                                            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedProduct?.id === product.id
-                                                ? 'border-yellow-400 bg-yellow-400/5 shadow-[0_0_20px_rgba(250,204,21,0.1)]'
-                                                : 'border-white/5 bg-white/[0.02] hover:bg-white-[0.05] hover:border-white/10'
-                                                }`}
                                             onClick={() => setSelectedProduct(product)}
+                                            style={{
+                                                padding: 20,
+                                                borderRadius: 16,
+                                                border: selectedProduct?.id === product.id
+                                                    ? '2px solid #facc15'
+                                                    : '2px solid rgba(255,255,255,0.05)',
+                                                cursor: 'pointer',
+                                                background: selectedProduct?.id === product.id
+                                                    ? 'rgba(250,204,21,0.05)'
+                                                    : 'rgba(255,255,255,0.02)'
+                                            }}
                                         >
-                                            <div className="font-bold text-white mb-1 uppercase tracking-tight text-sm">{product.name}</div>
-                                            <div className="text-2xl font-black text-yellow-500">
-                                                {product.amount} <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{product.currency}</span>
+
+                                            <div
+                                                style={{
+                                                    fontWeight: 700,
+                                                    color: '#fff',
+                                                    marginBottom: 6,
+                                                    fontSize: 13,
+                                                    textTransform: 'uppercase'
+                                                }}
+                                            >
+                                                {product.name}
                                             </div>
+
+                                            <div
+                                                style={{
+                                                    fontSize: 26,
+                                                    fontWeight: 900,
+                                                    color: '#facc15'
+                                                }}
+                                            >
+                                                {product.amount}
+
+                                                <span
+                                                    style={{
+                                                        fontSize: 11,
+                                                        color: '#71717a',
+                                                        marginLeft: 6,
+                                                        textTransform: 'uppercase'
+                                                    }}
+                                                >
+                                                    {product.currency}
+                                                </span>
+
+                                            </div>
+
                                         </div>
+
                                     ))}
+
                                 </div>
+
                             </div>
 
-                            <div>
-                                <h2 className="text-lg font-black text-white uppercase tracking-tight flex items-center mb-6">
-                                    <span className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-xs text-zinc-400 mr-3 border border-white/5">2</span>
+
+
+                            {/* customer form */}
+
+                            <div style={{ marginBottom: 40 }}>
+
+                                <h2
+                                    style={{
+                                        fontSize: 18,
+                                        fontWeight: 900,
+                                        color: '#fff',
+                                        textTransform: 'uppercase',
+                                        marginBottom: 20
+                                    }}
+                                >
                                     Client Identity
                                 </h2>
-                                <div className="space-y-5">
-                                    <div>
-                                        <label className="block text-[10px] uppercase font-black tracking-widest text-zinc-500 mb-2 pl-1">Full Name</label>
-                                        <input
-                                            className="saas-input text-base"
-                                            type="text"
-                                            required
-                                            value={customer.name}
-                                            onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                                            placeholder="John Doe"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-[10px] uppercase font-black tracking-widest text-zinc-500 mb-2 pl-1">Email Address</label>
-                                        <input
-                                            className="saas-input text-base"
-                                            type="email"
-                                            required
-                                            value={customer.email}
-                                            onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
-                                            placeholder="john@example.com"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-[10px] uppercase font-black tracking-widest text-zinc-500 mb-2 pl-1">Phone Number <span className="text-zinc-700">(Optional)</span></label>
-                                        <input
-                                            className="saas-input text-base"
-                                            type="tel"
-                                            value={customer.phone}
-                                            onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                                            placeholder="+1 (555) 000-0000"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-[10px] uppercase font-black tracking-widest text-zinc-500 mb-2 pl-1">Notes <span className="text-zinc-700">(Optional)</span></label>
-                                        <textarea
-                                            className="saas-input text-base resize-none"
-                                            rows="3"
-                                            value={customer.notes}
-                                            onChange={(e) => setCustomer({ ...customer, notes: e.target.value })}
-                                            placeholder="Add any special instructions..."
-                                        />
-                                    </div>
+
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                                    <input
+                                        style={inputStyle}
+                                        type="text"
+                                        required
+                                        placeholder="Full Name"
+                                        value={customer.name}
+                                        onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                                    />
+
+                                    <input
+                                        style={inputStyle}
+                                        type="email"
+                                        required
+                                        placeholder="Email Address"
+                                        value={customer.email}
+                                        onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                                    />
+
+                                    <input
+                                        style={inputStyle}
+                                        type="tel"
+                                        placeholder="Phone Number"
+                                        value={customer.phone}
+                                        onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                                    />
+
+                                    <textarea
+                                        rows={3}
+                                        style={{ ...inputStyle, resize: 'none' }}
+                                        placeholder="Notes"
+                                        value={customer.notes}
+                                        onChange={(e) => setCustomer({ ...customer, notes: e.target.value })}
+                                    />
+
                                 </div>
+
                             </div>
 
-                            <div className="pt-4 border-t border-white/5">
-                                <button type="submit" disabled={!selectedProduct} className="saas-btn-primary w-full py-5 text-base uppercase tracking-widest disabled:opacity-50">
-                                    {submitting ? (
-                                        <>
-                                            <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                                            Processing...
-                                        </>
-                                    ) : (
-                                        'Initialize Transaction'
-                                    )}
-                                </button>
-                                <p className="text-center text-[10px] font-bold text-zinc-600 mt-4 uppercase tracking-widest">Secured by Stripe</p>
-                            </div>
+
+
+                            {/* submit */}
+
+                            <button
+                                type="submit"
+                                disabled={!selectedProduct}
+                                style={{
+                                    width: '100%',
+                                    padding: 20,
+                                    background: '#facc15',
+                                    color: '#000',
+                                    borderRadius: 14,
+                                    border: 'none',
+                                    fontWeight: 800,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: 2,
+                                    cursor: 'pointer',
+                                    opacity: !selectedProduct ? 0.5 : 1
+                                }}
+                            >
+                                {submitting ? 'Processing...' : 'Initialize Transaction'}
+                            </button>
+
+
                         </form>
+
                     ) : (
-                        <div className="space-y-8 animate-in fade-in duration-500">
-                            <div className="flex justify-between items-center">
-                                <h2 className="text-lg font-black text-white uppercase tracking-tight flex items-center">
-                                    <span className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-xs text-black mr-3">3</span>
-                                    Finalize Payment
-                                </h2>
-                                <button
-                                    onClick={() => setClientSecret(null)}
-                                    className="text-zinc-500 hover:text-yellow-400 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
-                                >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                                    Back
-                                </button>
-                            </div>
-                            <div className="p-6 bg-yellow-400/5 border border-yellow-400/20 rounded-2xl flex items-center justify-between">
-                                <div>
-                                    <p className="text-[10px] uppercase font-black tracking-widest text-zinc-500 mb-1">Selected Plan</p>
-                                    <p className="text-white text-sm font-bold truncate max-w-[200px]">{selectedProduct.name}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-[10px] uppercase font-black tracking-widest text-zinc-500 mb-1">Total</p>
-                                    <div className="text-2xl font-black text-white">
-                                        {selectedProduct.amount} <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{selectedProduct.currency}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <Elements stripe={stripePromise} options={{
-                                clientSecret,
-                                appearance: {
-                                    theme: 'night',
-                                    variables: {
-                                        colorPrimary: '#facc15',
-                                        colorBackground: '#000000',
-                                        colorText: '#ffffff',
-                                        colorDanger: '#ef4444',
-                                        fontFamily: 'minion-pro, sans-serif',
-                                        borderRadius: '16px',
-                                    }
-                                }
-                            }}>
-                                <CheckoutForm amount={selectedProduct.amount} currency={selectedProduct.currency} />
-                            </Elements>
-                        </div>
+
+                        <Elements
+                            stripe={stripePromise}
+                            options={{ clientSecret }}
+                        >
+                            <CheckoutForm
+                                amount={selectedProduct.amount}
+                                currency={selectedProduct.currency}
+                            />
+                        </Elements>
+
                     )}
+
                 </div>
+
             </div>
+
         </main>
+
     );
+
 }
+
+
+const inputStyle = {
+    width: '100%',
+    padding: 14,
+    background: '#000',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 12,
+    color: '#fff',
+    fontSize: 14
+};

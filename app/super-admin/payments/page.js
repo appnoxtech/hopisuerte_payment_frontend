@@ -12,6 +12,9 @@ const getSuperAdminHeaders = () => ({
 export default function GlobalPayments() {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedFreelancerId, setSelectedFreelancerId] = useState(null);
+    const [view, setView] = useState('summary'); // 'summary' or 'detailed'
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchPayments = async () => {
         setLoading(true);
@@ -29,129 +32,364 @@ export default function GlobalPayments() {
         fetchPayments();
     }, []);
 
+    const getGroupedData = () => {
+        const groups = {};
+        payments.forEach(p => {
+            const freelancerId = p.product?.user?.id || 'unknown';
+            const freelancerName = p.product?.user?.name || 'Unknown Freelancer';
+            const freelancerEmail = p.product?.user?.email || '';
+
+            if (!groups[freelancerId]) {
+                groups[freelancerId] = {
+                    id: freelancerId,
+                    name: freelancerName,
+                    email: freelancerEmail,
+                    totalByCurrency: {},
+                    totalTransactions: 0,
+                    payments: []
+                };
+            }
+
+            const amount = p.amount || 0;
+            const currency = p.currency || 'USD';
+
+            groups[freelancerId].totalByCurrency[currency] = (groups[freelancerId].totalByCurrency[currency] || 0) + amount;
+            groups[freelancerId].totalTransactions += 1;
+            groups[freelancerId].payments.push(p);
+        });
+        return Object.values(groups);
+    };
+
+    const groupedFreelancers = getGroupedData().filter(f =>
+        f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        f.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const activeFreelancer = groupedFreelancers.find(f => f.id === selectedFreelancerId);
+
     if (loading && payments.length === 0) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
+            <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "400px"
+            }}>
+                <div style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    borderTop: "2px solid #eab308",
+                    borderBottom: "2px solid #eab308",
+                    animation: "spin 1s linear infinite"
+                }} />
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto space-y-12 animate-fade-in pb-20">
+        <div style={{
+            maxWidth: "1280px",
+            margin: "0 auto",
+            paddingBottom: "80px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "48px"
+        }}>
+
             {/* Header */}
-            <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
-                <div>
-                    <h1 className="text-4xl font-black text-white uppercase tracking-tighter italic">Global Payments</h1>
-                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em] mt-2 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
-                        Platform Transaction History
-                    </p>
+            <section style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "24px",
+                padding: "0 8px"
+            }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                    <div>
+                        <h1 style={{
+                            fontSize: "36px",
+                            fontWeight: "900",
+                            color: "#ffffff",
+                            textTransform: "uppercase",
+                            letterSpacing: "-0.03em",
+                            fontStyle: "italic"
+                        }}>
+                            {view === 'summary' ? 'Global Payments' : 'Freelancer Activity'}
+                        </h1>
+
+                        <p style={{
+                            color: "#71717a",
+                            fontSize: "12px",
+                            fontWeight: "700",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.2em",
+                            marginTop: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px"
+                        }}>
+                            <span style={{
+                                width: "6px",
+                                height: "6px",
+                                borderRadius: "50%",
+                                background: "#eab308",
+                                display: "inline-block"
+                            }}></span>
+                            {view === 'summary' ? 'Grouped by Freelancer' : `Detailed View: ${activeFreelancer?.name}`}
+                        </p>
+                    </div>
+
+                    {view === 'detailed' && (
+                        <button
+                            onClick={() => {
+                                setView('summary');
+                                setSelectedFreelancerId(null);
+                            }}
+                            style={{
+                                background: 'transparent',
+                                border: '1px solid #333',
+                                color: '#aaa',
+                                padding: '10px 20px',
+                                borderRadius: '8px',
+                                fontWeight: '700',
+                                fontSize: '11px',
+                                textTransform: 'uppercase',
+                                cursor: 'pointer',
+                                letterSpacing: '1px'
+                            }}
+                        >
+                            ← Back to Overview
+                        </button>
+                    )}
                 </div>
+
                 <button
                     onClick={fetchPayments}
                     disabled={loading}
-                    className="saas-btn-secondary gap-3 px-8 py-4 text-[10px] uppercase tracking-widest font-black h-fit shadow-lg shadow-black/20 disabled:opacity-50"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        padding: "16px 32px",
+                        fontSize: "10px",
+                        fontWeight: "900",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.15em",
+                        background: "#111",
+                        color: "#fff",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        cursor: "pointer",
+                        opacity: loading ? 0.5 : 1
+                    }}
                 >
-                    <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Refresh Payments
+                    Refresh Data
                 </button>
             </section>
 
-            {/* Payment Table */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-3 px-2">
-                    <div className="w-1.5 h-6 bg-green-500 rounded-full"></div>
-                    <h2 className="text-sm font-black text-zinc-400 uppercase tracking-widest">Transaction Records</h2>
+            {/* Main Content Area */}
+            <section style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "0 8px" }}>
+                    <div style={{
+                        width: "6px",
+                        height: "24px",
+                        background: view === 'summary' ? "#3b82f6" : "#22c55e",
+                        borderRadius: "999px"
+                    }}></div>
+
+                    <h2 style={{
+                        fontSize: "12px",
+                        fontWeight: "900",
+                        color: "#a1a1aa",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.15em"
+                    }}>
+                        {view === 'summary' ? 'Freelancer Performance Directory' : 'Individual Transaction History'}
+                    </h2>
                 </div>
 
-                <div className="glass-card overflow-hidden border-white/5 group shadow-2xl">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-white/[0.03] text-zinc-500 text-[10px] uppercase tracking-[0.2em] font-black">
-                                    <th className="px-10 py-6 border-b border-white/5">Freelancer</th>
-                                    <th className="px-10 py-6 border-b border-white/5">Customer</th>
-                                    <th className="px-10 py-6 border-b border-white/5">Product</th>
-                                    <th className="px-10 py-6 border-b border-white/5 text-right">Amount</th>
-                                    <th className="px-10 py-6 border-b border-white/5 text-center">Status</th>
-                                    <th className="px-10 py-6 border-b border-white/5 text-right">Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {payments.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="6" className="px-10 py-32 text-center">
-                                            <div className="flex flex-col items-center">
-                                                <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center mb-8 border border-white/5 opacity-40 group-hover:rotate-12 transition-transform duration-700">
-                                                    <svg className="w-10 h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                                    </svg>
-                                                </div>
-                                                <h3 className="text-zinc-600 font-black uppercase tracking-widest mb-2">No Payments</h3>
-                                                <p className="text-xs text-zinc-700 font-bold uppercase tracking-widest">No transactions have been recorded on the platform yet.</p>
-                                            </div>
-                                        </td>
+                <div style={{ display: 'flex', gap: '15px', padding: '0 8px' }}>
+                    <div style={{
+                        flex: 1,
+                        position: 'relative'
+                    }}>
+                        <span style={{
+                            position: 'absolute',
+                            left: '16px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            color: '#71717a'
+                        }}>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="Find freelancer by name or email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '14px 14px 14px 44px',
+                                background: '#111',
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                borderRadius: '10px',
+                                color: '#fff',
+                                fontSize: '14px',
+                                outline: 'none'
+                            }}
+                        />
+                    </div>
+                </div>
+
+                <div style={{
+                    overflow: "hidden",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                    borderRadius: "12px",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
+                    background: '#09090b'
+                }}>
+                    <div style={{ overflowX: "auto" }}>
+
+                        {view === 'summary' ? (
+                            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                                <thead>
+                                    <tr style={{
+                                        background: "rgba(255,255,255,0.03)",
+                                        color: "#71717a",
+                                        fontSize: "10px",
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.2em",
+                                        fontWeight: "900"
+                                    }}>
+                                        <th style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Freelancer</th>
+                                        <th style={{ padding: "24px 40px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Transactions</th>
+                                        <th style={{ padding: "24px 40px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Actions</th>
                                     </tr>
-                                ) : (
-                                    payments.map((payment) => (
-                                        <tr key={payment.id} className="group/row hover:bg-white/[0.04] transition-all duration-300">
-                                            <td className="px-10 py-8">
-                                                <div className="flex items-center gap-6">
-                                                    <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-zinc-500 font-black text-lg italic uppercase group-hover/row:border-yellow-500/30 group-hover/row:text-yellow-500 transition-all duration-500">
-                                                        {payment.product?.user?.name?.[0] || 'U'}
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-black text-lg text-white mb-1 uppercase tracking-tighter italic group-hover/row:text-yellow-400 transition-colors duration-300">{payment.product?.user?.name || 'Deleted User'}</p>
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-                                                            <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Verified User</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                </thead>
+                                <tbody>
+                                    {groupedFreelancers.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="3" style={{ padding: "120px 40px", textAlign: "center" }}>
+                                                <h3 style={{ color: "#52525b", fontWeight: "900", textTransform: "uppercase" }}>{searchQuery ? 'No Results Found' : 'No Payments Found'}</h3>
+                                                <p style={{ color: '#3f3f46', fontSize: '12px', marginTop: '8px' }}>
+                                                    {searchQuery ? 'Try adjusting your search criteria' : 'Transactions will appear here once recorded'}
+                                                </p>
                                             </td>
-                                            <td className="px-10 py-8">
-                                                <div>
-                                                    <p className="font-black text-white mb-1.5 uppercase tracking-tighter group-hover/row:tracking-tight hover:text-yellow-400 transition-all duration-300 italic">{payment.customer_name}</p>
-                                                    <div className="flex items-center gap-2 text-zinc-600">
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                                        <span className="text-[10px] font-black font-mono tracking-widest uppercase">{payment.customer_email}</span>
+                                        </tr>
+                                    ) : (
+                                        groupedFreelancers.map((freelancer) => (
+                                            <tr key={freelancer.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                                                <td style={{ padding: "32px 40px" }}>
+                                                    <div
+                                                        onClick={() => {
+                                                            setSelectedFreelancerId(freelancer.id);
+                                                            setView('detailed');
+                                                        }}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        <strong style={{ color: "#eab308", fontSize: "18px", display: 'block' }}>
+                                                            {freelancer.name}
+                                                        </strong>
+                                                        <span style={{ fontSize: "12px", color: "#71717a" }}>{freelancer.email}</span>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-10 py-8">
-                                                <div className="inline-flex items-center px-4 py-2 bg-white/5 rounded-xl border border-white/5 text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover/row:border-white/10 group-hover/row:text-white transition-all duration-500">
-                                                    {payment.product?.name || 'Deleted Product'}
-                                                </div>
-                                            </td>
-                                            <td className="px-10 py-8 text-right">
-                                                <div className="flex flex-col items-end">
-                                                    <span className="text-2xl font-black text-white tracking-tighter italic group-hover/row:text-green-400 transition-colors duration-500">
-                                                        {(payment.amount || 0).toLocaleString()} <span className="text-xs font-black text-zinc-600 uppercase tracking-[0.2em] not-italic ml-1">{payment.currency}</span>
+                                                </td>
+                                                <td style={{ padding: "32px 40px", textAlign: "center" }}>
+                                                    <span style={{
+                                                        padding: "6px 16px",
+                                                        background: 'rgba(59,130,246,0.1)',
+                                                        color: '#3b82f6',
+                                                        borderRadius: '20px',
+                                                        fontWeight: '900',
+                                                        fontSize: '12px'
+                                                    }}>
+                                                        {freelancer.totalTransactions} Records
                                                     </span>
-                                                </div>
+                                                </td>
+                                                <td style={{ padding: "32px 40px", textAlign: "right" }}>
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedFreelancerId(freelancer.id);
+                                                            setView('detailed');
+                                                        }}
+                                                        style={{
+                                                            padding: "10px 18px",
+                                                            borderRadius: "8px",
+                                                            border: "1px solid rgba(234,179,8,0.3)",
+                                                            background: "rgba(234,179,8,0.05)",
+                                                            color: "#eab308",
+                                                            fontWeight: "800",
+                                                            fontSize: "11px",
+                                                            textTransform: "uppercase",
+                                                            cursor: "pointer"
+                                                        }}
+                                                    >
+                                                        View History
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                                <thead>
+                                    <tr style={{
+                                        background: "rgba(255,255,255,0.03)",
+                                        color: "#71717a",
+                                        fontSize: "10px",
+                                        textTransform: "uppercase",
+                                        letterSpacing: "0.2em",
+                                        fontWeight: "900"
+                                    }}>
+                                        <th style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Customer</th>
+                                        <th style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Product</th>
+                                        <th style={{ padding: "24px 40px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Amount</th>
+                                        <th style={{ padding: "24px 40px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Status</th>
+                                        <th style={{ padding: "24px 40px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {activeFreelancer?.payments.map((payment) => (
+                                        <tr key={payment.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                                            <td style={{ padding: "32px 40px" }}>
+                                                <div style={{ color: "#fff", fontWeight: "700" }}>{payment.customer_name}</div>
+                                                <div style={{ fontSize: "12px", color: "#71717a" }}>{payment.customer_email}</div>
                                             </td>
-                                            <td className="px-10 py-8 text-center">
-                                                <span className={`badge ${payment.status === 'success' ? 'badge-success' : payment.status === 'failed' ? 'badge-error' : 'badge-pending'} uppercase tracking-tighter px-5 py-1.5 font-black italic shadow-2xl`}>
+                                            <td style={{ padding: "32px 40px" }}>
+                                                <span style={{ padding: "6px 12px", background: "rgba(255,255,255,0.05)", borderRadius: "8px", fontSize: "12px", color: '#fff' }}>
+                                                    {payment.product?.name || 'Deleted Product'}
+                                                </span>
+                                            </td>
+                                            <td style={{ padding: "32px 40px", textAlign: "right", fontWeight: "900", color: "#fff", fontSize: "20px" }}>
+                                                {(payment.amount || 0).toLocaleString()} {payment.currency}
+                                            </td>
+                                            <td style={{ padding: "32px 40px", textAlign: "center" }}>
+                                                <span style={{
+                                                    padding: "6px 16px",
+                                                    borderRadius: "999px",
+                                                    fontSize: "12px",
+                                                    background: payment.status === "success" ? "#16a34a" : payment.status === "failed" ? "#dc2626" : "#eab308",
+                                                    color: "#fff"
+                                                }}>
                                                     {payment.status}
                                                 </span>
                                             </td>
-                                            <td className="px-10 py-8 text-right">
-                                                <div className="flex flex-col items-end gap-1.5">
-                                                    <span className="text-xs font-black text-white tracking-widest uppercase">{new Date(payment.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                                                    <span className="text-[10px] font-black text-zinc-700 uppercase tracking-[0.3em]">{new Date(payment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                                </div>
+                                            <td style={{ padding: "32px 40px", textAlign: "right", color: "#fff", fontSize: "12px" }}>
+                                                {new Date(payment.created_at).toLocaleDateString()}
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+
                     </div>
                 </div>
+
             </section>
+
         </div>
     );
 }
