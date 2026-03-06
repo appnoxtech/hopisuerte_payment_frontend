@@ -49,7 +49,7 @@ export default function AdminLayout({ children }) {
         );
     }
 
-    if (pathname === '/admin/login') {
+    if (['/admin/login', '/admin/forgot-password', '/admin/reset-password'].includes(pathname)) {
         return <>{children}</>;
     }
 
@@ -71,7 +71,7 @@ export default function AdminLayout({ children }) {
                     </div>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-1 mt-4">
+                <nav className="flex-1 px-4 space-y-1 mt-10">
                     {[
                         { name: 'Dashboard', href: '/admin', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
                         { name: 'Products', href: '/admin/products', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },

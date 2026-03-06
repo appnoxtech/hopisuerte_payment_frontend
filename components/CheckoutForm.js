@@ -38,7 +38,7 @@ export default function CheckoutForm({ amount, currency }) {
     return (
         <form id="payment-form" onSubmit={handleSubmit}>
             <PaymentElement id="payment-element" />
-            <button disabled={isLoading || !stripe || !elements} id="submit" className="btn" style={{ marginTop: '1.5rem' }}>
+            <button className="saas-btn-primary" disabled={isLoading || !stripe || !elements} id="submit" style={{ marginTop: '1.5rem' }}>
                 <span id="button-text">
                     {isLoading ? "Processing..." : `Pay ${amount} ${currency}`}
                 </span>

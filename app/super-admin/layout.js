@@ -67,7 +67,7 @@ export default function SuperAdminLayout({ children }) {
     };
 
     // On the login page, render children directly (no sidebar)
-    if (pathname === '/super-admin/login') {
+    if (['/super-admin/login', '/super-admin/forgot-password'].includes(pathname)) {
         return <>{children}</>;
     }
 
@@ -103,7 +103,7 @@ export default function SuperAdminLayout({ children }) {
                     </div>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-1 mt-4">
+                <nav className="flex-1 px-4 space-y-1 mt-10">
                     {navLinks.map((item) => (
                         <Link
                             key={item.href}

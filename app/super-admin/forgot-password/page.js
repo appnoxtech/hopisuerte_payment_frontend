@@ -3,19 +3,28 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import api from '@/utils/api';
+import { validateEmail } from '@/utils/validation';
 
 export default function SuperAdminForgotPassword() {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [fieldError, setFieldError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setMessage('');
         setError('');
 
+        const emailError = validateEmail(email);
+        if (emailError) {
+            setFieldError(emailError);
+            return;
+        }
+        setFieldError('');
+
+        setLoading(true);
         try {
             await api.post('/password/forgot', { email });
             setMessage('A password reset link has been sent to your email.');
@@ -33,7 +42,7 @@ export default function SuperAdminForgotPassword() {
 
             <div className="w-full max-w-md glass-card p-10 relative z-10 animate-fade-in-up border-white/5 shadow-2xl">
                 <div className="text-center mb-10">
-                    <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                    <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                         <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                         </svg>
@@ -56,20 +65,22 @@ export default function SuperAdminForgotPassword() {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                     <div>
                         <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 pl-1">Admin Email</label>
                         <input
                             type="email"
-                            required
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="saas-input text-base"
+                            onChange={(e) => { setEmail(e.target.value); setFieldError(''); }}
+                            className={`saas-input text-base ${fieldError ? 'border-red-500/40 focus:ring-red-500/20' : ''}`}
                             placeholder="admin@hopisuerte.com"
                         />
+                        {fieldError && (
+                            <p className="text-red-400 text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider">{fieldError}</p>
+                        )}
                     </div>
 
-                    <div className="pt-4">
+                    <div>
                         <button
                             type="submit"
                             disabled={loading}

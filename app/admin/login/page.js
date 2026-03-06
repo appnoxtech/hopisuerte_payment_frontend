@@ -4,24 +4,44 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/utils/api';
 import Link from 'next/link';
+import { validateEmail } from '@/utils/validation';
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
     const router = useRouter();
+
+    const validateFields = () => {
+        const errors = { email: '', password: '' };
+        errors.email = validateEmail(email);
+        if (!password || password.trim() === '') {
+            errors.password = 'Please enter your password.';
+        }
+        setFieldErrors(errors);
+        return !errors.email && !errors.password;
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setError('');
+
+        if (!validateFields()) return;
+
+        setLoading(true);
         try {
             const response = await api.post('/login', { email, password });
             localStorage.setItem('auth_token', response.data.access_token);
             router.push('/admin');
         } catch (err) {
-            setError('Invalid email or password. Please try again.');
+            if (err.response?.status === 403) {
+                setError(err.response?.data?.message || 'Your account is disabled. Please contact support.');
+            } else {
+                setError('Invalid email or password. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -49,35 +69,52 @@ export default function AdminLogin() {
                     </div>
                 )}
 
-                <form onSubmit={handleLogin} className="space-y-6">
+                <form onSubmit={handleLogin} className="space-y-6" noValidate>
                     <div>
-                        <label className="block text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2 ml-1">Email Address</label>
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 ml-1">Email Address</label>
                         <input
                             type="email"
-                            required
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="saas-input py-3.5 px-6 text-base font-bold"
+                            onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({ ...prev, email: '' })); }}
+                            className={`saas-input py-3.5 px-6 text-base font-bold ${fieldErrors.email ? 'border-red-500/40 focus:ring-red-500/20' : ''}`}
                             placeholder="admin@example.com"
                         />
+                        {fieldErrors.email && (
+                            <p className="text-red-400 text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider">{fieldErrors.email}</p>
+                        )}
                     </div>
                     <div>
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="block text-[9px] font-black text-zinc-500 uppercase tracking-widest ml-1">Password</label>
-                            <Link href="/admin/forgot-password" size="sm" className="text-[9px] text-yellow-500/80 hover:text-yellow-400 transition-colors font-black uppercase tracking-widest">
-                                Forgot?
-                            </Link>
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 ml-1">Password</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({ ...prev, password: '' })); }}
+                                className={`saas-input py-3.5 px-6 pr-14 text-base font-bold ${fieldErrors.password ? 'border-red-500/40 focus:ring-red-500/20' : ''}`}
+                                placeholder="••••••••"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-yellow-500 transition-colors p-1"
+                            >
+                                {showPassword ? (
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                    </svg>
+                                )}
+                            </button>
                         </div>
-                        <input
-                            type="password"
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="saas-input py-3.5 px-6 text-base font-bold"
-                            placeholder="••••••••"
-                        />
+                        {fieldErrors.password && (
+                            <p className="text-red-400 text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider">{fieldErrors.password}</p>
+                        )}
                     </div>
-                    <div className="pt-4">
+                    <div className="pt-4 space-y-6">
                         <button
                             type="submit"
                             disabled={loading}
@@ -85,6 +122,12 @@ export default function AdminLogin() {
                         >
                             {loading ? 'Authenticating...' : 'Sign In'}
                         </button>
+
+                        <div className="text-center">
+                            <Link href="/admin/forgot-password" className="text-[9px] text-zinc-500 hover:text-yellow-500 transition-colors font-black uppercase tracking-[0.2em]">
+                                Forgot your password?
+                            </Link>
+                        </div>
                     </div>
                 </form>
 

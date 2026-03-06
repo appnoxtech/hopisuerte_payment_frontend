@@ -23,6 +23,7 @@ export default function UserPaymentPage() {
     const [clientSecret, setClientSecret] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         if (!slug) return;
@@ -43,6 +44,7 @@ export default function UserPaymentPage() {
     const handleStartPayment = async (e) => {
         e.preventDefault();
         if (!selectedProduct) return;
+        setSubmitting(true);
 
         try {
             const res = await api.post('/payments/intent', {
@@ -55,6 +57,8 @@ export default function UserPaymentPage() {
             setClientSecret(res.data.clientSecret);
         } catch (err) {
             alert("Failed to start payment process.");
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -156,7 +160,14 @@ export default function UserPaymentPage() {
 
                             <div className="pt-4 border-t border-white/5">
                                 <button type="submit" disabled={!selectedProduct} className="saas-btn-primary w-full py-5 text-base uppercase tracking-widest disabled:opacity-50">
-                                    Initialize Transaction
+                                    {submitting ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        'Initialize Transaction'
+                                    )}
                                 </button>
                                 <p className="text-center text-[10px] font-bold text-zinc-600 mt-4 uppercase tracking-widest">Secured by Stripe</p>
                             </div>

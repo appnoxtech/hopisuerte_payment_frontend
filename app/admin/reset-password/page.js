@@ -3,10 +3,13 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/utils/api';
+import { passwordRules, allPasswordRulesPassed, validatePassword } from '@/utils/validation';
 
 function ResetPasswordForm() {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -14,7 +17,6 @@ function ResetPasswordForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Get token and email from URL
     const token = searchParams.get('token');
     const email = searchParams.get('email');
 
@@ -24,17 +26,26 @@ function ResetPasswordForm() {
         }
     }, [token, email]);
 
+    const allPassed = allPasswordRulesPassed(password);
+    const passwordsMatch = password.length > 0 && password === passwordConfirmation;
+
     const handleReset = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setError('');
 
-        if (password !== passwordConfirmation) {
-            setError('Passwords do not match');
-            setLoading(false);
+        // Validate password strength
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            setError(passwordError);
             return;
         }
 
+        if (!passwordsMatch) {
+            setError('Passwords do not match.');
+            return;
+        }
+
+        setLoading(true);
         try {
             await api.post('/password/reset', {
                 token,
@@ -47,11 +58,31 @@ function ResetPasswordForm() {
                 router.push('/admin/login');
             }, 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to reset password. The link may have expired.');
+            const msg = err.response?.data?.message;
+            if (msg && msg.toLowerCase().includes('same as')) {
+                setError('New password cannot be the same as your previous password.');
+            } else {
+                setError(msg || 'Failed to reset password. The link may have expired.');
+            }
         } finally {
             setLoading(false);
         }
     };
+
+    const EyeIcon = ({ show, onToggle }) => (
+        <button type="button" onClick={onToggle} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-yellow-500 transition-colors p-1">
+            {show ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
+            )}
+        </button>
+    );
 
     if (success) {
         return (
@@ -95,43 +126,71 @@ function ResetPasswordForm() {
                     </div>
                 )}
 
-                <form onSubmit={handleReset} className="space-y-6">
+                <form onSubmit={handleReset} className="space-y-6" noValidate>
                     <div className="bg-white/[0.02] p-4 rounded-xl border border-white/5 mb-2">
                         <p className="text-[9px] uppercase font-black text-zinc-600 tracking-widest mb-1">Account</p>
                         <p className="text-white font-bold text-sm truncate">{email}</p>
                     </div>
 
                     <div>
-                        <label className="block text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2 ml-1">New Password</label>
-                        <input
-                            type="password"
-                            required
-                            minLength={8}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="saas-input py-3.5 px-6 text-base font-bold"
-                            placeholder="••••••••"
-                        />
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 ml-1">New Password</label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="saas-input py-3.5 px-6 pr-14 text-base font-bold"
+                                placeholder="••••••••"
+                            />
+                            <EyeIcon show={showPassword} onToggle={() => setShowPassword(!showPassword)} />
+                        </div>
+                    </div>
+
+                    {/* Password Requirements Checklist */}
+                    {password.length > 0 && (
+                        <div className="p-4 bg-white/[0.02] rounded-xl border border-white/5 space-y-2.5 animate-fade-in">
+                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2">Password Requirements</p>
+                            {passwordRules.map((rule, i) => (
+                                <div key={i} className="flex items-center gap-2.5">
+                                    <div className={`w-4 h-4 rounded-md flex items-center justify-center transition-all duration-300 ${rule.test(password) ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5 border border-white/10'}`}>
+                                        {rule.test(password) && (
+                                            <svg className="w-2.5 h-2.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        )}
+                                    </div>
+                                    <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 ${rule.test(password) ? 'text-green-400' : 'text-zinc-600'}`}>
+                                        {rule.test(password) ? rule.label : rule.message}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <div>
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 ml-1">Confirm Password</label>
+                        <div className="relative">
+                            <input
+                                type={showConfirm ? "text" : "password"}
+                                value={passwordConfirmation}
+                                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                className={`saas-input py-3.5 px-6 pr-14 text-base font-bold ${passwordConfirmation.length > 0 ? (passwordsMatch ? 'border-green-500/30 focus:ring-green-500/20' : 'border-red-500/30 focus:ring-red-500/20') : ''}`}
+                                placeholder="••••••••"
+                            />
+                            <EyeIcon show={showConfirm} onToggle={() => setShowConfirm(!showConfirm)} />
+                        </div>
+                        {passwordConfirmation.length > 0 && (
+                            <p className={`text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider ${passwordsMatch ? 'text-green-400' : 'text-red-400'}`}>
+                                {passwordsMatch ? '✓ Passwords match' : '✗ Passwords do not match'}
+                            </p>
+                        )}
                     </div>
 
                     <div>
-                        <label className="block text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
-                        <input
-                            type="password"
-                            required
-                            minLength={8}
-                            value={passwordConfirmation}
-                            onChange={(e) => setPasswordConfirmation(e.target.value)}
-                            className="saas-input py-3.5 px-6 text-base font-bold"
-                            placeholder="••••••••"
-                        />
-                    </div>
-
-                    <div className="pt-4">
                         <button
                             type="submit"
-                            disabled={loading || !token}
-                            className="saas-btn-primary w-full py-4 text-[10px] uppercase font-black tracking-[0.2em]"
+                            disabled={loading || !token || !allPassed || !passwordsMatch}
+                            className="saas-btn-primary w-full py-4 text-[10px] uppercase font-black tracking-[0.2em] disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Resetting Password...' : 'Save New Password'}
                         </button>

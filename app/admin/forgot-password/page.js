@@ -3,19 +3,28 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import api from '@/utils/api';
+import { validateEmail } from '@/utils/validation';
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [fieldError, setFieldError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
         setMessage('');
         setError('');
 
+        const emailError = validateEmail(email);
+        if (emailError) {
+            setFieldError(emailError);
+            return;
+        }
+        setFieldError('');
+
+        setLoading(true);
         try {
             await api.post('/password/forgot', { email });
             setMessage('A reset link has been sent to your email.');
@@ -56,20 +65,22 @@ export default function ForgotPassword() {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                     <div>
-                        <label className="block text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2 ml-1">Email Address</label>
+                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 ml-1">Email Address</label>
                         <input
                             type="email"
-                            required
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="saas-input py-3.5 px-6 text-base font-bold"
+                            onChange={(e) => { setEmail(e.target.value); setFieldError(''); }}
+                            className={`saas-input py-3.5 px-6 text-base font-bold ${fieldError ? 'border-red-500/40 focus:ring-red-500/20' : ''}`}
                             placeholder="your@email.com"
                         />
+                        {fieldError && (
+                            <p className="text-red-400 text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider">{fieldError}</p>
+                        )}
                     </div>
 
-                    <div className="pt-4">
+                    <div>
                         <button
                             type="submit"
                             disabled={loading}
