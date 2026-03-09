@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '@/utils/api';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
@@ -18,9 +19,7 @@ export default function Home() {
       .then(res => {
         const activeOnes = res.data.filter(p => p.active);
         setProducts(activeOnes);
-        if (activeOnes.length > 0) {
-          setSelectedProduct(activeOnes[0]);
-        }
+        if (activeOnes.length > 0) setSelectedProduct(activeOnes[0]);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -28,101 +27,103 @@ export default function Home() {
 
   const handleProceed = (e) => {
     e.preventDefault();
+
     if (!selectedProduct) {
       alert("Please select a product.");
       return;
     }
+
     if (!amount || amount <= 0) {
       alert("Please enter a valid amount.");
       return;
     }
 
-    // Redirect to the "Your Details" page (which is the product unique link page)
-    // Passing amount and currency via query parameters
     router.push(`/pay/${selectedProduct.unique_payment_id}?amount=${amount}&currency=${currency}`);
   };
 
   if (loading) return <div style={msgStyle}>Initializing Paysigur Portal...</div>;
 
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        background: '#000',
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-        fontFamily: 'system-ui, sans-serif'
-      }}
-    >
-      {/* Header / Nav */}
-      <div style={{ position: 'absolute', top: 20, right: 30, zIndex: 50 }}>
-        <Link href="/admin/login" style={{ color: '#71717a', fontSize: 12, textDecoration: 'none', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.5 }}>
-          Staff Login
+    <main style={mainStyle}>
+
+      {/* Staff Login */}
+      <div style={loginStyle}>
+        <Link href="/admin/login" style={loginLink}>
+          Login
         </Link>
       </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: 900,
-          height: 400,
-          background: 'rgba(250,204,21,0.1)',
-          borderRadius: '50%',
-          filter: 'blur(100px)',
-          pointerEvents: 'none'
-        }}
-      />
+      {/* Background Glow */}
+      <div style={glowStyle} />
 
-      <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 10 }}>
-        {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ width: 64, height: 64, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto' }}>
-            <span style={{ fontSize: 28, fontWeight: 900, color: '#facc15' }}>P</span>
-          </div>
-          <h1 style={{ fontSize: 36, fontWeight: 900, textTransform: 'uppercase', color: '#fff', marginBottom: 8, lineHeight: 1.1 }}>
-            Paysigur Gateway
-          </h1>
-          <p style={{ color: '#71717a', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2 }}>
-            Secure Payment Portal &bull; Start Transaction
-          </p>
+      <div style={containerStyle}>
+
+        {/* Logo */}
+        {/* Logo */}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 12,
+            width: '100%'
+          }}
+        >
+          <Image
+            src="/paysigur.png"
+            alt="Paysigur"
+            width={170}
+            height={50}
+            priority
+            style={{ objectFit: 'contain' }}
+          />
+
+          {/* <p
+            style={{
+              color: '#71717a',
+              fontSize: 12,
+              letterSpacing: 1
+            }}
+          >
+            Secure Payment Portal
+          </p> */}
         </div>
 
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '40px 32px' }}>
+        {/* Payment Card */}
+        <div style={cardStyle}>
           <form onSubmit={handleProceed}>
-            {/* Product Selection */}
-            <div style={{ marginBottom: 24 }}>
-              <label style={labelStyle}>Select Product</label>
+
+            {/* Product */}
+            <div style={fieldStyle}>
+              <label style={labelStyle}>Product</label>
               <select
                 style={inputStyle}
                 value={selectedProduct?.id || ''}
-                onChange={(e) => setSelectedProduct(products.find(p => p.id == e.target.value))}
-                required
+                onChange={(e) =>
+                  setSelectedProduct(products.find(p => p.id == e.target.value))
+                }
               >
                 {products.map(p => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
                 ))}
               </select>
             </div>
 
-            {/* Payment Amount & Currency */}
-            <div style={{ marginBottom: 30 }}>
-              <h2 style={labelStyle}>Payment Details</h2>
-              <div style={{ display: 'flex', gap: 12 }}>
+            {/* Amount */}
+            <div style={fieldStyle}>
+              <label style={labelStyle}>Amount</label>
+
+              <div style={{ display: 'flex', gap: 10 }}>
+
                 <div style={{ position: 'relative', flex: 1 }}>
-                  <span style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', color: '#facc15', fontSize: 20, fontWeight: 800 }}>
+                  <span style={currencySymbol}>
                     {currency === 'EUR' ? '€' : '$'}
                   </span>
+
                   <input
-                    style={{ ...inputStyle, paddingLeft: 44, fontSize: 24, fontWeight: 900, color: '#facc15' }}
                     type="number"
                     min="1"
                     step="0.01"
@@ -130,10 +131,12 @@ export default function Home() {
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
+                    style={{ ...inputStyle, paddingLeft: 34 }}
                   />
                 </div>
+
                 <select
-                  style={{ ...inputStyle, width: 120, fontWeight: 800, textAlign: 'center', cursor: 'pointer' }}
+                  style={{ ...inputStyle, width: 100 }}
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
                 >
@@ -141,12 +144,14 @@ export default function Home() {
                   <option value="EUR">EUR</option>
                   <option value="XCG">XCG</option>
                 </select>
+
               </div>
             </div>
 
             <button type="submit" style={submitStyle}>
-              Proceed to Your Details
+              Continue
             </button>
+
           </form>
         </div>
       </div>
@@ -154,40 +159,107 @@ export default function Home() {
   );
 }
 
+/* ================= STYLES ================= */
+
+const mainStyle = {
+  minHeight: '100vh',
+  background: '#000',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 20,
+  fontFamily: 'system-ui, sans-serif',
+  position: 'relative'
+};
+
+const containerStyle = {
+  width: '100%',
+  maxWidth: 420,
+  zIndex: 10
+};
+
+const cardStyle = {
+  background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 18,
+  padding: 24
+};
+
+const fieldStyle = {
+  marginBottom: 18
+};
+
 const labelStyle = {
   display: 'block',
-  fontSize: 16,
-  fontWeight: 800,
-  color: '#fff',
-  textTransform: 'uppercase',
-  marginBottom: 16
+  fontSize: 13,
+  fontWeight: 700,
+  color: '#cbd5f5',
+  marginBottom: 6
 };
 
 const inputStyle = {
   width: '100%',
-  padding: 16,
+  padding: 12,
   background: '#09090b',
   border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: 12,
+  borderRadius: 10,
   color: '#fff',
-  fontSize: 15,
-  outline: 'none',
-  transition: 'border-color 0.2s'
+  fontSize: 14,
+  outline: 'none'
 };
 
 const submitStyle = {
   width: '100%',
-  padding: 20,
+  marginTop: 8,
+  padding: 14,
   background: '#facc15',
   color: '#000',
-  borderRadius: 14,
+  borderRadius: 10,
   border: 'none',
-  fontWeight: 800,
-  textTransform: 'uppercase',
-  letterSpacing: 1.5,
+  fontWeight: 700,
   cursor: 'pointer',
-  fontSize: 15,
-  transition: 'transform 0.1s active'
+  fontSize: 14
+};
+
+const currencySymbol = {
+  position: 'absolute',
+  left: 10,
+  top: '50%',
+  transform: 'translateY(-50%)',
+  color: '#facc15',
+  fontWeight: 700
+};
+
+const subtitleStyle = {
+  color: '#71717a',
+  fontSize: 12,
+  marginTop: 8,
+  letterSpacing: 1
+};
+
+const glowStyle = {
+  position: 'absolute',
+  top: 0,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  width: 600,
+  height: 300,
+  background: 'rgba(250,204,21,0.12)',
+  borderRadius: '50%',
+  filter: 'blur(120px)'
+};
+
+const loginStyle = {
+  position: 'absolute',
+  top: 20,
+  right: 30
+};
+
+const loginLink = {
+  color: '#71717a',
+  fontSize: 16,
+  fontWeight: 700,
+  textDecoration: 'none',
 };
 
 const msgStyle = {

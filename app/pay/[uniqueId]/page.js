@@ -6,14 +6,15 @@ import api from '@/utils/api';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '@/components/CheckoutForm';
+import Image from 'next/image';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_placeholder');
 
 export default function UniqueProductPaymentPage() {
+
     const { uniqueId } = useParams();
     const searchParams = useSearchParams();
 
-    // Initialize from URL if present
     const urlAmount = searchParams.get('amount');
     const urlCurrency = searchParams.get('currency');
 
@@ -21,17 +22,6 @@ export default function UniqueProductPaymentPage() {
     const [amount, setAmount] = useState(urlAmount || '');
     const [currency, setCurrency] = useState(urlCurrency || 'USD');
     const [isPreFilled, setIsPreFilled] = useState(!!urlAmount);
-
-    // Update state if URL params change (though they usually won't in this flow)
-    useEffect(() => {
-        if (urlAmount) {
-            setAmount(urlAmount);
-            setIsPreFilled(true);
-        }
-        if (urlCurrency) {
-            setCurrency(urlCurrency);
-        }
-    }, [urlAmount, urlCurrency]);
 
     const [customer, setCustomer] = useState({
         name: '',
@@ -54,16 +44,17 @@ export default function UniqueProductPaymentPage() {
                 setLoading(false);
             })
             .catch(() => {
-                setError('Product not found or link has expired.');
+                setError('Product not found or link expired.');
                 setLoading(false);
             });
+
     }, [uniqueId]);
 
     const handleStartPayment = async (e) => {
         e.preventDefault();
 
-        if (!product || !amount || isNaN(amount) || Number(amount) <= 0) {
-            alert("Please enter a valid amount.");
+        if (!product || !amount || Number(amount) <= 0) {
+            alert("Please enter valid amount");
             return;
         }
 
@@ -81,8 +72,9 @@ export default function UniqueProductPaymentPage() {
             });
 
             setClientSecret(res.data.clientSecret);
+
         } catch {
-            alert("Failed to start payment process. Please try again.");
+            alert("Payment initialization failed");
         } finally {
             setSubmitting(false);
         }
@@ -92,65 +84,52 @@ export default function UniqueProductPaymentPage() {
     if (error) return <div style={{ ...msgStyle, color: '#ef4444' }}>{error}</div>;
 
     return (
-        <main
-            style={{
-                minHeight: '100vh',
-                background: '#000',
-                position: 'relative',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 24
-            }}
-        >
-            <div
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: '100%',
-                    maxWidth: 900,
-                    height: 400,
-                    background: 'rgba(250,204,21,0.1)',
-                    borderRadius: '50%',
-                    filter: 'blur(100px)',
-                    pointerEvents: 'none'
-                }}
-            />
+        <main style={mainStyle}>
 
-            <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 10 }}>
-                {/* Header */}
-                <div style={{ textAlign: 'center', marginBottom: 40 }}>
-                    <div style={{ width: 64, height: 64, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto' }}>
-                        <span style={{ fontSize: 28, fontWeight: 900, color: '#facc15' }}>{isPreFilled ? '✓' : '$'}</span>
-                    </div>
-                    <h1 style={{ fontSize: 36, fontWeight: 900, textTransform: 'uppercase', color: '#fff', marginBottom: 8, lineHeight: 1.1 }}>
-                        {product?.name}
-                    </h1>
-                    <p style={{ color: '#71717a', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2 }}>
-                        {isPreFilled ? `COMPLETE YOUR DETAILS FOR ${amount} ${currency}` : 'Secure Checkout • Select Amount & Currency'}
-                    </p>
+            <div style={glowStyle} />
+
+            <div style={containerStyle}>
+
+                {/* Logo */}
+                <div style={logoWrap}>
+                    <Image
+                        src="/paysigur.png"
+                        alt="Paysigur"
+                        width={180}
+                        height={70}
+                        priority
+                    />
+
                 </div>
 
-                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: '40px 32px' }}>
+                {/* Card */}
+                <div style={cardStyle}>
+
                     {!clientSecret ? (
+
                         <form onSubmit={handleStartPayment}>
-                            {/* Payment Amount & Currency (Only show if NOT pre-filled) */}
+
+                            {/* Product */}
+                            <div style={{ marginBottom: 18 }}>
+                                <div style={productTitle}>
+                                    {product?.name}
+                                </div>
+                            </div>
+
+                            {/* Amount */}
                             {!isPreFilled && (
-                                <div style={{ marginBottom: 30 }}>
-                                    <h2 style={{ fontSize: 16, fontWeight: 800, color: '#fff', textTransform: 'uppercase', marginBottom: 16 }}>
-                                        Payment Details
-                                    </h2>
-                                    <div style={{ display: 'flex', gap: 12 }}>
+                                <div style={{ marginBottom: 20 }}>
+
+                                    <label style={labelStyle}>Amount</label>
+
+                                    <div style={{ display: 'flex', gap: 10 }}>
+
                                         <div style={{ position: 'relative', flex: 1 }}>
-                                            <span style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', color: '#facc15', fontSize: 20, fontWeight: 800 }}>
+                                            <span style={currencySymbol}>
                                                 {currency === 'EUR' ? '€' : '$'}
                                             </span>
+
                                             <input
-                                                style={{ ...inputStyle, paddingLeft: 44, fontSize: 24, fontWeight: 900, color: '#facc15' }}
                                                 type="number"
                                                 min="1"
                                                 step="0.01"
@@ -158,10 +137,12 @@ export default function UniqueProductPaymentPage() {
                                                 placeholder="0.00"
                                                 value={amount}
                                                 onChange={(e) => setAmount(e.target.value)}
+                                                style={{ ...inputStyle, paddingLeft: 34 }}
                                             />
                                         </div>
+
                                         <select
-                                            style={{ ...inputStyle, width: 120, fontWeight: 800, textAlign: 'center', cursor: 'pointer' }}
+                                            style={{ ...inputStyle, width: 100 }}
                                             value={currency}
                                             onChange={(e) => setCurrency(e.target.value)}
                                         >
@@ -169,24 +150,27 @@ export default function UniqueProductPaymentPage() {
                                             <option value="EUR">EUR</option>
                                             <option value="XCG">XCG</option>
                                         </select>
+
                                     </div>
+
                                 </div>
                             )}
 
-                            {/* Client Identification */}
-                            <div style={{ marginBottom: 32 }}>
-                                <h2 style={{ fontSize: 16, fontWeight: 800, color: '#fff', textTransform: 'uppercase', marginBottom: 16 }}>
-                                    Your Details
-                                </h2>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            {/* Customer */}
+                            <div style={{ marginBottom: 20 }}>
+
+                                <label style={labelStyle}>Your Details</label>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
                                     <input
                                         style={inputStyle}
-                                        type="text"
-                                        required
                                         placeholder="Full Name"
+                                        required
                                         value={customer.name}
                                         onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
                                     />
+
                                     <input
                                         style={inputStyle}
                                         type="email"
@@ -195,75 +179,156 @@ export default function UniqueProductPaymentPage() {
                                         value={customer.email}
                                         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                     />
+
                                     <input
                                         style={inputStyle}
-                                        type="tel"
-                                        placeholder="Phone Number (Optional)"
+                                        placeholder="Phone (Optional)"
                                         value={customer.phone}
                                         onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                                     />
+
                                     <textarea
-                                        rows={3}
+                                        rows={2}
                                         style={{ ...inputStyle, resize: 'none' }}
-                                        placeholder="Add a note (Optional)"
+                                        placeholder="Notes (Optional)"
                                         value={customer.notes}
                                         onChange={(e) => setCustomer({ ...customer, notes: e.target.value })}
                                     />
+
                                 </div>
                             </div>
 
-                            {/* Submit */}
+                            {/* Button */}
                             <button
                                 type="submit"
                                 disabled={submitting || !amount}
-                                style={{
-                                    width: '100%',
-                                    padding: 20,
-                                    background: '#facc15',
-                                    color: '#000',
-                                    borderRadius: 14,
-                                    border: 'none',
-                                    fontWeight: 800,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: 1.5,
-                                    cursor: 'pointer',
-                                    opacity: submitting || !amount ? 0.6 : 1,
-                                    transition: 'opacity 0.2s',
-                                    fontSize: 15
-                                }}
+                                style={submitStyle}
                             >
-                                {submitting ? 'Authenticating...' : `Pay ${amount ? Number(amount).toFixed(2) : '0.00'} ${currency}`}
+                                {submitting
+                                    ? "Processing..."
+                                    : `Pay ${amount ? Number(amount).toFixed(2) : '0.00'} ${currency}`
+                                }
                             </button>
+
                         </form>
+
                     ) : (
+
                         <Elements stripe={stripePromise} options={{ clientSecret }}>
                             <CheckoutForm amount={amount} currency={currency} />
                         </Elements>
+
                     )}
+
                 </div>
+
             </div>
+
         </main>
     );
 }
 
+/* ---------------- STYLES ---------------- */
+
+const mainStyle = {
+    minHeight: '100vh',
+    background: '#000',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative'
+};
+
+const containerStyle = {
+    width: '100%',
+    maxWidth: 420,
+    zIndex: 2
+};
+
+const cardStyle = {
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: 18,
+    padding: 24
+};
+
+const logoWrap = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+};
+
+const subtitleStyle = {
+    fontSize: 12,
+    color: '#71717a',
+    marginTop: 8,
+    letterSpacing: 1
+};
+
+const labelStyle = {
+    fontSize: 13,
+    color: '#cbd5f5',
+    marginBottom: 6,
+    display: 'block'
+};
+
+const productTitle = {
+    fontSize: 18,
+    fontWeight: 700,
+    color: '#fff',
+    textAlign: 'center'
+};
+
 const inputStyle = {
     width: '100%',
-    padding: 16,
+    padding: 12,
     background: '#09090b',
     border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 12,
+    borderRadius: 10,
     color: '#fff',
-    fontSize: 15,
-    outline: 'none',
-    transition: 'border-color 0.2s'
+    fontSize: 14,
+    outline: 'none'
+};
+
+const currencySymbol = {
+    position: 'absolute',
+    left: 10,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    color: '#facc15',
+    fontWeight: 700
+};
+
+const submitStyle = {
+    width: '100%',
+    marginTop: 6,
+    padding: 14,
+    background: '#facc15',
+    color: '#000',
+    border: 'none',
+    borderRadius: 10,
+    fontWeight: 700,
+    cursor: 'pointer',
+    fontSize: 14
+};
+
+const glowStyle = {
+    position: 'absolute',
+    top: 0,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 600,
+    height: 300,
+    background: 'rgba(250,204,21,0.12)',
+    borderRadius: '50%',
+    filter: 'blur(120px)'
 };
 
 const msgStyle = {
     textAlign: 'center',
-    marginTop: 100,
     color: '#94a3b8',
-    fontSize: 18,
-    fontWeight: 600,
+    fontSize: 16,
+    fontWeight: 500,
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
