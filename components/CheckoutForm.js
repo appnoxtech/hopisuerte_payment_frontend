@@ -38,9 +38,27 @@ export default function CheckoutForm({ amount, currency }) {
     return (
         <form id="payment-form" onSubmit={handleSubmit}>
             <PaymentElement id="payment-element" />
-            <button className="saas-btn-primary" disabled={isLoading || !stripe || !elements} id="submit" style={{ marginTop: '1.5rem' }}>
+            <button
+                id="submit"
+                disabled={isLoading || !stripe || !elements}
+                style={{
+                    marginTop: '2rem',
+                    width: '100%',
+                    padding: 20,
+                    background: '#facc15',
+                    color: '#000',
+                    borderRadius: 14,
+                    border: 'none',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1.5,
+                    cursor: 'pointer',
+                    fontSize: 15,
+                    opacity: isLoading || !stripe || !elements ? 0.5 : 1
+                }}
+            >
                 <span id="button-text">
-                    {isLoading ? "Processing..." : `Pay ${amount} ${currency}`}
+                    {isLoading ? "Processing..." : `Complete Payment`}
                 </span>
             </button>
             {message && <div id="payment-message" style={{ color: 'var(--error)', marginTop: '1rem' }}>{message}</div>}

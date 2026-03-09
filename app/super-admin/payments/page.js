@@ -343,40 +343,80 @@ export default function GlobalPayments() {
                                         letterSpacing: "0.2em",
                                         fontWeight: "900"
                                     }}>
-                                        <th style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Customer</th>
-                                        <th style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Product</th>
-                                        <th style={{ padding: "24px 40px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Amount</th>
-                                        <th style={{ padding: "24px 40px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Status</th>
-                                        <th style={{ padding: "24px 40px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Date</th>
+                                        <th style={{ padding: "24px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Customer</th>
+                                        <th style={{ padding: "24px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Product</th>
+                                        <th style={{ padding: "24px 20px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Amount</th>
+                                        <th style={{ padding: "24px 20px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Payment</th>
+                                        <th style={{ padding: "24px 20px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Payout</th>
+                                        <th style={{ padding: "24px 20px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {activeFreelancer?.payments.map((payment) => (
                                         <tr key={payment.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                                            <td style={{ padding: "32px 40px" }}>
+                                            <td style={{ padding: "32px 20px" }}>
                                                 <div style={{ color: "#fff", fontWeight: "700" }}>{payment.customer_name}</div>
                                                 <div style={{ fontSize: "12px", color: "#71717a" }}>{payment.customer_email}</div>
                                             </td>
-                                            <td style={{ padding: "32px 40px" }}>
+                                            <td style={{ padding: "32px 20px" }}>
                                                 <span style={{ padding: "6px 12px", background: "rgba(255,255,255,0.05)", borderRadius: "8px", fontSize: "12px", color: '#fff' }}>
                                                     {payment.product?.name || 'Deleted Product'}
                                                 </span>
                                             </td>
-                                            <td style={{ padding: "32px 40px", textAlign: "right", fontWeight: "900", color: "#fff", fontSize: "20px" }}>
+                                            <td style={{ padding: "32px 20px", textAlign: "right", fontWeight: "900", color: "#fff", fontSize: "16px" }}>
                                                 {(payment.amount || 0).toLocaleString()} {payment.currency}
                                             </td>
-                                            <td style={{ padding: "32px 40px", textAlign: "center" }}>
+                                            <td style={{ padding: "32px 20px", textAlign: "center" }}>
                                                 <span style={{
-                                                    padding: "6px 16px",
-                                                    borderRadius: "999px",
-                                                    fontSize: "12px",
-                                                    background: payment.status === "success" ? "#16a34a" : payment.status === "failed" ? "#dc2626" : "#eab308",
-                                                    color: "#fff"
+                                                    padding: "4px 12px",
+                                                    borderRadius: "4px",
+                                                    fontSize: "10px",
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    background: payment.status === "success" ? "rgba(22, 163, 74, 0.1)" : payment.status === "failed" ? "rgba(220, 38, 38, 0.1)" : "rgba(234, 179, 8, 0.1)",
+                                                    color: payment.status === "success" ? "#22c55e" : payment.status === "failed" ? "#ef4444" : "#facc15"
                                                 }}>
                                                     {payment.status}
                                                 </span>
                                             </td>
-                                            <td style={{ padding: "32px 40px", textAlign: "right", color: "#fff", fontSize: "12px" }}>
+                                            <td style={{ padding: "32px 20px", textAlign: "center" }}>
+                                                {payment.status === 'success' ? (
+                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                                                        <span style={{
+                                                            padding: "4px 12px",
+                                                            borderRadius: "4px",
+                                                            fontSize: "10px",
+                                                            fontWeight: 'bold',
+                                                            textTransform: 'uppercase',
+                                                            background: payment.payout_status === "completed" ? "rgba(22, 163, 74, 0.1)" : "rgba(234, 179, 8, 0.1)",
+                                                            color: payment.payout_status === "completed" ? "#22c55e" : "#facc15"
+                                                        }}>
+                                                            {payment.payout_status || 'pending'}
+                                                        </span>
+                                                        {payment.payout_status !== 'completed' && (
+                                                            <button
+                                                                onClick={async () => {
+                                                                    if (!confirm('Mark this payment payout as completed?')) return;
+                                                                    try {
+                                                                        await api.post(`/super-admin/payments/${payment.id}/transfer`, {}, getSuperAdminHeaders());
+                                                                        fetchPayments();
+                                                                    } catch (err) {
+                                                                        alert('Failed to update payout status.');
+                                                                    }
+                                                                }}
+                                                                style={{
+                                                                    background: '#3b82f6', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', textTransform: 'uppercase'
+                                                                }}
+                                                            >
+                                                                Clear Payout
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ color: '#71717a', fontSize: '12px' }}>N/A</span>
+                                                )}
+                                            </td>
+                                            <td style={{ padding: "32px 20px", textAlign: "right", color: "#a1a1aa", fontSize: "12px" }}>
                                                 {new Date(payment.created_at).toLocaleDateString()}
                                             </td>
                                         </tr>

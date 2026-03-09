@@ -4,19 +4,9 @@ import { useEffect, useState } from 'react';
 import api from '@/utils/api';
 
 export default function ProductManagement() {
-
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
-
-    const [formData, setFormData] = useState({
-        name: '',
-        description: '',
-        amount: '',
-        currency: 'USD',
-        active: true
-    });
+    const [copiedLink, setCopiedLink] = useState(null);
 
     useEffect(() => {
         fetchProducts();
@@ -33,384 +23,101 @@ export default function ProductManagement() {
         }
     };
 
-    const handleOpenModal = (product = null) => {
-
-        if (product) {
-            setEditingProduct(product);
-
-            setFormData({
-                name: product.name,
-                description: product.description || '',
-                amount: product.amount,
-                currency: product.currency,
-                active: !!product.active
-            });
-
-        } else {
-
-            setEditingProduct(null);
-
-            setFormData({
-                name: '',
-                description: '',
-                amount: '',
-                currency: 'USD',
-                active: true
-            });
-        }
-
-        setIsModalOpen(true);
+    const handleCopy = (url, linkId) => {
+        navigator.clipboard.writeText(url);
+        setCopiedLink(linkId);
+        setTimeout(() => setCopiedLink(null), 2000);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-
-            if (editingProduct) {
-                await api.put(`/admin/products/${editingProduct.id}`, formData);
-            } else {
-                await api.post('/admin/products', formData);
-            }
-
-            fetchProducts();
-            setIsModalOpen(false);
-
-        } catch (err) {
-            alert('Failed to save product');
+    const getPaymentUrl = (productId, currency) => {
+        if (typeof window !== 'undefined') {
+            return `${window.location.origin}/pay/${productId}/${currency}`;
         }
-    };
-
-    const handleDelete = async (id) => {
-
-        if (!confirm('Are you sure you want to delete this product?')) return;
-
-        try {
-
-            await api.delete(`/admin/products/${id}`);
-            fetchProducts();
-
-        } catch (err) {
-            alert('Failed to delete');
-        }
+        return '';
     };
 
     if (loading) {
         return (
-            <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "400px"
-            }}>
-                Loading...
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #eab308', borderBottom: '2px solid #eab308', animation: 'spin 1s linear infinite' }} />
             </div>
         )
     }
 
     return (
-
-        <div style={{
-            maxWidth: "1200px",
-            margin: "0px auto",
-            paddingBottom: "20px"
-        }}>
+        <div style={{ maxWidth: "1200px", margin: "0px auto", paddingBottom: "20px", padding: '0 16px' }}>
 
             {/* Header */}
-
-            <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "10px",
-                alignItems: "center"
-            }}>
-
-                <div>
-                    <p style={{
-                        fontSize: "10px",
-                        color: "#999",
-                        letterSpacing: "3px",
-                        marginBottom: "8px"
-                    }}>
-                        PAYMENT LINKS & SERVICES
-                    </p>
-
-                    <h1 style={{
-                        fontSize: "28px",
-                        color: "white",
-                        fontWeight: "900"
-                    }}>
-                        Products
-                    </h1>
-                </div>
-
-                <button
-                    onClick={() => handleOpenModal()}
-                    style={{
-                        background: "#facc15",
-                        border: "none",
-                        padding: "12px 20px",
-                        fontWeight: "bold",
-                        cursor: "pointer"
-                    }}
-                >
-                    + Add New Product
-                </button>
-
+            <div style={{ marginBottom: "30px" }}>
+                <p style={{ fontSize: "10px", color: "#999", letterSpacing: "3px", marginBottom: "8px" }}>
+                    YOUR ASSIGNED PRODUCTS
+                </p>
+                <h1 style={{ fontSize: "28px", color: "white", fontWeight: "900" }}>
+                    Products
+                </h1>
+                <p style={{ color: '#71717a', fontSize: '14px', marginTop: '8px' }}>
+                    View your assigned products and get their direct payment links. Products can only be configured by the Super Admin.
+                </p>
             </div>
 
-
             {/* Product Grid */}
-
             {products.length === 0 ? (
-
-                <div style={{
-                    textAlign: "center",
-                    padding: "120px",
-                    border: "1px solid #222",
-                    borderRadius: "12px"
-                }}>
-                    No products yet
+                <div style={{ textAlign: "center", padding: "80px", border: "1px dashed rgba(255,255,255,0.1)", borderRadius: "12px", background: 'rgba(255,255,255,0.02)' }}>
+                    <p style={{ color: '#a1a1aa', fontSize: '15px' }}>You have not been assigned any products yet.</p>
                 </div>
-
             ) : (
-
-                <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))",
-                    gap: "20px"
-                }}>
-
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: "24px" }}>
                     {products.map((product) => (
+                        <div key={product.id} style={{ border: "1px solid rgba(255,255,255,0.05)", padding: "24px", borderRadius: "16px", background: "rgba(255,255,255,0.02)", color: "white", position: "relative" }}>
 
-                        <div
-                            key={product.id}
-                            style={{
-                                border: "1px solid #222",
-                                padding: "20px",
-                                borderRadius: "12px",
-                                background: "#111",
-                                color: "white",
-                                position: "relative"
-                            }}
-                        >
-
-                            {/* Actions */}
-
-                            <div style={{
-                                position: "absolute",
-                                top: "10px",
-                                right: "10px",
-                                display: "flex",
-                                gap: "6px"
-                            }}>
-
-                                <button
-                                    onClick={() => handleOpenModal(product)}
-                                    style={{
-                                        padding: "4px 8px",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    onClick={() => handleDelete(product.id)}
-                                    style={{
-                                        padding: "4px 8px",
-                                        cursor: "pointer",
-                                        color: "red"
-                                    }}
-                                >
-                                    Delete
-                                </button>
-
+                            <div style={{ marginBottom: "12px", display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span style={{ padding: '4px 8px', borderRadius: '4px', background: product.active ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: product.active ? '#22c55e' : '#ef4444', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                    {product.active ? "Active" : "Archived"}
+                                </span>
                             </div>
 
-
-                            <div style={{
-                                marginBottom: "12px"
-                            }}>
-                                <strong>{product.active ? "Active" : "Hidden"}</strong>
-                            </div>
-
-
-                            <h3 style={{
-                                fontSize: "18px",
-                                marginBottom: "10px"
-                            }}>
+                            <h3 style={{ fontSize: "20px", marginBottom: "8px", fontWeight: '800' }}>
                                 {product.name}
                             </h3>
 
-                            <p style={{
-                                color: "#aaa",
-                                fontSize: "13px"
-                            }}>
-                                {product.description || "No description"}
+                            <p style={{ color: "#a1a1aa", fontSize: "14px", marginBottom: '24px', minHeight: '40px' }}>
+                                {product.description || "No description provided."}
                             </p>
 
-                            <div style={{
-                                marginTop: "20px",
-                                borderTop: "1px solid #333",
-                                paddingTop: "10px",
-                                fontSize: "22px",
-                                fontWeight: "bold"
-                            }}>
-                                {product.amount} {product.currency}
-                            </div>
+                            {/* <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "20px" }}>
+                                <h4 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#71717a', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '16px' }}>
+                                    Payment Link
+                                </h4>
 
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    {(() => {
+                                        const url = `${window.location.origin}/pay/${product.unique_payment_id}`;
+                                        const linkId = product.id;
+                                        const isCopied = copiedLink === linkId;
+
+                                        return (
+                                            <div style={{ display: 'flex', background: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', overflow: 'hidden' }}>
+                                                <div style={{ width: '60px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '12px', color: '#facc15' }}>
+                                                    LINK
+                                                </div>
+                                                <div style={{ flex: 1, padding: '10px 12px', fontSize: '11px', color: '#a1a1aa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                                                    {url}
+                                                </div>
+                                                <button
+                                                    onClick={() => handleCopy(url, linkId)}
+                                                    style={{ background: isCopied ? '#22c55e' : 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '0 16px', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', cursor: 'pointer', transition: 'background 0.2s' }}
+                                                >
+                                                    {isCopied ? 'Copied' : 'Copy'}
+                                                </button>
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            </div> */}
                         </div>
-
                     ))}
-
                 </div>
-
             )}
-
-
-            {/* Modal */}
-
-            {isModalOpen && (
-
-                <div style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100vw",
-                    height: "100vh",
-                    background: "rgba(0,0,0,0.8)",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    zIndex: 999
-                }}>
-
-                    <div style={{
-                        background: "#111",
-                        padding: "30px",
-                        width: "500px",
-                        borderRadius: "10px"
-                    }}>
-
-                        <h2 style={{ marginBottom: "20px" }}>
-                            {editingProduct ? "Edit Product" : "Create Product"}
-                        </h2>
-
-                        <form onSubmit={handleSubmit}>
-
-                            <div style={{ marginBottom: "15px" }}>
-                                <input
-                                    type="text"
-                                    placeholder="Product name"
-                                    value={formData.name}
-                                    required
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        name: e.target.value
-                                    })}
-                                    style={{
-                                        width: "100%",
-                                        padding: "10px"
-                                    }}
-                                />
-                            </div>
-
-
-                            <div style={{ marginBottom: "15px" }}>
-                                <textarea
-                                    placeholder="Description"
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        description: e.target.value
-                                    })}
-                                    style={{
-                                        width: "100%",
-                                        padding: "10px"
-                                    }}
-                                />
-                            </div>
-
-
-                            <div style={{
-                                display: "flex",
-                                gap: "10px",
-                                marginBottom: "15px"
-                            }}>
-
-                                <input
-                                    type="number"
-                                    value={formData.amount}
-                                    required
-                                    placeholder="Price"
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        amount: e.target.value
-                                    })}
-                                    style={{
-                                        flex: 1,
-                                        padding: "10px"
-                                    }}
-                                />
-
-                                <select
-                                    value={formData.currency}
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        currency: e.target.value
-                                    })}
-                                    style={{
-                                        flex: 1,
-                                        padding: "10px"
-                                    }}
-                                >
-                                    <option value="USD">USD</option>
-                                    <option value="EUR">EUR</option>
-                                    <option value="XCG">XCG</option>
-                                </select>
-
-                            </div>
-
-
-                            <div style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                marginTop: "20px"
-                            }}>
-
-                                <button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(false)}
-                                    style={{
-                                        padding: "10px 20px"
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    type="submit"
-                                    style={{
-                                        padding: "10px 20px",
-                                        background: "#facc15",
-                                        border: "none",
-                                        fontWeight: "bold"
-                                    }}
-                                >
-                                    {editingProduct ? "Save" : "Create"}
-                                </button>
-
-                            </div>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-            )}
-
         </div>
     );
 }

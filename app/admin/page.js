@@ -141,7 +141,7 @@ export default function AdminDashboard() {
             </header>
 
             {/* Payment Link */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 4, height: 20, background: '#eab308', borderRadius: 4 }} />
                     <h2 style={{
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Revenue Stats */}
             <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -508,7 +508,8 @@ export default function AdminDashboard() {
                                 <th style={{ padding: 16, textAlign: 'left' }}>Customer</th>
                                 <th style={{ padding: 16, textAlign: 'left' }}>Product</th>
                                 <th style={{ padding: 16, textAlign: 'right' }}>Amount</th>
-                                <th style={{ padding: 16, textAlign: 'center' }}>Status</th>
+                                <th style={{ padding: 16, textAlign: 'center' }}>Payment</th>
+                                <th style={{ padding: 16, textAlign: 'center' }}>Payout Status</th>
                                 <th
                                     onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
                                     style={{
@@ -527,7 +528,7 @@ export default function AdminDashboard() {
                         <tbody>
                             {filteredPayments.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" style={{ padding: 48, textAlign: 'center', color: '#71717a', fontSize: 12, fontWeight: 700 }}>
+                                    <td colSpan="6" style={{ padding: 48, textAlign: 'center', color: '#71717a', fontSize: 12, fontWeight: 700 }}>
                                         No transactions found matching your filters.
                                     </td>
                                 </tr>
@@ -575,6 +576,24 @@ export default function AdminDashboard() {
                                             }}>
                                                 {p.status}
                                             </span>
+                                        </td>
+
+                                        <td style={{ padding: 16, textAlign: 'center' }}>
+                                            {p.status === 'success' ? (
+                                                <span style={{
+                                                    padding: '4px 8px',
+                                                    borderRadius: 6,
+                                                    fontSize: 10,
+                                                    textTransform: 'uppercase',
+                                                    color: p.payout_status === 'completed' ? '#22c55e' : '#facc15',
+                                                    background: p.payout_status === 'completed' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
+                                                    fontWeight: 'bold'
+                                                }}>
+                                                    {p.payout_status || 'Pending'}
+                                                </span>
+                                            ) : (
+                                                <span style={{ color: '#71717a', fontSize: 11 }}>-</span>
+                                            )}
                                         </td>
 
                                         <td style={{ padding: 16, textAlign: 'right', color: '#71717a', fontSize: 12 }}>

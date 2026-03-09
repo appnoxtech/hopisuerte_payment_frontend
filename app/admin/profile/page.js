@@ -257,7 +257,7 @@ export default function ProfileSettings() {
                         </div>
 
                         {/* Slug */}
-                        <div style={{
+                        {/* <div style={{
                             paddingTop: '30px',
                             borderTop: '1px solid rgba(255,255,255,0.05)',
                             display: 'flex',
@@ -335,7 +335,7 @@ export default function ProfileSettings() {
                                         : ''}
                                 </code>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Save Button */}
                         <div style={{
@@ -362,14 +362,7 @@ export default function ProfileSettings() {
                                 {saving ? 'Saving...' : 'Save Profile Changes'}
                             </button>
 
-                            <p style={{
-                                fontSize: '10px',
-                                color: '#71717a',
-                                fontWeight: '700',
-                                textTransform: 'uppercase'
-                            }}>
-                                Updating your slug will change your public profile address.
-                            </p>
+
                         </div>
 
                     </form>
@@ -377,43 +370,6 @@ export default function ProfileSettings() {
             </section>
 
             {/* Warning */}
-            <div style={{
-                padding: '20px',
-                borderRadius: '12px',
-                border: '1px solid rgba(239,68,68,0.3)',
-                background: 'rgba(239,68,68,0.05)',
-                display: 'flex',
-                gap: '20px',
-                alignItems: 'center'
-            }}>
-                <div style={{
-                    padding: '10px',
-                    borderRadius: '10px',
-                    background: 'rgba(239,68,68,0.1)',
-                    color: '#ef4444'
-                }}>
-                    ⚠
-                </div>
-
-                <div>
-                    <h3 style={{
-                        color: '#ef4444',
-                        fontWeight: '900',
-                        fontSize: '11px',
-                        textTransform: 'uppercase'
-                    }}>
-                        Important Note
-                    </h3>
-
-                    <p style={{
-                        color: '#71717a',
-                        fontSize: '13px'
-                    }}>
-                        If you change your URL slug, any old links you have shared will stop working.
-                        Make sure to update them to prevent payment issues.
-                    </p>
-                </div>
-            </div>
         </div>
     );
 }
