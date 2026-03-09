@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/utils/api';
 import { validateEmail } from '@/utils/validation';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function SuperAdminLogin() {
     const [email, setEmail] = useState('');
@@ -18,7 +19,6 @@ export default function SuperAdminLogin() {
 
     const validateFields = () => {
         const errors = { email: '', password: '' };
-
         errors.email = validateEmail(email);
 
         if (!password || password.trim() === '') {
@@ -26,7 +26,6 @@ export default function SuperAdminLogin() {
         }
 
         setFieldErrors(errors);
-
         return !errors.email && !errors.password;
     };
 
@@ -42,11 +41,8 @@ export default function SuperAdminLogin() {
             const response = await api.post('/super-admin/login', { email, password });
 
             localStorage.setItem('super_admin_token', response.data.access_token);
-
             router.push('/super-admin');
-
         } catch (err) {
-
             if (err.response?.status === 403) {
                 setError('Access denied. Super Admin privileges required.');
             } else if (err.response?.status === 401) {
@@ -54,349 +50,241 @@ export default function SuperAdminLogin() {
             } else {
                 setError('Server error. Please try again later.');
             }
-
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#000',
-                position: 'relative',
-                overflow: 'hidden'
-            }}
-        >
+        <div style={mainStyle}>
+            <div style={glowStyle} />
 
-            {/* Background blur circles */}
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            <div style={containerStyle}>
+                {/* Card */}
+                <div style={cardStyle}>
+                    <h1 style={{ ...titleStyle, fontSize: 26 }}>Super Admin</h1>
 
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '-160px',
-                        left: '-160px',
-                        width: '320px',
-                        height: '320px',
-                        background: 'rgba(234,179,8,0.05)',
-                        borderRadius: '50%',
-                        filter: 'blur(80px)'
-                    }}
-                />
-
-                <div
-                    style={{
-                        position: 'absolute',
-                        bottom: '-160px',
-                        right: '-160px',
-                        width: '380px',
-                        height: '380px',
-                        background: 'rgba(202,138,4,0.05)',
-                        borderRadius: '50%',
-                        filter: 'blur(80px)'
-                    }}
-                />
-
-            </div>
-
-            {/* Grid overlay */}
-            <div
-                style={{
-                    position: 'absolute',
-                    inset: 0,
-                    opacity: 0.03,
-                    backgroundImage:
-                        'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
-                    backgroundSize: '60px 60px'
-                }}
-            />
-
-            <div style={{ position: 'relative', width: '100%', maxWidth: 450, margin: '0 16px' }}>
-
-                {/* Secure badge */}
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            padding: '6px 14px',
-                            background: 'rgba(234,179,8,0.1)',
-                            border: '1px solid rgba(234,179,8,0.2)',
-                            borderRadius: 50
-                        }}
-                    >
-                        <span
-                            style={{
-                                color: '#facc15',
-                                fontSize: 11,
-                                fontWeight: 700,
-                                letterSpacing: 2,
-                                textTransform: 'uppercase'
-                            }}
-                        >
-                            Secure Portal
-                        </span>
-                    </div>
-
-                </div>
-
-                <div
-                    style={{
-                        background: 'rgba(24,24,27,0.85)',
-                        border: '1px solid rgba(255,255,255,0.05)',
-                        padding: 40,
-                        borderRadius: 16,
-                        position: 'relative'
-                    }}
-                >
-
-                    {/* Accent line */}
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: 96,
-                            height: 4,
-                            borderBottomLeftRadius: 50,
-                            borderBottomRightRadius: 50,
-                            background: 'linear-gradient(to right,#facc15,#ca8a04)'
-                        }}
-                    />
-
-                    {/* Heading */}
-                    <div style={{ textAlign: 'center', marginBottom: 40 }}>
-
-                        <h1
-                            style={{
-                                fontSize: 30,
-                                fontWeight: 900,
-                                background: 'linear-gradient(to right,#facc15,#ca8a04)',
-                                WebkitBackgroundClip: 'text',
-                                color: 'transparent',
-                                textTransform: 'uppercase',
-                                fontStyle: 'italic'
-                            }}
-                        >
-                            Super Admin
-                        </h1>
-
-                        <p
-                            style={{
-                                color: '#71717a',
-                                fontSize: 10,
-                                fontWeight: 700,
-                                letterSpacing: 2,
-                                textTransform: 'uppercase'
-                            }}
-                        >
-                            Management Portal
-                        </p>
-
-                    </div>
+                    <p style={{ ...subtitleStyle, marginBottom: 28 }}>
+                        Restricted management portal
+                    </p>
 
                     {error && (
-                        <div
-                            style={{
-                                marginBottom: 20,
-                                padding: 14,
-                                background: 'rgba(239,68,68,0.1)',
-                                border: '1px solid rgba(239,68,68,0.2)',
-                                color: '#ef4444',
-                                borderRadius: 10,
-                                fontSize: 14,
-                                fontWeight: 700
-                            }}
-                        >
+                        <div style={errorStyle}>
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} noValidate>
-
+                    <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {/* Email */}
-                        <div style={{ marginBottom: 20 }}>
-
-                            <label
-                                style={{
-                                    display: 'block',
-                                    fontSize: 10,
-                                    fontWeight: 800,
-                                    color: '#71717a',
-                                    marginBottom: 6,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: 2
-                                }}
-                            >
-                                Admin Email
-                            </label>
+                        <div>
+                            <label style={labelStyle}>Email Address</label>
 
                             <input
                                 type="email"
                                 value={email}
-                                placeholder="admin@paysigur.com"
                                 onChange={(e) => {
                                     setEmail(e.target.value);
                                     setFieldErrors(prev => ({ ...prev, email: '' }));
                                 }}
+                                placeholder="superadmin@paysigur.com"
                                 style={{
-                                    width: '100%',
-                                    padding: '12px 14px',
-                                    borderRadius: 10,
-                                    border: fieldErrors.email ? '1px solid red' : '1px solid #333',
-                                    background: '#111',
-                                    color: '#fff'
+                                    ...inputStyle,
+                                    border: fieldErrors.email ? '1px solid #ef4444' : inputStyle.border,
                                 }}
                             />
 
                             {fieldErrors.email && (
-                                <p style={{ color: '#f87171', fontSize: 11, marginTop: 6 }}>
+                                <p style={fieldErrorStyle}>
                                     {fieldErrors.email}
                                 </p>
                             )}
-
                         </div>
 
                         {/* Password */}
-                        <div style={{ marginBottom: 24 }}>
-
-                            <label
-                                style={{
-                                    display: 'block',
-                                    fontSize: 10,
-                                    fontWeight: 800,
-                                    color: '#71717a',
-                                    marginBottom: 6,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: 2
-                                }}
-                            >
-                                Password
-                            </label>
+                        <div>
+                            <label style={labelStyle}>Password</label>
 
                             <div style={{ position: 'relative' }}>
-
                                 <input
-                                    type={showPassword ? 'text' : 'password'}
+                                    type={showPassword ? "text" : "password"}
                                     value={password}
-                                    placeholder="••••••••"
                                     onChange={(e) => {
                                         setPassword(e.target.value);
                                         setFieldErrors(prev => ({ ...prev, password: '' }));
                                     }}
+                                    placeholder="••••••••"
                                     style={{
-                                        width: '100%',
-                                        padding: '12px 14px',
-                                        borderRadius: 10,
-                                        border: fieldErrors.password ? '1px solid red' : '1px solid #333',
-                                        background: '#111',
-                                        color: '#fff'
+                                        ...inputStyle,
+                                        paddingRight: 44,
+                                        border: fieldErrors.password ? '1px solid #ef4444' : inputStyle.border,
                                     }}
                                 />
 
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    style={{
-                                        position: 'absolute',
-                                        right: 12,
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        border: 'none',
-                                        background: 'transparent',
-                                        cursor: 'pointer',
-                                        color: '#aaa'
-                                    }}
+                                    style={toggleBtn}
                                 >
-                                    👁
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
-
                             </div>
 
                             {fieldErrors.password && (
-                                <p style={{ color: '#f87171', fontSize: 11, marginTop: 6 }}>
+                                <p style={fieldErrorStyle}>
                                     {fieldErrors.password}
                                 </p>
                             )}
-
                         </div>
 
-                        {/* Login button */}
+                        {/* Submit */}
                         <button
                             type="submit"
                             disabled={loading}
                             style={{
-                                width: '100%',
-                                padding: '14px',
-                                borderRadius: 12,
-                                border: 'none',
-                                fontWeight: 800,
-                                letterSpacing: 2,
-                                textTransform: 'uppercase',
-                                background: 'linear-gradient(to right,#facc15,#ca8a04)',
-                                cursor: 'pointer'
+                                ...submitStyle,
+                                background: loading ? '#d4a017' : '#facc15',
+                                cursor: loading ? 'not-allowed' : 'pointer',
                             }}
                         >
-                            {loading ? 'Logging in...' : 'Login'}
+                            {loading ? 'Authenticating...' : 'Sign In'}
                         </button>
 
-                        <div style={{ textAlign: 'center', marginTop: 20 }}>
-                            <Link
-                                href="/super-admin/forgot-password"
-                                style={{
-                                    fontSize: 11,
-                                    color: '#a1a1aa',
-                                    textDecoration: 'none',
-                                    fontWeight: 700,
-                                    letterSpacing: 1
-                                }}
-                            >
-                                Trouble signing in? Reset Password
+                        <div style={{ textAlign: 'center' }}>
+                            <Link href="/super-admin/forgot-password" style={forgotStyle}>
+                                Forgot your password?
                             </Link>
                         </div>
-
                     </form>
 
-                    <div
-                        style={{
-                            marginTop: 30,
-                            paddingTop: 20,
-                            borderTop: '1px solid rgba(255,255,255,0.05)',
-                            textAlign: 'center',
-                            fontSize: 10,
-                            color: '#52525b',
-                            letterSpacing: 2,
-                            fontWeight: 700
-                        }}
-                    >
-                        Access is restricted to authorized platform administrators.
+                    <div style={{
+                        marginTop: 28,
+                        paddingTop: 20,
+                        borderTop: '1px solid rgba(255,255,255,0.06)',
+                        textAlign: 'center',
+                        fontSize: 11,
+                        color: '#52525b',
+                    }}>
+                        Access restricted to authorized super administrators only
                     </div>
-
                 </div>
-
-                <div style={{ textAlign: 'center', marginTop: 16 }}>
-                    <p
-                        style={{
-                            color: '#444',
-                            fontSize: 10,
-                            fontWeight: 900,
-                            letterSpacing: 5,
-                            textTransform: 'uppercase'
-                        }}
-                    >
-                        Paysigur Platform
-                    </p>
-                </div>
-
             </div>
         </div>
     );
 }
+
+/* ────────────────────────────────────────────── */
+/*          Reused Styles (same as previous pages) */
+/* ────────────────────────────────────────────── */
+
+const mainStyle = {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#000',
+    padding: 20,
+    position: 'relative'
+};
+
+const glowStyle = {
+    position: 'absolute',
+    top: 0,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 640,
+    height: 340,
+    background: 'rgba(250,204,21,0.14)',
+    borderRadius: '50%',
+    filter: 'blur(130px)'
+};
+
+const containerStyle = {
+    width: '100%',
+    maxWidth: 420,
+    zIndex: 2
+};
+
+const cardStyle = {
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.09)',
+    borderRadius: 18,
+    padding: 32
+};
+
+const titleStyle = {
+    fontSize: 24,
+    fontWeight: 800,
+    color: '#fff',
+    textAlign: 'center',
+    letterSpacing: -0.5
+};
+
+const subtitleStyle = {
+    fontSize: 12,
+    color: '#71717a',
+    textAlign: 'center',
+    marginBottom: 20
+};
+
+const labelStyle = {
+    fontSize: 12,
+    color: '#cbd5f5',
+    marginBottom: 6,
+    display: 'block'
+};
+
+const inputStyle = {
+    width: '100%',
+    padding: 12,
+    borderRadius: 10,
+    background: '#09090b',
+    border: '1px solid rgba(255,255,255,0.08)',
+    color: '#fff',
+    fontSize: 14,
+    outline: 'none'
+};
+
+const toggleBtn = {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#71717a'
+};
+
+const submitStyle = {
+    marginTop: 8,
+    padding: 14,
+    background: '#facc15',
+    border: 'none',
+    borderRadius: 10,
+    fontWeight: 700,
+    color: '#000',
+    fontSize: 14
+};
+
+const forgotStyle = {
+    fontSize: 12,
+    color: '#71717a',
+    textDecoration: 'none'
+};
+
+const fieldErrorStyle = {
+    color: '#f87171',
+    fontSize: 11,
+    marginTop: 4
+};
+
+const errorStyle = {
+    marginBottom: 20,
+    padding: 12,
+    background: 'rgba(239,68,68,0.1)',
+    border: '1px solid rgba(239,68,68,0.2)',
+    color: '#ef4444',
+    borderRadius: 10,
+    fontSize: 13,
+    textAlign: 'center'
+};

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/utils/api';
 import { passwordRules, allPasswordRulesPassed, validatePassword } from '@/utils/validation';
+import { Eye, EyeOff } from 'lucide-react';
 
-function ResetPasswordForm() {
+export default function ResetPassword() {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -26,14 +27,13 @@ function ResetPasswordForm() {
         }
     }, [token, email]);
 
-    const allPassed = allPasswordRulesPassed(password);
+    const allRulesPassed = allPasswordRulesPassed(password);
     const passwordsMatch = password.length > 0 && password === passwordConfirmation;
 
     const handleReset = async (e) => {
         e.preventDefault();
         setError('');
 
-        // Validate password strength
         const passwordError = validatePassword(password);
         if (passwordError) {
             setError(passwordError);
@@ -46,58 +46,46 @@ function ResetPasswordForm() {
         }
 
         setLoading(true);
+
         try {
             await api.post('/password/reset', {
                 token,
                 email,
                 password,
-                password_confirmation: passwordConfirmation
+                password_confirmation: passwordConfirmation,
             });
+
             setSuccess(true);
+
             setTimeout(() => {
                 router.push('/admin/login');
             }, 3000);
         } catch (err) {
-            const msg = err.response?.data?.message;
-            if (msg && msg.toLowerCase().includes('same as')) {
-                setError('New password cannot be the same as your previous password.');
-            } else {
-                setError(msg || 'Failed to reset password. The link may have expired.');
-            }
+            const msg = err.response?.data?.message || 'Failed to reset password. The link may have expired.';
+            setError(msg.includes('same as') ? 'New password cannot be the same as your previous password.' : msg);
         } finally {
             setLoading(false);
         }
     };
 
-    const EyeIcon = ({ show, onToggle }) => (
-        <button type="button" onClick={onToggle} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-yellow-500 transition-colors p-1">
-            {show ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-            ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                </svg>
-            )}
-        </button>
-    );
-
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black p-6 relative overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[400px] bg-green-500/5 rounded-full blur-[100px] pointer-events-none"></div>
-                <div className="w-full max-w-md glass-card p-10 relative z-10 text-center animate-fade-in border-white/5">
-                    <div className="w-16 h-16 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center justify-center text-green-500 mx-auto mb-6">
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <h1 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Password Reset</h1>
-                    <p className="text-zinc-500 text-sm mb-8 font-medium">Your password has been updated. Redirecting to login...</p>
-                    <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-green-500 h-full animate-[progress_3s_linear_forwards]"></div>
+            <div style={mainStyle}>
+                <div style={{ ...glowStyle, background: 'rgba(74,222,128,0.12)' }} />
+
+                <div style={containerStyle}>
+                    <div style={cardStyle}>
+                        <h1 style={{ ...titleStyle, color: '#4ade80' }}>Password Reset</h1>
+
+                        <p style={{ ...subtitleStyle, color: '#4ade80', opacity: 0.9 }}>
+                            Your password has been updated successfully.
+                        </p>
+
+                        <div style={{ textAlign: 'center', marginTop: 24 }}>
+                            <p style={{ color: '#71717a', fontSize: 14 }}>
+                                Redirecting to login in 3 seconds...
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,116 +93,288 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black p-6 relative overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[400px] bg-yellow-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div style={mainStyle}>
+            <div style={glowStyle} />
 
-            <div className="w-full max-w-md glass-card p-10 relative z-10 animate-fade-in-up border-white/5">
-                <div className="text-center mb-10">
-                    <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
-                    <h1 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">Reset Password</h1>
-                    <p className="text-zinc-500 text-[10px] uppercase tracking-[0.2em] font-bold">Create a new secure password</p>
-                </div>
+            <div style={containerStyle}>
+                <div style={cardStyle}>
+                    <h1 style={titleStyle}>Reset Password</h1>
 
-                {error && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-xs font-bold flex items-center gap-3">
-                        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        {error}
-                    </div>
-                )}
+                    <p style={subtitleStyle}>
+                        Create a new secure password for your account
+                    </p>
 
-                <form onSubmit={handleReset} className="space-y-6" noValidate>
-                    <div className="bg-white/[0.02] p-4 rounded-xl border border-white/5 mb-2">
-                        <p className="text-[9px] uppercase font-black text-zinc-600 tracking-widest mb-1">Account</p>
-                        <p className="text-white font-bold text-sm truncate">{email}</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 ml-1">New Password</label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="saas-input py-3.5 px-6 pr-14 text-base font-bold"
-                                placeholder="••••••••"
-                            />
-                            <EyeIcon show={showPassword} onToggle={() => setShowPassword(!showPassword)} />
-                        </div>
-                    </div>
-
-                    {/* Password Requirements Checklist */}
-                    {password.length > 0 && (
-                        <div className="p-4 bg-white/[0.02] rounded-xl border border-white/5 space-y-2.5 animate-fade-in">
-                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2">Password Requirements</p>
-                            {passwordRules.map((rule, i) => (
-                                <div key={i} className="flex items-center gap-2.5">
-                                    <div className={`w-4 h-4 rounded-md flex items-center justify-center transition-all duration-300 ${rule.test(password) ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5 border border-white/10'}`}>
-                                        {rule.test(password) && (
-                                            <svg className="w-2.5 h-2.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        )}
-                                    </div>
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 ${rule.test(password) ? 'text-green-400' : 'text-zinc-600'}`}>
-                                        {rule.test(password) ? rule.label : rule.message}
-                                    </span>
-                                </div>
-                            ))}
+                    {error && (
+                        <div style={errorStyle}>
+                            {error}
                         </div>
                     )}
 
-                    <div>
-                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3 ml-1">Confirm Password</label>
-                        <div className="relative">
-                            <input
-                                type={showConfirm ? "text" : "password"}
-                                value={passwordConfirmation}
-                                onChange={(e) => setPasswordConfirmation(e.target.value)}
-                                className={`saas-input py-3.5 px-6 pr-14 text-base font-bold ${passwordConfirmation.length > 0 ? (passwordsMatch ? 'border-green-500/30 focus:ring-green-500/20' : 'border-red-500/30 focus:ring-red-500/20') : ''}`}
-                                placeholder="••••••••"
-                            />
-                            <EyeIcon show={showConfirm} onToggle={() => setShowConfirm(!showConfirm)} />
+                    {email && (
+                        <div style={{
+                            background: 'rgba(255,255,255,0.03)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: 10,
+                            padding: 12,
+                            marginBottom: 16,
+                        }}>
+                            <label style={{ ...labelStyle, marginBottom: 4 }}>Account</label>
+                            <div style={{ color: '#fff', fontSize: 14, fontWeight: 500 }}>
+                                {email}
+                            </div>
                         </div>
-                        {passwordConfirmation.length > 0 && (
-                            <p className={`text-[10px] font-bold mt-2 ml-1 uppercase tracking-wider ${passwordsMatch ? 'text-green-400' : 'text-red-400'}`}>
-                                {passwordsMatch ? '✓ Passwords match' : '✗ Passwords do not match'}
-                            </p>
-                        )}
-                    </div>
+                    )}
 
-                    <div>
+                    <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        {/* New Password */}
+                        <div>
+                            <label style={labelStyle}>New Password</label>
+
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    style={{
+                                        ...inputStyle,
+                                        paddingRight: 44,
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={toggleBtn}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Password Requirements */}
+                        {password.length > 0 && (
+                            <div style={{
+                                background: 'rgba(255,255,255,0.02)',
+                                border: '1px solid rgba(255,255,255,0.06)',
+                                borderRadius: 10,
+                                padding: 12,
+                            }}>
+                                <p style={{ fontSize: 11, color: '#71717a', marginBottom: 8 }}>Password must contain:</p>
+                                {passwordRules.map((rule, index) => {
+                                    const passed = rule.test(password);
+                                    return (
+                                        <div key={index} style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 8,
+                                            marginBottom: 4,
+                                        }}>
+                                            <div style={{
+                                                width: 14,
+                                                height: 14,
+                                                borderRadius: 4,
+                                                background: passed ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.04)',
+                                                border: `1px solid ${passed ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.1)'}`,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                            }}>
+                                                {passed && <div style={{ width: 6, height: 6, background: '#4ade80', borderRadius: 2 }} />}
+                                            </div>
+                                            <span style={{
+                                                fontSize: 12,
+                                                color: passed ? '#4ade80' : '#71717a',
+                                            }}>
+                                                {rule.label}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* Confirm Password */}
+                        <div>
+                            <label style={labelStyle}>Confirm Password</label>
+
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    type={showConfirm ? "text" : "password"}
+                                    value={passwordConfirmation}
+                                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                    placeholder="••••••••"
+                                    style={{
+                                        ...inputStyle,
+                                        paddingRight: 44,
+                                        border: passwordConfirmation.length > 0
+                                            ? (passwordsMatch ? '1px solid rgba(74,222,128,0.4)' : '1px solid #ef4444')
+                                            : inputStyle.border,
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirm(!showConfirm)}
+                                    style={toggleBtn}
+                                >
+                                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+
+                            {passwordConfirmation.length > 0 && (
+                                <p style={{
+                                    ...fieldErrorStyle,
+                                    color: passwordsMatch ? '#4ade80' : '#f87171',
+                                    marginTop: 6,
+                                }}>
+                                    {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Submit */}
                         <button
                             type="submit"
-                            disabled={loading || !token || !allPassed || !passwordsMatch}
-                            className="saas-btn-primary w-full py-4 text-[10px] uppercase font-black tracking-[0.2em] disabled:opacity-40 disabled:cursor-not-allowed"
+                            disabled={loading || !token || !allRulesPassed || !passwordsMatch}
+                            style={{
+                                ...submitStyle,
+                                opacity: (loading || !allRulesPassed || !passwordsMatch) ? 0.6 : 1,
+                                cursor: (loading || !allRulesPassed || !passwordsMatch) ? 'not-allowed' : 'pointer',
+                            }}
                         >
-                            {loading ? 'Resetting Password...' : 'Save New Password'}
+                            {loading ? 'Resetting...' : 'Reset Password'}
                         </button>
-                    </div>
 
-                    <div className="text-center mt-10 pt-8 border-t border-white/5">
-                        <p className="text-[10px] text-zinc-600 font-bold tracking-widest uppercase">
-                            Secure Account Recovery
-                        </p>
-                    </div>
-                </form>
+                        <div style={{ textAlign: 'center' }}>
+                            <a
+                                href="/admin/login"
+                                style={{
+                                    ...forgotStyle,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                }}
+                            >
+                                ← Back to Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
 }
 
-export default function ResetPassword() {
-    return (
-        <Suspense fallback={
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
-            </div>
-        }>
-            <ResetPasswordForm />
-        </Suspense>
-    );
-}
+/* ────────────────────────────────────────────── */
+/*          Reused Styles (same as Login page)     */
+/* ────────────────────────────────────────────── */
+
+const mainStyle = {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#000',
+    padding: 20,
+    position: 'relative'
+};
+
+const glowStyle = {
+    position: 'absolute',
+    top: 0,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 600,
+    height: 300,
+    background: 'rgba(250,204,21,0.12)',
+    borderRadius: '50%',
+    filter: 'blur(120px)'
+};
+
+const containerStyle = {
+    width: '100%',
+    maxWidth: 420,
+    zIndex: 2
+};
+
+const cardStyle = {
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: 18,
+    padding: 28
+};
+
+const titleStyle = {
+    fontSize: 22,
+    fontWeight: 800,
+    color: '#fff',
+    textAlign: 'center'
+};
+
+const subtitleStyle = {
+    fontSize: 12,
+    color: '#71717a',
+    textAlign: 'center',
+    marginBottom: 20
+};
+
+const labelStyle = {
+    fontSize: 12,
+    color: '#cbd5f5',
+    marginBottom: 6,
+    display: 'block'
+};
+
+const inputStyle = {
+    width: '100%',
+    padding: 12,
+    borderRadius: 10,
+    background: '#09090b',
+    border: '1px solid rgba(255,255,255,0.08)',
+    color: '#fff',
+    fontSize: 14,
+    outline: 'none'
+};
+
+const toggleBtn = {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#71717a'
+};
+
+const submitStyle = {
+    marginTop: 6,
+    padding: 14,
+    background: '#facc15',
+    border: 'none',
+    borderRadius: 10,
+    fontWeight: 700,
+    color: '#000',
+    fontSize: 14
+};
+
+const forgotStyle = {
+    fontSize: 12,
+    color: '#71717a',
+    textDecoration: 'none'
+};
+
+const fieldErrorStyle = {
+    color: '#f87171',
+    fontSize: 11,
+    marginTop: 4
+};
+
+const errorStyle = {
+    marginBottom: 16,
+    padding: 10,
+    background: 'rgba(239,68,68,0.1)',
+    border: '1px solid rgba(239,68,68,0.2)',
+    color: '#ef4444',
+    borderRadius: 8,
+    fontSize: 12
+};
