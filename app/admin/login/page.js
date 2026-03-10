@@ -8,8 +8,10 @@ import Image from 'next/image';
 import { validateEmail } from '@/utils/validation';
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function AdminLogin() {
+import { useToast } from '@/context/ToastContext';
 
+export default function AdminLogin() {
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -45,15 +47,20 @@ export default function AdminLogin() {
             const response = await api.post('/login', { email, password });
 
             localStorage.setItem('auth_token', response.data.access_token);
+            showToast('Gateway Access Authorized', 'success');
 
             router.push('/admin');
 
         } catch (err) {
 
             if (err.response?.status === 403) {
-                setError(err.response?.data?.message || 'Your account is disabled.');
+                const msg = err.response?.data?.message || 'Your account is disabled.';
+                setError(msg);
+                showToast(msg, 'error');
             } else {
-                setError('Invalid email or password.');
+                const msg = 'Invalid email or password.';
+                setError(msg);
+                showToast(msg, 'error');
             }
 
         } finally {

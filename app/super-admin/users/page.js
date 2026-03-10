@@ -23,7 +23,10 @@ const getSuperAdminHeaders = () => ({
     },
 });
 
+import { useToast } from '@/context/ToastContext';
+
 export default function UserManagement() {
+    const { showToast } = useToast();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -34,8 +37,6 @@ export default function UserManagement() {
         email: ''
     });
     const [formLoading, setFormLoading] = useState(false);
-    const [formError, setFormError] = useState('');
-    const [formSuccess, setFormSuccess] = useState('');
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -43,7 +44,7 @@ export default function UserManagement() {
             const response = await api.get('/super-admin/users', getSuperAdminHeaders());
             setUsers(response.data);
         } catch (err) {
-            console.error('Failed to fetch users:', err);
+            showToast('Nexus participant synchronization failed', 'error');
         } finally {
             setLoading(false);
         }
@@ -56,21 +57,15 @@ export default function UserManagement() {
     const handleCreateUser = async (e) => {
         e.preventDefault();
         setFormLoading(true);
-        setFormError('');
-        setFormSuccess('');
 
         try {
             const response = await api.post('/super-admin/register-freelancer', formData, getSuperAdminHeaders());
-            setFormSuccess(response.data.message);
+            showToast(response.data.message || 'Agent provisioned successfully', 'success');
             setFormData({ name: '', email: '' });
             fetchUsers();
-
-            setTimeout(() => {
-                setShowModal(false);
-                setFormSuccess('');
-            }, 3000);
+            setShowModal(false);
         } catch (err) {
-            setFormError(err.response?.data?.message || 'Failed to create user account');
+            showToast(err.response?.data?.message || 'Provisioning failed', 'error');
         } finally {
             setFormLoading(false);
         }
@@ -80,8 +75,9 @@ export default function UserManagement() {
         try {
             const response = await api.patch(`/super-admin/users/${id}/status`, {}, getSuperAdminHeaders());
             setUsers(users.map(u => u.id === id ? { ...u, status: response.data.status } : u));
+            showToast(`Agent verification ${response.data.status}`, 'info');
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to update status');
+            showToast(err.response?.data?.message || 'Verification shift failed', 'error');
         }
     };
 
@@ -93,8 +89,9 @@ export default function UserManagement() {
         try {
             await api.delete(`/super-admin/users/${id}`, getSuperAdminHeaders());
             setUsers(users.filter(u => u.id !== id));
+            showToast('Agent access revoked', 'warning');
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to delete user');
+            showToast(err.response?.data?.message || 'Revocation failed', 'error');
         }
     };
 
@@ -239,9 +236,6 @@ export default function UserManagement() {
                             </div>
                             <button onClick={() => setShowModal(false)} style={modalCloseBtnStyle}><X size={18} /></button>
                         </div>
-
-                        {formError && <div style={errorBannerStyle}>{formError}</div>}
-                        {formSuccess && <div style={successBannerStyle}>{formSuccess}</div>}
 
                         <form onSubmit={handleCreateUser} style={modalFormStyle}>
                             <div style={inputGroupStyle}>

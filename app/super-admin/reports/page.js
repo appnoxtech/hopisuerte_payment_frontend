@@ -17,7 +17,10 @@ import {
 } from 'lucide-react';
 import CustomDropdown from '@/components/CustomDropdown';
 
+import { useToast } from '@/context/ToastContext';
+
 export default function SuperAdminReportsPage() {
+    const { showToast } = useToast();
     const [month, setMonth] = useState('');
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [freelancerId, setFreelancerId] = useState('');
@@ -50,14 +53,15 @@ export default function SuperAdminReportsPage() {
                 const response = await api.get('/super-admin/users');
                 setFreelancers(response.data);
             } catch (error) {
-                console.error('Failed to fetch freelancers:', error);
+                showToast('Registry sync failed', 'error');
             }
         };
         fetchFreelancers();
-    }, []);
+    }, [showToast]);
 
     const handleDownload = async (format = 'csv') => {
         setLoading(true);
+        showToast('Compiling platform ledger...', 'info');
         try {
             const params = new URLSearchParams();
             params.append('format', format);
@@ -85,9 +89,9 @@ export default function SuperAdminReportsPage() {
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
+            showToast('Audit report extracted successfully', 'success');
         } catch (err) {
-            console.error('Failed to download report:', err);
-            alert('Export failed. Review system logs.');
+            showToast('Extraction sequence failed', 'error');
         } finally {
             setLoading(false);
         }
@@ -165,8 +169,9 @@ export default function SuperAdminReportsPage() {
                         </p>
                         <button onClick={() => handleDownload('csv')} style={btnStyle} disabled={loading}>
                             {loading ? (
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                                    <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                                    <div style={{ ...spinnerStyle, borderTopColor: '#000', borderBottomColor: 'transparent', width: 14, height: 14 }} />
+                                    <span>Processing...</span>
                                 </div>
                             ) : (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>

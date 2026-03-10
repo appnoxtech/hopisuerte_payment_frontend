@@ -7,11 +7,12 @@ import api from '@/utils/api';
 import { validateEmail } from '@/utils/validation';
 import { Eye, ArrowLeft } from 'lucide-react'; // ArrowLeft optional – can remove if not wanted
 
+import { useToast } from '@/context/ToastContext';
+
 export default function ForgotPassword() {
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState({ email: '' });
 
     const router = useRouter();
@@ -25,8 +26,6 @@ export default function ForgotPassword() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage('');
-        setError('');
         setFieldErrors({ email: '' });
 
         if (!validateFields()) return;
@@ -35,13 +34,10 @@ export default function ForgotPassword() {
 
         try {
             await api.post('/password/forgot', { email });
-            setMessage('A password reset link has been sent to your email.');
+            showToast('Recovery link dispatched to primary node');
             setEmail('');
         } catch (err) {
-            setError(
-                err.response?.data?.message ||
-                'Failed to send reset email. Please try again.'
-            );
+            showToast(err.response?.data?.message || 'Signal failure: recovery sequence aborted', 'error');
         } finally {
             setLoading(false);
         }

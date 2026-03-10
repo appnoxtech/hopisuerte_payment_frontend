@@ -19,20 +19,26 @@ const getSuperAdminHeaders = () => ({
     },
 });
 
+import { useToast } from '@/context/ToastContext';
+
 export default function GlobalPayments() {
+    const { showToast } = useToast();
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedFreelancerId, setSelectedFreelancerId] = useState(null);
     const [view, setView] = useState('summary'); // 'summary' or 'detailed'
     const [searchQuery, setSearchQuery] = useState('');
 
-    const fetchPayments = async () => {
+    const fetchPayments = async (isManual = false) => {
         setLoading(true);
         try {
             const response = await api.get('/super-admin/payments', getSuperAdminHeaders());
             setPayments(response.data);
+            if (isManual) {
+                showToast('Financial stream synchronized', 'success');
+            }
         } catch (err) {
-            console.error('Failed to fetch payments:', err);
+            showToast('Nexus ledger synchronization failed', 'error');
         } finally {
             setLoading(false);
         }
@@ -115,7 +121,7 @@ export default function GlobalPayments() {
                             Recent Stream
                         </button>
                     </div>
-                    <button onClick={fetchPayments} style={refreshBtnStyle}>
+                    <button onClick={() => fetchPayments(true)} style={refreshBtnStyle}>
                         <RefreshCcw size={14} />
                     </button>
                 </div>

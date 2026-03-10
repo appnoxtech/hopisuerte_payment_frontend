@@ -13,7 +13,10 @@ import {
     ShieldCheck
 } from 'lucide-react';
 
+import { useToast } from '@/context/ToastContext';
+
 export default function ProductManagement() {
+    const { showToast } = useToast();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [copiedLink, setCopiedLink] = useState(null);
@@ -28,7 +31,7 @@ export default function ProductManagement() {
             const response = await api.get('/admin/products');
             setProducts(response.data);
         } catch (err) {
-            console.error('Failed to fetch products', err);
+            showToast('Synchronized inventory retrieval failed', 'error');
         } finally {
             setLoading(false);
         }
@@ -37,6 +40,7 @@ export default function ProductManagement() {
     const handleCopy = (url, linkId) => {
         navigator.clipboard.writeText(url);
         setCopiedLink(linkId);
+        showToast('Secure link copied to buffer');
         setTimeout(() => setCopiedLink(null), 2000);
     };
 
@@ -56,7 +60,7 @@ export default function ProductManagement() {
                     <h1 style={titleStyle}>Assigned Products</h1>
                     <p style={subtitleStyle}>Authorized products for payment processing</p>
                 </div>
-                
+
             </header>
 
             {/* Product Grid */}

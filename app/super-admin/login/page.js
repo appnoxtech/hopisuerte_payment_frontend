@@ -7,7 +7,10 @@ import api from '@/utils/api';
 import { validateEmail } from '@/utils/validation';
 import { Eye, EyeOff } from 'lucide-react';
 
+import { useToast } from '@/context/ToastContext';
+
 export default function SuperAdminLogin() {
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -41,15 +44,17 @@ export default function SuperAdminLogin() {
             const response = await api.post('/super-admin/login', { email, password });
 
             localStorage.setItem('super_admin_token', response.data.access_token);
+            showToast('Executive Protocol Initialized', 'success');
             router.push('/super-admin');
         } catch (err) {
+            let msg = 'Server error. Please try again later.';
             if (err.response?.status === 403) {
-                setError('Access denied. Super Admin privileges required.');
+                msg = 'Access denied. Super Admin privileges required.';
             } else if (err.response?.status === 401) {
-                setError('Invalid email or password.');
-            } else {
-                setError('Server error. Please try again later.');
+                msg = 'Invalid email or password.';
             }
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }

@@ -45,25 +45,25 @@ export default function CustomDropdown({
             const minSpaceNeeded = 250;
 
             let direction = 'down';
-            let top = rect.bottom + window.scrollY + 4;
+            // Coordinates for fixed positioning (relative to viewport)
+            let top = rect.bottom + 4;
 
             if (spaceBelow < minSpaceNeeded && spaceAbove > spaceBelow) {
                 direction = 'up';
-                top = rect.top + window.scrollY - 4; // We'll use transform: translateY(-100%)
+                top = rect.top - 4;
             }
 
             setPortalCoords({
                 top,
-                left: rect.left + window.scrollX,
+                left: rect.left,
                 width: rect.width,
                 direction,
-                maxHeight: direction === 'down' ? Math.min(350, spaceBelow - 20) : Math.min(350, spaceAbove - 20)
+                maxHeight: direction === 'down' ? Math.min(400, spaceBelow - 20) : Math.min(400, spaceAbove - 20)
             });
         }
 
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                // Check if the click was inside the portal menu
                 const portalMenu = document.getElementById('dropdown-portal-menu');
                 if (portalMenu && portalMenu.contains(event.target)) return;
                 setIsOpen(false);
@@ -72,7 +72,7 @@ export default function CustomDropdown({
 
         if (isOpen) {
             document.addEventListener("mousedown", handleClickOutside);
-            window.addEventListener("scroll", () => setIsOpen(false), { once: true });
+            window.addEventListener("scroll", () => setIsOpen(false), { capture: true, once: true });
         }
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -90,11 +90,14 @@ export default function CustomDropdown({
             id="dropdown-portal-menu"
             style={{
                 ...menuWrapperStyle,
+                position: 'fixed',
                 top: portalCoords.top,
                 left: portalCoords.left,
                 width: portalCoords.width,
                 maxHeight: portalCoords.maxHeight,
                 transform: portalCoords.direction === 'up' ? 'translateY(-100%)' : 'none',
+                zIndex: 10000, // Extremely high
+                animation: 'fadeIn 0.1s ease-out'
             }}
         >
             {showSearch && (
@@ -126,8 +129,8 @@ export default function CustomDropdown({
                             onClick={() => handleSelect(opt)}
                             style={{
                                 ...optionStyle,
-                                background: value === opt.value ? 'rgba(250,204,21,0.1)' : 'transparent',
-                                color: value === opt.value ? '#facc15' : '#fff'
+                                background: value === opt.value ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
+                                color: value === opt.value ? '#fbbf24' : '#fff'
                             }}
                         >
                             {opt.label}

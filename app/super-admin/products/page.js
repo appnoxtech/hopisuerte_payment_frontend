@@ -21,7 +21,10 @@ import {
     ExternalLink
 } from 'lucide-react';
 
+import { useToast } from '@/context/ToastContext';
+
 export default function SuperAdminProducts() {
+    const { showToast } = useToast();
     const [products, setProducts] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -57,7 +60,7 @@ export default function SuperAdminProducts() {
             setViewingProductName(product.name);
             setIsPaymentModalOpen(true);
         } catch (err) {
-            alert('Failed to fetch payments');
+            showToast('Failed to retrieve audit trail', 'error');
         }
     };
 
@@ -66,7 +69,7 @@ export default function SuperAdminProducts() {
             const response = await api.get('/super-admin/products');
             setProducts(response.data);
         } catch (err) {
-            console.error('Failed to fetch products', err);
+            showToast('Nexus sync failed', 'error');
         } finally {
             setLoading(false);
         }
@@ -77,7 +80,7 @@ export default function SuperAdminProducts() {
             const response = await api.get('/super-admin/users');
             setUsers(response.data);
         } catch (err) {
-            console.error('Failed to fetch users', err);
+            // silent fail or small toast
         }
     };
 
@@ -107,13 +110,15 @@ export default function SuperAdminProducts() {
         try {
             if (editingProduct) {
                 await api.put(`/super-admin/products/${editingProduct.id}`, formData);
+                showToast('Asset configuration sanitized', 'success');
             } else {
                 await api.post('/super-admin/products', formData);
+                showToast('New asset committed to Nexus', 'success');
             }
             fetchProducts();
             setIsModalOpen(false);
         } catch (err) {
-            alert('Failed to save product');
+            showToast(err.response?.data?.message || 'Configuration failed', 'error');
         }
     };
 
@@ -121,15 +126,17 @@ export default function SuperAdminProducts() {
         if (!confirm('Permanently remove this product?')) return;
         try {
             await api.delete(`/super-admin/products/${id}`);
+            showToast('Asset purged from registry', 'warning');
             fetchProducts();
         } catch (err) {
-            alert('Failed to delete');
+            showToast('Purge failed - dependency lock', 'error');
         }
     };
 
     const handleCopy = (url, id) => {
         navigator.clipboard.writeText(url);
         setCopiedId(id);
+        showToast('Link captured');
         setTimeout(() => setCopiedId(null), 2000);
     };
 

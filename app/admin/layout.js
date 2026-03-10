@@ -15,67 +15,54 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 
+import { useUser } from '@/context/UserContext';
+import { useToast } from '@/context/ToastContext';
+
 export default function AdminLayout({ children }) {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { user, loading, logout: contextLogout } = useUser();
+    const { showToast } = useToast();
 
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
-        const publicPaths = [
-            '/admin/login',
-            '/admin/forgot-password',
-            '/admin/reset-password'
-        ];
-
-        if (publicPaths.includes(pathname)) {
-            setLoading(false);
-            return;
-        }
-
-        const fetchUser = async () => {
-            try {
-                const response = await api.get('/user');
-                setUser(response.data);
-            } catch (err) {
-                localStorage.removeItem('auth_token');
-                router.push('/admin/login');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUser();
-    }, [pathname, router]);
+    const publicPaths = [
+        '/admin/login',
+        '/admin/forgot-password',
+        '/admin/reset-password'
+    ];
 
     const handleLogout = async () => {
         try {
             await api.post('/logout');
+            showToast('Session terminated successfully');
         } catch (err) {
             // silent fail
         } finally {
-            localStorage.removeItem('auth_token');
+            contextLogout();
             router.push('/admin/login');
         }
     };
 
-    if (
-        [
-            '/admin/login',
-            '/admin/forgot-password',
-            '/admin/reset-password'
-        ].includes(pathname)
-    ) {
+    useEffect(() => {
+        if (!loading && !user && !publicPaths.includes(pathname)) {
+            router.push('/admin/login');
+        }
+    }, [user, loading, pathname, router]);
+
+    if (publicPaths.includes(pathname)) {
         return <>{children}</>;
     }
 
     if (loading) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#050506" }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
+    }
+
+    if (!user) {
+        return null;
     }
 
     const menuItems = [
@@ -115,7 +102,7 @@ export default function AdminLayout({ children }) {
                         <Image
                             src="/paysigur.png"
                             alt="Paysigur"
-                            width={160}
+                            width={80}
                             height={48}
                             priority
                             style={{ objectFit: 'contain' }}
@@ -232,7 +219,7 @@ const sidebarHeaderStyle = {
 };
 
 const logoWrapperStyle = {
-    marginBottom: '8px',
+    // marginBottom: '8px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'

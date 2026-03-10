@@ -16,76 +16,51 @@ import {
 } from 'lucide-react';
 import NextLink from 'next/link';
 
+import { useUser } from '@/context/UserContext';
+import { useToast } from '@/context/ToastContext';
+
 export default function SuperAdminLayout({ children }) {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { user, loading, logout: contextLogout } = useUser();
+    const { showToast } = useToast();
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
-        const publicPaths = ['/super-admin/login', '/super-admin/forgot-password'];
-        if (publicPaths.includes(pathname)) {
-            setLoading(false);
-            return;
-        }
-
-        const fetchUser = async () => {
-            try {
-                const token = localStorage.getItem('super_admin_token');
-                if (!token) {
-                    router.push('/super-admin/login');
-                    return;
-                }
-
-                const response = await api.get('/user', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                const userData = response.data;
-                if (userData.role !== 'admin' && userData.role !== 'super_admin') {
-                    localStorage.removeItem('super_admin_token');
-                    router.push('/super-admin/login');
-                    return;
-                }
-
-                setUser(userData);
-            } catch (err) {
-                localStorage.removeItem('super_admin_token');
-                router.push('/super-admin/login');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUser();
-    }, [pathname, router]);
+    const publicPaths = ['/super-admin/login', '/super-admin/forgot-password'];
 
     const handleLogout = async () => {
         try {
-            const token = localStorage.getItem('super_admin_token');
-            if (token) {
-                await api.post('/logout', {}, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-            }
+            await api.post('/logout');
+            showToast('Secure session terminated');
         } catch (err) {
             // silent fail
         } finally {
-            localStorage.removeItem('super_admin_token');
+            contextLogout();
             router.push('/super-admin/login');
         }
     };
 
-    if (['/super-admin/login', '/super-admin/forgot-password'].includes(pathname)) {
+    useEffect(() => {
+        if (!loading && !publicPaths.includes(pathname)) {
+            if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
+                router.push('/super-admin/login');
+            }
+        }
+    }, [user, loading, pathname, router]);
+
+    if (publicPaths.includes(pathname)) {
         return <>{children}</>;
     }
 
     if (loading) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#050506" }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
+    }
+
+    if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
+        return null;
     }
 
     const navLinks = [
@@ -110,7 +85,7 @@ export default function SuperAdminLayout({ children }) {
                         <Image
                             src="/paysigur.png"
                             alt="Paysigur"
-                            width={110}
+                            width={80}
                             height={40}
                             priority
                             style={{ objectFit: 'contain' }}
@@ -227,7 +202,7 @@ const sidebarHeaderStyle = {
 };
 
 const logoWrapperStyle = {
-    marginBottom: '8px',
+    // marginBottom: '8px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'

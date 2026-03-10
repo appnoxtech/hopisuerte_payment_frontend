@@ -13,7 +13,13 @@ import {
     Fingerprint
 } from 'lucide-react';
 
+import { useUser } from '@/context/UserContext';
+import { useToast } from '@/context/ToastContext';
+
 export default function ProfileSettings() {
+    const { refreshUser } = useUser();
+    const { showToast } = useToast();
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [slug, setSlug] = useState('');
@@ -22,58 +28,44 @@ export default function ProfileSettings() {
     const [originalSlug, setOriginalSlug] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
 
     useEffect(() => {
-        fetchUser();
-    }, []);
-
-    const fetchUser = async () => {
-        try {
-            const response = await api.get('/user');
-            const user = response.data;
-            setName(user.name);
-            setEmail(user.email);
-            setSlug(user.slug);
-            setOriginalName(user.name);
-            setOriginalEmail(user.email);
-            setOriginalSlug(user.slug);
-        } catch (err) {
-            setMessage({ type: 'error', text: 'Failed to load profile data.' });
-        } finally {
-            setLoading(false);
-        }
-    };
+        const fetchInitialData = async () => {
+            try {
+                const response = await api.get('/user');
+                const user = response.data;
+                setName(user.name);
+                setEmail(user.email);
+                setSlug(user.slug);
+                setOriginalName(user.name);
+                setOriginalEmail(user.email);
+                setOriginalSlug(user.slug);
+            } catch (err) {
+                showToast('Failed to load profile data', 'error');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchInitialData();
+    }, [showToast]);
 
     const handleUpdate = async (e) => {
         e.preventDefault();
         setSaving(true);
-        setMessage({ type: '', text: '' });
-
-        const isSlugChanged = slug !== originalSlug;
-        const isProfileChanged = name !== originalName || email !== originalEmail;
-
-        if (isSlugChanged || isProfileChanged) {
-            const warningMessage = isSlugChanged
-                ? 'Changing your slug will update your public URLs and may break existing links. Continue?'
-                : 'Save these profile changes?';
-
-            const confirmed = window.confirm(warningMessage);
-            if (!confirmed) {
-                setSaving(false);
-                return;
-            }
-        }
 
         try {
             const response = await api.put('/user', { name, email, slug });
-            setMessage({ type: 'success', text: 'Profile updated successfully!' });
+            showToast('Profile security updated', 'success');
+
             setSlug(response.data.slug);
             setOriginalName(response.data.name);
             setOriginalEmail(response.data.email);
             setOriginalSlug(response.data.slug);
+
+            // Sync with sidebar
+            await refreshUser();
         } catch (err) {
-            setMessage({ type: 'error', text: err.response?.data?.message || 'Update failed.' });
+            showToast(err.response?.data?.message || 'Update synchronization failed', 'error');
         } finally {
             setSaving(false);
         }
@@ -81,8 +73,8 @@ export default function ProfileSettings() {
 
     if (loading) return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
-            </div>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+        </div>
     );
 
     return (
@@ -93,20 +85,7 @@ export default function ProfileSettings() {
                     <h1 style={titleStyle}>Profile Settings</h1>
                     <p style={subtitleStyle}>Manage your personal account details</p>
                 </div>
-               
             </header>
-
-            {message.text && (
-                <div style={{
-                    ...messageBoxStyle,
-                    borderColor: message.type === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
-                    color: message.type === 'success' ? '#10b981' : '#f43f5e',
-                    background: message.type === 'success' ? 'rgba(16, 185, 129, 0.05)' : 'rgba(244, 63, 94, 0.05)',
-                }}>
-                    {message.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-                    {message.text}
-                </div>
-            )}
 
             {/* Profile Form */}
             <section style={formSectionStyle}>
@@ -196,9 +175,9 @@ export default function ProfileSettings() {
                             </button>
                         </div>
                     </form>
-                </div>
-            </section>
-        </div>
+                </div >
+            </section >
+        </div >
     );
 }
 
