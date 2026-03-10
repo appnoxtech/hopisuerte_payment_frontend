@@ -23,17 +23,46 @@ export default function Home() {
     { label: 'EUR - Euro', value: 'EUR' },
     { label: 'XCG - Curacao Guilder', value: 'XCG' }
   ];
+  // Searching state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     api.get('/products')
       .then(res => {
         const activeOnes = res.data.filter(p => p.active);
         setProducts(activeOnes);
-        if (activeOnes.length > 0) setSelectedProduct(activeOnes[0]);
+        setFilteredProducts(activeOnes);
+        if (activeOnes.length > 0) {
+          setSelectedProduct(activeOnes[0]);
+          setSearchTerm(activeOnes[0].name);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    setIsDropdownOpen(true);
+
+    if (!value.trim()) {
+      setFilteredProducts(products);
+    } else {
+      const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }
+  };
+
+  const selectProduct = (product) => {
+    setSelectedProduct(product);
+    setSearchTerm(product.name);
+    setIsDropdownOpen(false);
+  };
 
   const handleProceed = (e) => {
     e.preventDefault();
@@ -56,12 +85,6 @@ export default function Home() {
   return (
     <main style={mainStyle}>
 
-      {/* Staff Login */}
-      <div style={loginStyle}>
-        <Link href="/admin/login" style={loginLink}>
-          Login
-        </Link>
-      </div>
 
       {/* Background Glow */}
       <div style={glowStyle} />
@@ -255,6 +278,29 @@ const loginLink = {
   fontSize: 16,
   fontWeight: 700,
   textDecoration: 'none',
+};
+
+const dropdownStyle = {
+  position: 'absolute',
+  top: '100%',
+  left: 0,
+  right: 0,
+  background: '#09090b',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 10,
+  marginTop: 6,
+  maxHeight: 200,
+  overflowY: 'auto',
+  zIndex: 100,
+  boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+};
+
+const dropdownItemStyle = {
+  padding: '12px 16px',
+  fontSize: 14,
+  cursor: 'pointer',
+  transition: 'all 0.1s ease',
+  borderBottom: '1px solid rgba(255,255,255,0.03)'
 };
 
 const msgStyle = {

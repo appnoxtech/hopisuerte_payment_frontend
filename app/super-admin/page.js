@@ -40,26 +40,6 @@ export default function SuperAdminDashboard() {
         fetchStats();
     }, []);
 
-    const handleDownloadReport = async () => {
-        try {
-            const token = localStorage.getItem('super_admin_token');
-            const response = await api.get('/super-admin/export-report', {
-                headers: { Authorization: `Bearer ${token}` },
-                responseType: 'blob',
-            });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `system_report_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error('Failed to download report:', err);
-            alert('Failed to generate report.');
-        }
-    };
 
     if (loading) {
         return (
@@ -101,18 +81,7 @@ export default function SuperAdminDashboard() {
                     <h1 style={titleStyle}>Command Center</h1>
                     <p style={subtitleStyle}>Global oversight of system operations and capital flow</p>
                 </div>
-                <button onClick={handleDownloadReport} style={reportBtnStyle}>
-                    <Download size={16} />
-                    <span>Generate Report</span>
-                </button>
             </header>
-
-            <section style={statGridStyle}>
-                <StatCard title="Total Network Users" value={stats?.total_users || 0} color="#fbbf24" icon={Users} />
-                <StatCard title="Active Flux" value={stats?.total_transactions || 0} color="#f59e0b" icon={Zap} />
-                <StatCard title="Gross Volume" value={(stats?.total_volume || 0).toLocaleString()} unit="USD" color="#10b981" icon={BarChart3} />
-                <StatCard title="Success Metric" value={stats?.success_rate || 0} unit="%" color="#6366f1" icon={TrendingUp} />
-            </section>
 
             <section style={accessGridStyle}>
                 <div style={managementCardStyle}>
