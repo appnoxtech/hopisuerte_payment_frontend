@@ -32,45 +32,6 @@ export default function SuperAdminDashboard() {
 
     }, []);
 
-    const handleDownloadReport = async () => {
-        try {
-
-            const token = localStorage.getItem('super_admin_token');
-
-            const response = await api.get('/super-admin/export-report', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                responseType: 'blob',
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-
-            const link = document.createElement('a');
-
-            link.href = url;
-
-            link.setAttribute(
-                'download',
-                `paysigur_report_${new Date().toISOString().split('T')[0]}.csv`
-            );
-
-            document.body.appendChild(link);
-
-            link.click();
-
-            link.remove();
-
-            window.URL.revokeObjectURL(url);
-
-        } catch (err) {
-
-            console.error('Failed to download report:', err);
-
-            alert('Failed to generate report. Please try again.');
-
-        }
-    };
 
     if (loading)
         return (
@@ -237,20 +198,6 @@ export default function SuperAdminDashboard() {
                     </p>
                 </div>
 
-                <button
-                    onClick={handleDownloadReport}
-                    style={{
-                        padding: '14px 26px',
-                        background: '#27272a',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#fff',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                    }}
-                >
-                    Download Report
-                </button>
             </section>
 
             {/* Stats */}
