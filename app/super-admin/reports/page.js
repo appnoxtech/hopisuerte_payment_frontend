@@ -1,13 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '@/utils/api';
-import { Download, FileText, Calendar, Filter, Users, DollarSign, Activity } from 'lucide-react';
+import { Download, FileText, Calendar, Filter, Users, DollarSign, Activity, UserCircle } from 'lucide-react';
 
 export default function SuperAdminReportsPage() {
     const [month, setMonth] = useState('');
     const [year, setYear] = useState(new Date().getFullYear().toString());
+    const [freelancerId, setFreelancerId] = useState('');
+    const [freelancers, setFreelancers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchFreelancers = async () => {
+            try {
+                const response = await api.get('/super-admin/users');
+                setFreelancers(response.data);
+            } catch (error) {
+                console.error('Failed to fetch freelancers:', error);
+            }
+        };
+        fetchFreelancers();
+
+        // Close dropdown on outside click
+        const handleClickOutside = () => setIsDropdownOpen(false);
+        window.addEventListener('click', handleClickOutside);
+        return () => window.removeEventListener('click', handleClickOutside);
+    }, []);
 
     const handleDownload = async (format) => {
         setLoading(true);
@@ -16,6 +37,7 @@ export default function SuperAdminReportsPage() {
             params.append('format', format);
             if (month) params.append('month', month);
             if (year) params.append('year', year);
+            if (freelancerId) params.append('freelancer_id', freelancerId);
 
             const response = await api.get(`/super-admin/export-report?${params.toString()}`, {
                 responseType: 'blob'
@@ -26,9 +48,11 @@ export default function SuperAdminReportsPage() {
             const link = document.createElement('a');
             link.href = url;
 
+            const selectedFreelancer = freelancers.find(f => f.id.toString() === freelancerId);
+            const nameSuf = selectedFreelancer ? `_${selectedFreelancer.name.replace(/\s+/g, '_')}` : '';
             const dateStr = month ? `${month}-${year}` : year;
             const extension = format === 'csv' ? 'csv' : 'pdf';
-            link.setAttribute('download', `platform_intelligence_report_${dateStr}.${extension}`);
+            link.setAttribute('download', `platform_report${nameSuf}_${dateStr}.${extension}`);
 
             document.body.appendChild(link);
             link.click();
@@ -77,41 +101,107 @@ export default function SuperAdminReportsPage() {
                 <div style={cardStyle}>
                     <div style={cardHeaderStyle}>
                         <Filter size={18} color="#facc15" />
-                        <h2 style={cardTitleStyle}>Reporting Period</h2>
+                        <h2 style={cardTitleStyle}>Reporting Scope & Period</h2>
                     </div>
 
                     <div style={formGridStyle}>
-                        <div style={fieldStyle}>
-                            <label style={labelStyle}>Fiscal Year</label>
-                            <select
+                        <div style={{ ...fieldStyle, position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+                            <label style={labelStyle}>Target Freelancer (Search & Select)</label>
+                            <input
+                                type="text"
                                 style={inputStyle}
-                                value={year}
-                                onChange={(e) => setYear(e.target.value)}
-                            >
-                                {years.map(y => (
-                                    <option key={y} value={y}>{y}</option>
-                                ))}
-                            </select>
+                                placeholder="Search by name or email..."
+                                value={searchTerm}
+                                onFocus={() => setIsDropdownOpen(true)}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setIsDropdownOpen(true);
+                                    if (!e.target.value) setFreelancerId('');
+                                }}
+                            />
+
+                            {isDropdownOpen && (
+                                <div style={dropdownStyle}>
+                                    <div
+                                        style={dropdownItemStyle}
+                                        onClick={() => {
+                                            setFreelancerId('');
+                                            setSearchTerm('');
+                                            setIsDropdownOpen(false);
+                                        }}
+                                    >
+                                        All Platform Accounts
+                                    </div>
+                                    {freelancers
+                                        .filter(f =>
+                                            f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                            f.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                        )
+                                        .slice(0, 8)
+                                        .map(f => (
+                                            <div
+                                                key={f.id}
+                                                style={dropdownItemStyle}
+                                                onClick={() => {
+                                                    setFreelancerId(f.id.toString());
+                                                    setSearchTerm(f.name);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                            >
+                                                <div style={{ fontWeight: 600 }}>{f.name}</div>
+                                                <div style={{ fontSize: 11, color: '#71717a' }}>{f.email}</div>
+                                            </div>
+                                        ))
+                                    }
+                                    {freelancers.filter(f =>
+                                        f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                        f.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                    ).length === 0 && (
+                                            <div style={{ ...dropdownItemStyle, color: '#71717a', fontStyle: 'italic' }}>
+                                                No freelancers found
+                                            </div>
+                                        )}
+                                </div>
+                            )}
                         </div>
 
-                        <div style={fieldStyle}>
-                            <label style={labelStyle}>Specific Month</label>
-                            <select
-                                style={inputStyle}
-                                value={month}
-                                onChange={(e) => setMonth(e.target.value)}
-                            >
-                                {months.map(m => (
-                                    <option key={m.value} value={m.value}>{m.label}</option>
-                                ))}
-                            </select>
+                        <div style={formGridStyleRow}>
+                            <div style={{ ...fieldStyle, flex: 1 }}>
+                                <label style={labelStyle}>Fiscal Year</label>
+                                <select
+                                    style={inputStyle}
+                                    value={year}
+                                    onChange={(e) => setYear(e.target.value)}
+                                >
+                                    {years.map(y => (
+                                        <option key={y} value={y}>{y}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{ ...fieldStyle, flex: 1 }}>
+                                <label style={labelStyle}>Specific Month</label>
+                                <select
+                                    style={inputStyle}
+                                    value={month}
+                                    onChange={(e) => setMonth(e.target.value)}
+                                >
+                                    {months.map(m => (
+                                        <option key={m.value} value={m.value}>{m.label}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     <p style={infoNoteStyle}>
+                        {freelancers.find(f => f.id.toString() === freelancerId)
+                            ? `Exporting personal performance data for ${freelancers.find(f => f.id.toString() === freelancerId).name}`
+                            : 'Exporting platform-wide intelligence data'
+                        }
                         {month
-                            ? `Exporting platform-wide data for ${months.find(m => m.value === month)?.label} ${year}`
-                            : `Exporting platform-wide data for the full year of ${year}`
+                            ? ` for ${months.find(m => m.value === month)?.label} ${year}`
+                            : ` for the full year of ${year}`
                         }
                     </p>
                 </div>
@@ -262,6 +352,12 @@ const formGridStyle = {
     gap: 16,
 };
 
+const formGridStyleRow = {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 16,
+};
+
 const fieldStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -386,4 +482,31 @@ const spinnerStyle = {
     borderTop: '2px solid #facc15',
     borderRadius: '50%',
     animation: 'spin 1s linear infinite',
+};
+
+const dropdownStyle = {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    background: '#09090b',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: 10,
+    marginTop: 4,
+    maxHeight: 250,
+    overflowY: 'auto',
+    zIndex: 100,
+    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
+};
+
+const dropdownItemStyle = {
+    padding: '12px 16px',
+    cursor: 'pointer',
+    color: '#fff',
+    fontSize: 13,
+    transition: 'background 0.2s',
+    borderBottom: '1px solid rgba(255,255,255,0.02)',
+    hover: {
+        background: 'rgba(255,255,255,0.05)',
+    }
 };
