@@ -74,7 +74,17 @@ export default function UserPaymentPage() {
 
     if (loading) {
         return (
-            <div style={{ textAlign: 'center', marginTop: 80, color: '#94a3b8' }}>
+            <div style={{
+                textAlign: 'center',
+                color: '#94a3b8',
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#000',
+                fontSize: 18,
+                fontWeight: 600
+            }}>
                 Loading payment profile...
             </div>
         );
@@ -297,7 +307,7 @@ export default function UserPaymentPage() {
                                             onChange={(e) => setAmount(e.target.value)}
                                         />
                                         <span style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', color: '#facc15', fontSize: 20, fontWeight: 800 }}>
-                                            {currency === 'EUR' ? '€' : '$'}
+                                            {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
                                         </span>
                                     </div>
                                     <select

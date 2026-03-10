@@ -347,7 +347,6 @@ export default function GlobalPayments() {
                                         <th style={{ padding: "24px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Product</th>
                                         <th style={{ padding: "24px 20px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Amount</th>
                                         <th style={{ padding: "24px 20px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Payment</th>
-                                        <th style={{ padding: "24px 20px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Payout</th>
                                         <th style={{ padding: "24px 20px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Date</th>
                                     </tr>
                                 </thead>
@@ -378,43 +377,6 @@ export default function GlobalPayments() {
                                                 }}>
                                                     {payment.status}
                                                 </span>
-                                            </td>
-                                            <td style={{ padding: "32px 20px", textAlign: "center" }}>
-                                                {payment.status === 'success' ? (
-                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                                                        <span style={{
-                                                            padding: "4px 12px",
-                                                            borderRadius: "4px",
-                                                            fontSize: "10px",
-                                                            fontWeight: 'bold',
-                                                            textTransform: 'uppercase',
-                                                            background: payment.payout_status === "completed" ? "rgba(22, 163, 74, 0.1)" : "rgba(234, 179, 8, 0.1)",
-                                                            color: payment.payout_status === "completed" ? "#22c55e" : "#facc15"
-                                                        }}>
-                                                            {payment.payout_status || 'pending'}
-                                                        </span>
-                                                        {payment.payout_status !== 'completed' && (
-                                                            <button
-                                                                onClick={async () => {
-                                                                    if (!confirm('Mark this payment payout as completed?')) return;
-                                                                    try {
-                                                                        await api.post(`/super-admin/payments/${payment.id}/transfer`, {}, getSuperAdminHeaders());
-                                                                        fetchPayments();
-                                                                    } catch (err) {
-                                                                        alert('Failed to update payout status.');
-                                                                    }
-                                                                }}
-                                                                style={{
-                                                                    background: '#3b82f6', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', fontSize: '10px', fontWeight: 'bold', cursor: 'pointer', textTransform: 'uppercase'
-                                                                }}
-                                                            >
-                                                                Clear Payout
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <span style={{ color: '#71717a', fontSize: '12px' }}>N/A</span>
-                                                )}
                                             </td>
                                             <td style={{ padding: "32px 20px", textAlign: "right", color: "#a1a1aa", fontSize: "12px" }}>
                                                 {new Date(payment.created_at).toLocaleDateString()}

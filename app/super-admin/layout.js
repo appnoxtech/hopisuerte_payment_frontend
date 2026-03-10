@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/utils/api';
+import Image from 'next/image';
 
 export default function SuperAdminLayout({ children }) {
     const [user, setUser] = useState(null);
@@ -95,13 +96,14 @@ export default function SuperAdminLayout({ children }) {
             <aside style={sidebarStyle}>
                 {/* Logo / Brand */}
                 <div style={brandStyle}>
-                    <div style={logoCircleStyle}>
-                        <span style={logoTextStyle}>S</span>
-                    </div>
-                    <div>
-                        <h2 style={brandTitleStyle}>SUPER ADMIN</h2>
-                        <p style={brandSubtitleStyle}>CONTROL PANEL</p>
-                    </div>
+                    <Image
+                        src="/paysigur.png"
+                        alt="Paysigur"
+                        width={160}
+                        height={46}
+                        priority
+                        style={{ objectFit: 'contain' }}
+                    />
                 </div>
 
                 {/* Navigation */}

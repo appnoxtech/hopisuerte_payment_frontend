@@ -32,13 +32,13 @@ export default function Home() {
       alert("Please select a product.");
       return;
     }
-
-    if (!amount || amount <= 0) {
-      alert("Please enter a valid amount.");
+    if (!amount || isNaN(amount) || parseFloat(amount) < 0.50) {
+      alert("Amount must be greater than 0.50");
       return;
     }
 
-    router.push(`/pay/${selectedProduct.unique_payment_id}?amount=${amount}&currency=${currency}`);
+    const identifier = selectedProduct.slug || selectedProduct.unique_payment_id;
+    router.push(`/pay/${identifier}-${currency.toLowerCase()}?amount=${amount}`);
   };
 
   if (loading) return <div style={msgStyle}>Initializing Paysigur Portal...</div>;
@@ -120,7 +120,7 @@ export default function Home() {
 
                 <div style={{ position: 'relative', flex: 1 }}>
                   <span style={currencySymbol}>
-                    {currency === 'EUR' ? '€' : '$'}
+                    {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
                   </span>
 
                   <input
@@ -264,7 +264,6 @@ const loginLink = {
 
 const msgStyle = {
   textAlign: 'center',
-  marginTop: 100,
   color: '#94a3b8',
   fontSize: 18,
   fontWeight: 600,

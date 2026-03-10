@@ -509,7 +509,6 @@ export default function AdminDashboard() {
                                 <th style={{ padding: 16, textAlign: 'left' }}>Product</th>
                                 <th style={{ padding: 16, textAlign: 'right' }}>Amount</th>
                                 <th style={{ padding: 16, textAlign: 'center' }}>Payment</th>
-                                <th style={{ padding: 16, textAlign: 'center' }}>Payout Status</th>
                                 <th
                                     onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
                                     style={{
@@ -578,23 +577,6 @@ export default function AdminDashboard() {
                                             </span>
                                         </td>
 
-                                        <td style={{ padding: 16, textAlign: 'center' }}>
-                                            {p.status === 'success' ? (
-                                                <span style={{
-                                                    padding: '4px 8px',
-                                                    borderRadius: 6,
-                                                    fontSize: 10,
-                                                    textTransform: 'uppercase',
-                                                    color: p.payout_status === 'completed' ? '#22c55e' : '#facc15',
-                                                    background: p.payout_status === 'completed' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
-                                                    fontWeight: 'bold'
-                                                }}>
-                                                    {p.payout_status || 'Pending'}
-                                                </span>
-                                            ) : (
-                                                <span style={{ color: '#71717a', fontSize: 11 }}>-</span>
-                                            )}
-                                        </td>
 
                                         <td style={{ padding: 16, textAlign: 'right', color: '#71717a', fontSize: 12 }}>
                                             {new Date(p.created_at).toLocaleString()}

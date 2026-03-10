@@ -21,7 +21,8 @@ export default function UniqueProductPaymentPage() {
     const [product, setProduct] = useState(null);
     const [amount, setAmount] = useState(urlAmount || '');
     const [currency, setCurrency] = useState(urlCurrency || 'USD');
-    const [isPreFilled, setIsPreFilled] = useState(!!urlAmount);
+    const [isCurrencyLocked, setIsCurrencyLocked] = useState(!!urlCurrency);
+    const [isAmountPreFilled, setIsAmountPreFilled] = useState(!!urlAmount);
 
     const [customer, setCustomer] = useState({
         name: '',
@@ -40,7 +41,12 @@ export default function UniqueProductPaymentPage() {
 
         api.get(`/product/link/${uniqueId}`)
             .then(res => {
-                setProduct(res.data);
+                const data = res.data.product ? res.data : { product: res.data, prefilled_currency: null };
+                setProduct(data.product);
+                if (data.prefilled_currency) {
+                    setCurrency(data.prefilled_currency);
+                    setIsCurrencyLocked(true);
+                }
                 setLoading(false);
             })
             .catch(() => {
@@ -53,8 +59,8 @@ export default function UniqueProductPaymentPage() {
     const handleStartPayment = async (e) => {
         e.preventDefault();
 
-        if (!product || !amount || Number(amount) <= 0) {
-            alert("Please enter valid amount");
+        if (!product || !amount || isNaN(amount) || parseFloat(amount) < 0.50) {
+            alert("Amount must be greater than 0.50");
             return;
         }
 
@@ -88,18 +94,23 @@ export default function UniqueProductPaymentPage() {
 
             <div style={glowStyle} />
 
-            <div style={containerStyle}>
-
-                {/* Logo */}
-                <div style={logoWrap}>
+            <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 10 }}>
+                {/* Header with Logo */}
+                <div style={{ textAlign: 'center', marginBottom: 20 }}>
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
                         width={180}
-                        height={70}
+                        height={54}
                         priority
+                        style={{ objectFit: 'contain', margin: '0 auto 12px auto' }}
                     />
-
+                    {/* <p style={{ color: '#71717a', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2 }}>
+                        Secure Checkout • Stripe & iDEAL
+                    </p> */}
+                    {/* <h1 style={{ fontSize: 24, fontWeight: 900, textTransform: 'uppercase', color: '#fff', marginTop: 24, marginBottom: 8, lineHeight: 1.1 }}>
+                        {product?.name}
+                    </h1> */}
                 </div>
 
                 {/* Card */}
@@ -109,29 +120,21 @@ export default function UniqueProductPaymentPage() {
 
                         <form onSubmit={handleStartPayment}>
 
-                            {/* Product */}
-                            <div style={{ marginBottom: 18 }}>
-                                <div style={productTitle}>
-                                    {product?.name}
-                                </div>
-                            </div>
+                            {/* Brand Header */}
 
-                            {/* Amount */}
-                            {!isPreFilled && (
+
+                            {/* Amount - only show if not pre-filled from home page */}
+                            {!isAmountPreFilled && (
                                 <div style={{ marginBottom: 20 }}>
-
                                     <label style={labelStyle}>Amount</label>
-
                                     <div style={{ display: 'flex', gap: 10 }}>
-
                                         <div style={{ position: 'relative', flex: 1 }}>
                                             <span style={currencySymbol}>
-                                                {currency === 'EUR' ? '€' : '$'}
+                                                {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
                                             </span>
-
                                             <input
                                                 type="number"
-                                                min="1"
+                                                min="0.50"
                                                 step="0.01"
                                                 required
                                                 placeholder="0.00"
@@ -140,19 +143,17 @@ export default function UniqueProductPaymentPage() {
                                                 style={{ ...inputStyle, paddingLeft: 34 }}
                                             />
                                         </div>
-
                                         <select
-                                            style={{ ...inputStyle, width: 100 }}
+                                            style={{ ...inputStyle, width: 100, opacity: isCurrencyLocked ? 0.6 : 1, cursor: isCurrencyLocked ? 'not-allowed' : 'pointer' }}
                                             value={currency}
+                                            disabled={isCurrencyLocked}
                                             onChange={(e) => setCurrency(e.target.value)}
                                         >
                                             <option value="USD">USD</option>
                                             <option value="EUR">EUR</option>
                                             <option value="XCG">XCG</option>
                                         </select>
-
                                     </div>
-
                                 </div>
                             )}
 

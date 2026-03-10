@@ -84,36 +84,37 @@ export default function ProductManagement() {
                                 {product.description || "No description provided."}
                             </p>
 
-                            {/* <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "20px" }}>
+                            <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "20px" }}>
                                 <h4 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#71717a', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '16px' }}>
-                                    Payment Link
+                                    Payment Links by Currency
                                 </h4>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    {(() => {
-                                        const url = `${window.location.origin}/pay/${product.unique_payment_id}`;
-                                        const linkId = product.id;
+                                    {['USD', 'EUR', 'XCG'].map((curr) => {
+                                        const identifier = product.slug || product.unique_payment_id;
+                                        const url = `${window.location.origin}/pay/${identifier}-${curr.toLowerCase()}`;
+                                        const linkId = `${product.id}-${curr}`;
                                         const isCopied = copiedLink === linkId;
 
                                         return (
-                                            <div style={{ display: 'flex', background: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', overflow: 'hidden' }}>
-                                                <div style={{ width: '60px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '12px', color: '#facc15' }}>
-                                                    LINK
+                                            <div key={curr} style={{ display: 'flex', background: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', overflow: 'hidden' }}>
+                                                <div style={{ width: '50px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', fontSize: '10px', color: '#facc15' }}>
+                                                    {curr}
                                                 </div>
-                                                <div style={{ flex: 1, padding: '10px 12px', fontSize: '11px', color: '#a1a1aa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                                                <div style={{ flex: 1, padding: '10px 12px', fontSize: '10px', color: '#a1a1aa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
                                                     {url}
                                                 </div>
                                                 <button
                                                     onClick={() => handleCopy(url, linkId)}
-                                                    style={{ background: isCopied ? '#22c55e' : 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '0 16px', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', cursor: 'pointer', transition: 'background 0.2s' }}
+                                                    style={{ background: isCopied ? '#22c55e' : 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '0 12px', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', cursor: 'pointer', transition: 'background 0.2s' }}
                                                 >
                                                     {isCopied ? 'Copied' : 'Copy'}
                                                 </button>
                                             </div>
                                         );
-                                    })()}
+                                    })}
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                     ))}
                 </div>

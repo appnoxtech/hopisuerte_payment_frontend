@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/utils/api';
-import {  Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AdminLayout({ children }) {
     const [user, setUser] = useState(null);
@@ -85,7 +86,7 @@ export default function AdminLayout({ children }) {
         {
             name: 'Settings',
             href: '/admin/profile',
-            icon: {Settings2}
+            icon: { Settings2 }
         }
     ];
 
@@ -97,13 +98,14 @@ export default function AdminLayout({ children }) {
             <aside style={sidebarStyle}>
                 {/* Brand / Logo */}
                 <div style={brandContainerStyle}>
-                    <div style={logoContainerStyle}>
-                        <span style={logoLetterStyle}>P</span>
-                    </div>
-                    <div>
-                        <h2 style={brandNameStyle}>PAYSIGUR</h2>
-                        <p style={brandSubtitleStyle}>ADMIN PANEL</p>
-                    </div>
+                    <Image
+                        src="/paysigur.png"
+                        alt="Paysigur"
+                        width={140}
+                        height={40}
+                        priority
+                        style={{ objectFit: 'contain' }}
+                    />
                 </div>
 
                 {/* Navigation */}

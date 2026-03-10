@@ -20,6 +20,8 @@ export default function SuperAdminProducts() {
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [selectedProductPayments, setSelectedProductPayments] = useState([]);
     const [viewingProductName, setViewingProductName] = useState('');
+    const [filterName, setFilterName] = useState('');
+    const [filterAssignedTo, setFilterAssignedTo] = useState('');
 
     useEffect(() => {
         fetchProducts();
@@ -126,6 +128,30 @@ export default function SuperAdminProducts() {
                 </button>
             </div>
 
+            {/* Filters */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '20px', background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '10px', fontWeight: '900', color: '#71717a', textTransform: 'uppercase', letterSpacing: '1px' }}>Filter by Product Name</label>
+                    <input
+                        type="text"
+                        placeholder="Search product..."
+                        value={filterName}
+                        onChange={(e) => setFilterName(e.target.value)}
+                        style={{ background: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', color: 'white', fontSize: '13px', outline: 'none' }}
+                    />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <label style={{ fontSize: '10px', fontWeight: '900', color: '#71717a', textTransform: 'uppercase', letterSpacing: '1px' }}>Filter by Assigned To</label>
+                    <input
+                        type="text"
+                        placeholder="Search freelancer..."
+                        value={filterAssignedTo}
+                        onChange={(e) => setFilterAssignedTo(e.target.value)}
+                        style={{ background: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', color: 'white', fontSize: '13px', outline: 'none' }}
+                    />
+                </div>
+            </div>
+
             <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
@@ -138,12 +164,22 @@ export default function SuperAdminProducts() {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.length === 0 ? (
-                            <tr>
-                                <td colSpan="5" style={{ padding: 48, textAlign: 'center', color: '#71717a', fontSize: 13 }}>No products found.</td>
-                            </tr>
-                        ) : (
-                            products.map((product) => (
+                        {(() => {
+                            const filtered = products.filter(p => {
+                                const matchesName = p.name.toLowerCase().includes(filterName.toLowerCase());
+                                const matchesAssigned = (p.user?.name || '').toLowerCase().includes(filterAssignedTo.toLowerCase());
+                                return matchesName && matchesAssigned;
+                            });
+
+                            if (filtered.length === 0) {
+                                return (
+                                    <tr>
+                                        <td colSpan="5" style={{ padding: 48, textAlign: 'center', color: '#71717a', fontSize: 13 }}>No products found matching your filters.</td>
+                                    </tr>
+                                );
+                            }
+
+                            return filtered.map((product) => (
                                 <tr key={product.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                     <td style={{ padding: 16 }}>
                                         <button
@@ -158,21 +194,30 @@ export default function SuperAdminProducts() {
                                         <span style={{ fontSize: 12, color: '#eab308' }}>{product.user?.name || 'Unknown User'}</span>
                                     </td>
                                     <td style={{ padding: 16 }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                            <input
-                                                readOnly
-                                                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/pay/${product.unique_payment_id}`}
-                                                style={{ background: '#000', border: '1px solid rgba(255,255,255,0.1)', color: '#71717a', fontSize: 10, padding: '4px 8px', borderRadius: 4, width: 150 }}
-                                            />
-                                            <button
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(`${window.location.origin}/pay/${product.unique_payment_id}`);
-                                                    alert('Link copied!');
-                                                }}
-                                                style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#facc15', fontSize: 10, padding: '4px 8px', borderRadius: 4, cursor: 'pointer' }}
-                                            >
-                                                Copy
-                                            </button>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                            {['USD', 'EUR', 'XCG'].map(curr => {
+                                                const identifier = product.slug || product.unique_payment_id;
+                                                const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/pay/${identifier}-${curr.toLowerCase()}`;
+                                                return (
+                                                    <div key={curr} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                                        <span style={{ fontSize: 9, fontWeight: '900', color: '#facc15', width: 24 }}>{curr}</span>
+                                                        <input
+                                                            readOnly
+                                                            value={url}
+                                                            style={{ background: '#000', border: '1px solid rgba(255,255,255,0.1)', color: '#71717a', fontSize: 10, padding: '4px 8px', borderRadius: 4, flex: 1 }}
+                                                        />
+                                                        <button
+                                                            onClick={() => {
+                                                                navigator.clipboard.writeText(url);
+                                                                alert(`${curr} link copied!`);
+                                                            }}
+                                                            style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#facc15', fontSize: 10, padding: '4px 8px', borderRadius: 4, cursor: 'pointer' }}
+                                                        >
+                                                            Copy
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </td>
                                     <td style={{ padding: 16, textAlign: 'center' }}>
@@ -186,7 +231,7 @@ export default function SuperAdminProducts() {
                                     </td>
                                 </tr>
                             ))
-                        )}
+                        })()}
                     </tbody>
                 </table>
             </div>
@@ -243,7 +288,6 @@ export default function SuperAdminProducts() {
                                         <th style={{ padding: 12, textAlign: 'left' }}>Customer</th>
                                         <th style={{ padding: 12, textAlign: 'right' }}>Amount</th>
                                         <th style={{ padding: 12, textAlign: 'center' }}>Status</th>
-                                        <th style={{ padding: 12, textAlign: 'center' }}>Payout</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -264,9 +308,6 @@ export default function SuperAdminProducts() {
                                                 </td>
                                                 <td style={{ padding: 12, textAlign: 'center' }}>
                                                     <span style={{ fontSize: 10, color: p.status === 'success' ? '#22c55e' : '#ef4444' }}>{p.status.toUpperCase()}</span>
-                                                </td>
-                                                <td style={{ padding: 12, textAlign: 'center' }}>
-                                                    <span style={{ fontSize: 10, color: p.payout_status === 'completed' ? '#22c55e' : '#eab308' }}>{p.payout_status.toUpperCase()}</span>
                                                 </td>
                                             </tr>
                                         ))
