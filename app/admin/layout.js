@@ -4,7 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/utils/api';
-import { Settings2 } from 'lucide-react';
+import {
+    LayoutDashboard,
+    ShoppingBag,
+    Settings,
+    LogOut,
+    ShieldCheck
+} from 'lucide-react';
 import Image from 'next/image';
 
 export default function AdminLayout({ children }) {
@@ -28,7 +34,6 @@ export default function AdminLayout({ children }) {
 
         const fetchUser = async () => {
             try {
-                // Note: assuming the token is automatically attached via api interceptor
                 const response = await api.get('/user');
                 setUser(response.data);
             } catch (err) {
@@ -53,7 +58,6 @@ export default function AdminLayout({ children }) {
         }
     };
 
-    // Show only content on public auth pages
     if (
         [
             '/admin/login',
@@ -66,7 +70,7 @@ export default function AdminLayout({ children }) {
 
     if (loading) {
         return (
-            <div style={loadingContainerStyle}>
+            <div style={loadingStyle}>
                 <div style={spinnerStyle} />
             </div>
         );
@@ -76,17 +80,17 @@ export default function AdminLayout({ children }) {
         {
             name: 'Dashboard',
             href: '/admin',
-            icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'
+            icon: LayoutDashboard
         },
         {
             name: 'Products',
             href: '/admin/products',
-            icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
+            icon: ShoppingBag
         },
         {
-            name: 'Settings',
+            name: 'Profile Settings',
             href: '/admin/profile',
-            icon: { Settings2 }
+            icon: Settings
         }
     ];
 
@@ -94,243 +98,332 @@ export default function AdminLayout({ children }) {
 
     return (
         <div style={layoutStyle}>
-            {/* Fixed Sidebar */}
+            {/* Background Effects */}
+            <div style={overlayGlowStyle} />
+
+            {/* Sidebar */}
             <aside style={sidebarStyle}>
-                {/* Brand / Logo */}
-                <div style={brandContainerStyle}>
-                    <Image
-                        src="/paysigur.png"
-                        alt="Paysigur"
-                        width={140}
-                        height={40}
-                        priority
-                        style={{ objectFit: 'contain' }}
-                    />
+                <div style={sidebarHeaderStyle}>
+                    <div style={logoWrapperStyle}>
+                        <Image
+                            src="/paysigur.png"
+                            alt="Paysigur"
+                            width={160}
+                            height={48}
+                            priority
+                            style={{ objectFit: 'contain' }}
+                        />
+                    </div>
                 </div>
 
-                {/* Navigation */}
-                <nav style={navStyle}>
-                    {menuItems.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            style={{
-                                ...navItemBaseStyle,
-                                background: isActive(item.href) ? 'rgba(250,204,21,0.09)' : 'transparent',
-                                borderLeft: isActive(item.href) ? '3px solid #facc15' : '3px solid transparent',
-                                color: isActive(item.href) ? '#facc15' : '#d1d5db'
-                            }}
-                        >
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d={item.icon}
+                <div style={navDividerStyle} />
+
+                <nav style={navContainerStyle}>
+                    {menuItems.map((item) => {
+                        const active = isActive(item.href);
+                        const Icon = item.icon;
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                style={{
+                                    ...navItemStyle,
+                                    background: active ? 'rgba(251, 191, 36, 0.12)' : 'transparent',
+                                    color: active ? '#fbbf24' : '#a1a1aa',
+                                    border: `1px solid ${active ? 'rgba(251, 191, 36, 0.2)' : 'transparent'}`,
+                                }}
+                            >
+                                <Icon
+                                    size={18}
+                                    style={{ opacity: active ? 1 : 0.6 }}
                                 />
-                            </svg>
-                            <span style={navLabelStyle}>{item.name}</span>
-                        </Link>
-                    ))}
+                                <span>{item.name}</span>
+                                {active && <div style={activeIndicatorStyle} />}
+                            </Link>
+                        );
+                    })}
                 </nav>
 
-                {/* User & Logout Section */}
-                <div style={userSectionStyle}>
-                    <div style={userCardStyle}>
-                        <div style={avatarStyle}>
+                <div style={userFooterStyle}>
+                    <div style={userBriefStyle}>
+                        <div style={userAvatarStyle}>
                             {user?.name?.[0]?.toUpperCase() || 'A'}
                         </div>
-                        <div style={userInfoStyle}>
-                            <div style={userNameStyle}>{user?.name || 'Admin'}</div>
-                            <div style={userRoleStyle}>{user?.slug || 'Administrator'}</div>
+                        <div style={userDetailsStyle}>
+                            <p style={userNameStyle}>{user?.name || 'Admin'}</p>
+                            <p style={userBadgeStyle}>{user?.slug || 'Agent'}</p>
                         </div>
                     </div>
-
-                    <button onClick={handleLogout} style={logoutButtonStyle}>
-                        Logout
+                    <button onClick={handleLogout} style={logoutBtnStyle}>
+                        <LogOut size={16} />
+                        <span>Logout Session</span>
                     </button>
                 </div>
             </aside>
 
-            {/* Scrollable Main Content */}
-            <div style={mainWrapperStyle}>
-                <main style={mainContentStyle}>
-                    {children}
+            {/* Main Content Area */}
+            <div style={mainContentAreaStyle}>
+                <header style={topHeaderStyle}>
+                    <div style={headerLeftStyle}>
+                        <h2 style={headerTitleStyle}>
+                            {menuItems.find(l => l.href === pathname)?.name || 'Command Center'}
+                        </h2>
+                        <div style={breadcrumbStyle}>
+                            <span>Control Panel</span>
+                            <span style={{ color: '#52525b' }}>/</span>
+                            <span>{menuItems.find(l => l.href === pathname)?.name || 'Home'}</span>
+                        </div>
+                    </div>
+                    
+                </header>
+
+                <main style={mainViewStyle}>
+                    <div style={pageInnerStyle}>
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>
     );
 }
 
-/* ────────────────────────────────────────────── */
-/*                  STYLES                          */
-/* ────────────────────────────────────────────── */
-
 const layoutStyle = {
     minHeight: '100vh',
-    background: '#000',
+    background: '#050506',
     color: '#fff',
     display: 'flex',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    position: 'relative',
+    fontFamily: "'Inter', sans-serif"
+};
+
+const overlayGlowStyle = {
+    position: 'absolute',
+    top: -200,
+    right: -200,
+    width: 600,
+    height: 600,
+    background: 'radial-gradient(circle, rgba(251, 191, 36, 0.03) 0%, transparent 70%)',
+    pointerEvents: 'none',
+    zIndex: 0
 };
 
 const sidebarStyle = {
     width: '260px',
-    background: 'rgba(10,10,15,0.98)',
+    background: '#0a0a0c',
     borderRight: '1px solid rgba(255,255,255,0.04)',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
     height: '100vh',
-    zIndex: 20
+    zIndex: 50,
+    boxShadow: '10px 0 30px rgba(0,0,0,0.5)'
 };
 
-const brandContainerStyle = {
-    padding: '28px 20px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 14,
-    borderBottom: '1px solid rgba(255,255,255,0.04)'
+const sidebarHeaderStyle = {
+    padding: '20px 24px',
 };
 
-const logoContainerStyle = {
-    width: 48,
-    height: 48,
-    background: '#facc15',
-    borderRadius: 12,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 6px 20px rgba(250,204,21,0.35)'
-};
-
-const logoLetterStyle = {
-    color: '#000',
-    fontWeight: 900,
-    fontSize: 24,
-    fontStyle: 'italic'
-};
-
-const brandNameStyle = {
-    fontSize: 18,
-    fontWeight: 900,
-    letterSpacing: '0.6px'
-};
-
-const brandSubtitleStyle = {
-    fontSize: 10,
-    color: '#71717a',
-    letterSpacing: '1.6px',
-    fontWeight: 700,
-    textTransform: 'uppercase'
-};
-
-const navStyle = {
-    flex: 1,
-    padding: '32px 12px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 4
-};
-
-const navItemBaseStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 14,
-    padding: '12px 16px',
-    borderRadius: 8,
-    textDecoration: 'none',
-    fontSize: 13,
-    fontWeight: 600,
-    letterSpacing: '0.3px',
-    transition: 'all 0.15s ease'
-};
-
-const navLabelStyle = {
-    textTransform: 'uppercase'
-};
-
-const userSectionStyle = {
-    padding: '24px 16px'
-};
-
-const userCardStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 16,
-    padding: 14,
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
-    borderRadius: 12
-};
-
-const avatarStyle = {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-    background: '#111',
-    border: '1px solid rgba(250,204,21,0.15)',
-    color: '#facc15',
-    fontSize: 18,
-    fontWeight: 900,
+const logoWrapperStyle = {
+    marginBottom: '8px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
 };
 
-const userInfoStyle = { flex: 1 };
+const navDividerStyle = {
+    height: '1px',
+    background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.05) 50%, transparent)',
+    margin: '0 24px 24px'
+};
+
+const navContainerStyle = {
+    padding: '0 12px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    flex: 1
+};
+
+const navItemStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 16px',
+    borderRadius: '10px',
+    textDecoration: 'none',
+    fontSize: '13px',
+    fontWeight: '600',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    position: 'relative',
+    letterSpacing: '0.01em'
+};
+
+const activeIndicatorStyle = {
+    position: 'absolute',
+    left: '0',
+    top: '25%',
+    bottom: '25%',
+    width: '2px',
+    background: '#fbbf24',
+    borderRadius: '0 4px 4px 0',
+    boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
+};
+
+const userFooterStyle = {
+    padding: '20px',
+    borderTop: '1px solid rgba(255,255,255,0.04)',
+    background: 'rgba(255,255,255,0.01)'
+};
+
+const userBriefStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '16px'
+};
+
+const userAvatarStyle = {
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    background: 'linear-gradient(135deg, #18181b, #09090b)',
+    border: '1px solid rgba(251, 191, 36, 0.15)',
+    color: '#fbbf24',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '800',
+    fontSize: '14px'
+};
+
+const userDetailsStyle = {
+    flex: 1,
+    overflow: 'hidden'
+};
 
 const userNameStyle = {
-    fontSize: 13,
-    fontWeight: 700
+    fontSize: '13px',
+    fontWeight: '700',
+    color: '#fff',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
 };
 
-const userRoleStyle = {
-    fontSize: 11,
+const userBadgeStyle = {
+    fontSize: '10px',
     color: '#71717a',
-    marginTop: 2
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
-const logoutButtonStyle = {
+const logoutBtnStyle = {
     width: '100%',
-    padding: '12px',
-    background: 'rgba(239,68,68,0.07)',
-    border: '1px solid rgba(239,68,68,0.25)',
-    borderRadius: 10,
-    color: '#f87171',
-    fontWeight: 700,
-    fontSize: 13,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '10px',
+    background: 'transparent',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '8px',
+    color: '#a1a1aa',
+    fontSize: '12px',
+    fontWeight: '700',
     cursor: 'pointer',
-    transition: 'all 0.15s ease'
+    transition: 'all 0.2s ease'
 };
 
-const mainWrapperStyle = {
-    marginLeft: '260px',
+const mainContentAreaStyle = {
+    paddingLeft: '260px',
     flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
     minHeight: '100vh',
-    background: '#050506'
+    zIndex: 1
 };
 
-const mainContentStyle = {
+const topHeaderStyle = {
+    height: '64px',
+    padding: '0 32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    background: 'rgba(5, 5, 6, 0.8)',
+    backdropFilter: 'blur(12px)',
+    borderBottom: '1px solid rgba(255,255,255,0.04)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 40
+};
+
+const headerTitleStyle = {
+    fontSize: '16px',
+    fontWeight: '800',
+    color: '#fff',
+    margin: 0,
+    letterSpacing: '-0.02em'
+};
+
+const breadcrumbStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '10px',
+    fontWeight: '600',
+    color: '#52525b',
+    marginTop: '2px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const headerLeftStyle = { display: 'flex', flexDirection: 'column' };
+
+const headerRightStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 12px',
+    borderRadius: '20px',
+    background: 'rgba(16, 185, 129, 0.05)',
+    border: '1px solid rgba(16, 185, 129, 0.1)'
+};
+
+const statusTextStyle = {
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#10b981',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const mainViewStyle = {
     flex: 1,
-    padding: '40px',
+    padding: '32px',
     overflowY: 'auto'
 };
 
-const loadingContainerStyle = {
+const pageInnerStyle = {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    width: '100%'
+};
+
+const loadingStyle = {
     minHeight: '100vh',
-    background: '#000',
+    background: '#050506',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
 };
 
 const spinnerStyle = {
-    width: 52,
-    height: 52,
+    width: '32px',
+    height: '32px',
     borderRadius: '50%',
-    border: '4px solid rgba(250,204,21,0.12)',
-    borderTop: '4px solid #facc15',
+    border: '3px solid rgba(251, 191, 36, 0.1)',
+    borderTop: '3px solid #fbbf24',
     animation: 'spin 1s linear infinite'
 };

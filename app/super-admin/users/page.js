@@ -85,304 +85,532 @@ export default function UserManagement() {
 
     if (loading && users.length === 0) {
         return (
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '400px'
-            }}>
-                <div style={{
-                    width: '32px',
-                    height: '32px',
-                    border: '4px solid #eab308',
-                    borderTop: '4px solid transparent',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite'
-                }} />
+            <div style={loadingContainerStyle}>
+                <div style={spinnerStyle} />
+                <p style={loadingTextStyle}>Accessing User Directory...</p>
             </div>
         );
     }
 
     return (
-        <div style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            paddingBottom: '80px'
-        }}>
-
-            {/* Header */}
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: '40px',
-                flexWrap: 'wrap'
-            }}>
+        <div style={pageContainerStyle}>
+            {/* Header Section */}
+            <header style={headerWrapperStyle}>
                 <div>
-                    <h1 style={{
-                        fontSize: '36px',
-                        fontWeight: 900,
-                        color: '#fff'
-                    }}>
-                        User Management
-                    </h1>
-
-                    <p style={{
-                        color: '#71717a',
-                        fontSize: '12px',
-                        marginTop: '6px'
-                    }}>
-                        Platform User Directory
-                    </p>
+                    <h1 style={titleStyle}>User Management</h1>
+                    <p style={subtitleStyle}>Command center for platform participants</p>
                 </div>
 
-                <button
-                    onClick={() => setShowForm(!showForm)}
-                    style={{
-                        background: '#eab308',
-                        border: 'none',
-                        padding: '12px 20px',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                        borderRadius: '6px'
-                    }}
-                >
-                    {showForm ? 'Cancel Registration' : 'Add New User'}
-                </button>
-            </div>
+                <div style={headerActionsStyle}>
+                    <div style={statsOverviewStyle}>
+                        <div style={miniStatStyle}>
+                            <span style={miniStatValueStyle}>{users.length}</span>
+                            <span style={miniStatLabelStyle}>Total</span>
+                        </div>
+                        <div style={miniStatDividerStyle} />
+                        <div style={miniStatStyle}>
+                            <span style={miniStatValueStyle}>{users.filter(u => u.status === 'active').length}</span>
+                            <span style={miniStatLabelStyle}>Active</span>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setShowForm(!showForm)}
+                        style={{
+                            ...addBtnStyle,
+                            background: showForm ? 'rgba(239, 68, 68, 0.1)' : 'var(--primary, #fbbf24)',
+                            color: showForm ? '#f43f5e' : '#000',
+                            borderColor: showForm ? 'rgba(239, 68, 68, 0.2)' : 'transparent'
+                        }}
+                    >
+                        {showForm ? (
+                            <><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg> Close Registration</>
+                        ) : (
+                            <><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg> Add Participant</>
+                        )}
+                    </button>
+                </div>
+            </header>
 
-            {/* Registration Form */}
+            {/* Registration Form - Animated/Drawer Style */}
             {showForm && (
-                <div style={{
-                    background: '#111',
-                    padding: '40px',
-                    borderRadius: '12px',
-                    marginBottom: '40px',
-                    border: '1px solid rgba(255,255,255,0.05)'
-                }}>
+                <div style={formCardStyle}>
+                    <div style={formHeaderStyle}>
+                        <h2 style={formTitleStyle}>Register New User</h2>
+                        <p style={formSubtitleStyle}>Invite a new freelancer to the platform</p>
+                    </div>
 
-                    <h2 style={{
-                        fontSize: '24px',
-                        fontWeight: 800,
-                        color: '#fff',
-                        marginBottom: '20px'
-                    }}>
-                        Create New User
-                    </h2>
-
-                    {formError && (
-                        <div style={{
-                            background: '#7f1d1d',
-                            padding: '12px',
-                            marginBottom: '16px',
-                            borderRadius: '6px',
-                            color: '#f87171'
-                        }}>
-                            {formError}
-                        </div>
-                    )}
-
-                    {formSuccess && (
-                        <div style={{
-                            background: '#064e3b',
-                            padding: '12px',
-                            marginBottom: '16px',
-                            borderRadius: '6px',
-                            color: '#4ade80'
-                        }}>
-                            {formSuccess}
-                        </div>
-                    )}
+                    {formError && <div style={errorBannerStyle}>{formError}</div>}
+                    {formSuccess && <div style={successBannerStyle}>{formSuccess}</div>}
 
                     <form onSubmit={handleCreateUser}>
-
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 1fr',
-                            gap: '20px',
-                            marginBottom: '30px'
-                        }}>
-
-                            <div>
-                                <label style={{ fontSize: '12px', color: '#aaa' }}>Full Name</label>
-
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="Enter full name"
-                                    style={{
-                                        width: '100%',
-                                        padding: '12px',
-                                        marginTop: '6px',
-                                        borderRadius: '6px',
-                                        border: '1px solid #333',
-                                        background: '#000',
-                                        color: '#fff'
-                                    }}
-                                />
+                        <div style={formGridStyle}>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Full Name</label>
+                                <div style={inputWrapperStyle}>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        placeholder="e.g. Alexander Pierce"
+                                        style={inputStyle}
+                                    />
+                                </div>
                             </div>
 
-                            <div>
-                                <label style={{ fontSize: '12px', color: '#aaa' }}>Email</label>
-
-                                <input
-                                    type="email"
-                                    required
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    placeholder="user@example.com"
-                                    style={{
-                                        width: '100%',
-                                        padding: '12px',
-                                        marginTop: '6px',
-                                        borderRadius: '6px',
-                                        border: '1px solid #333',
-                                        background: '#000',
-                                        color: '#fff'
-                                    }}
-                                />
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Email Address</label>
+                                <div style={inputWrapperStyle}>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        placeholder="pierce@example.com"
+                                        style={inputStyle}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-
-                            <button
-                                type="button"
-                                onClick={() => setShowForm(false)}
-                                style={{
-                                    padding: '10px 20px',
-                                    background: '#27272a',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                Cancel
+                        <div style={formFooterStyle}>
+                            <button type="submit" disabled={formLoading} style={submitBtnStyle}>
+                                {formLoading ? 'Synchronizing...' : 'Finalize Registration'}
                             </button>
-
-                            <button
-                                type="submit"
-                                disabled={formLoading}
-                                style={{
-                                    padding: '10px 20px',
-                                    background: '#eab308',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    fontWeight: 700,
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                {formLoading ? 'Creating...' : 'Register User'}
-                            </button>
-
                         </div>
                     </form>
                 </div>
             )}
 
-            {/* Table */}
-            <div style={{
-                background: '#111',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                border: '1px solid rgba(255,255,255,0.05)'
-            }}>
-
-                <table style={{
-                    width: '100%',
-                    borderCollapse: 'collapse'
-                }}>
-
+            {/* Main Data Table */}
+            <div style={tableContainerStyle}>
+                <table style={tableStyle}>
                     <thead>
-                        <tr style={{
-                            background: 'rgba(255,255,255,0.03)',
-                            color: '#aaa',
-                            fontSize: '12px'
-                        }}>
-                            <th style={{ padding: '16px' }}>User</th>
-                            <th>Status</th>
-                            <th>Products</th>
-                            <th>Total Earnings</th>
-                            <th style={{ textAlign: 'right', paddingRight: '20px' }}>Actions</th>
+                        <tr style={tableHeaderRowStyle}>
+                            <th style={{ ...thStyle, paddingLeft: '32px' }}>Participant Profile</th>
+                            <th style={thStyle}>Verification Status</th>
+                            <th style={thCenterStyle}>Inventory</th>
+                            <th style={thCenterStyle}>Net Earnings</th>
+                            <th style={{ ...thStyle, textAlign: 'right', paddingRight: '32px' }}>Command</th>
                         </tr>
                     </thead>
-
                     <tbody>
-
                         {users.length === 0 ? (
                             <tr>
-                                <td colSpan="5" style={{
-                                    padding: '60px',
-                                    textAlign: 'center',
-                                    color: '#666'
-                                }}>
-                                    No Users Found
+                                <td colSpan="5" style={emptyStateStyle}>
+                                    <div style={emptyIconWrapperStyle}>
+                                        <svg width="40" height="40" fill="none" stroke="#27272a" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                    </div>
+                                    <h3 style={emptyTitleStyle}>Database Empty</h3>
+                                    <p style={emptyDescStyle}>No registered participants found in the system</p>
                                 </td>
                             </tr>
                         ) : (
-
                             users.map(user => (
-                                <tr key={user.id} style={{
-                                    borderTop: '1px solid rgba(255,255,255,0.05)'
-                                }}>
-
-                                    <td style={{ padding: '20px', color: '#fff' }}>
-                                        {user.name}
+                                <tr key={user.id} style={trStyle}>
+                                    <td style={{ ...tdStyle, paddingLeft: '32px' }}>
+                                        <div style={userCellWrapperStyle}>
+                                            <div style={tableAvatarStyle}>
+                                                {user.name[0].toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div style={userNameTextStyle}>{user.name}</div>
+                                                <div style={userEmailTextStyle}>{user.email}</div>
+                                            </div>
+                                        </div>
                                     </td>
-
-                                    <td style={{ textAlign: 'center' }}>
-                                        <button
+                                    <td style={tdStyle}>
+                                        <div
                                             onClick={() => handleToggleStatus(user.id)}
                                             style={{
-                                                padding: '6px 10px',
-                                                borderRadius: '6px',
-                                                border: 'none',
-                                                background: user.status === 'active' ? '#16a34a' : '#dc2626',
-                                                color: '#fff',
-                                                cursor: 'pointer'
+                                                ...statusBadgeStyle,
+                                                background: user.status === 'active' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(244, 63, 94, 0.08)',
+                                                color: user.status === 'active' ? '#10b981' : '#f43f5e',
+                                                borderColor: user.status === 'active' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
                                             }}
                                         >
-                                            {user.status || 'active'}
-                                        </button>
+                                            <div style={{ ...dotStyle, background: user.status === 'active' ? '#10b981' : '#f43f5e' }} />
+                                            {user.status || 'Active'}
+                                        </div>
                                     </td>
-
-                                    <td style={{ textAlign: 'center' }}>
-                                        {user.products_count || 0}
+                                    <td style={tdCenterStyle}>
+                                        <span style={countBadgeStyle}>{user.products_count || 0} Products</span>
                                     </td>
-
-                                    <td style={{ textAlign: 'center', color: '#fff' }}>
+                                    <td style={{ ...tdCenterStyle, fontWeight: '800', color: '#fff' }}>
+                                        <span style={currencySymbolStyle}>$</span>
                                         {(user.total_earnings || 0).toLocaleString()}
                                     </td>
-
-                                    <td style={{ textAlign: 'right', paddingRight: '20px' }}>
+                                    <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '32px' }}>
                                         <button
                                             onClick={() => handleDeleteUser(user.id, user.name)}
-                                            style={{
-                                                background: '#dc2626',
-                                                border: 'none',
-                                                color: '#fff',
-                                                padding: '8px 12px',
-                                                borderRadius: '6px',
-                                                cursor: 'pointer'
-                                            }}
+                                            style={deleteBtnStyle}
+                                            title="Revoke Access"
                                         >
-                                            Delete
+                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
                                         </button>
                                     </td>
-
                                 </tr>
                             ))
-
                         )}
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
     );
 }
+
+/* ────────────────────────────────────────────── */
+/*                  STYLES                          */
+/* ────────────────────────────────────────────── */
+
+const pageContainerStyle = {
+    animation: 'fadeIn 0.4s ease-out',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '40px'
+};
+
+const headerWrapperStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: '24px'
+};
+
+const titleStyle = {
+    fontSize: '32px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-0.02em'
+};
+
+const subtitleStyle = {
+    fontSize: '14px',
+    color: '#71717a',
+    marginTop: '4px'
+};
+
+const headerActionsStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '24px'
+};
+
+const statsOverviewStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    background: 'rgba(255,255,255,0.02)',
+    padding: '8px 20px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.04)'
+};
+
+const miniStatStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+};
+
+const miniStatValueStyle = {
+    fontSize: '16px',
+    fontWeight: '900',
+    color: '#fff'
+};
+
+const miniStatLabelStyle = {
+    fontSize: '10px',
+    color: '#52525b',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const miniStatDividerStyle = {
+    width: '1px',
+    height: '20px',
+    background: 'rgba(255,255,255,0.1)'
+};
+
+const addBtnStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 24px',
+    borderRadius: '12px',
+    border: '1px solid transparent',
+    fontSize: '14px',
+    fontWeight: '800',
+    cursor: 'pointer',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+};
+
+const formCardStyle = {
+    background: 'rgba(15, 15, 20, 0.4)',
+    backdropFilter: 'blur(24px)',
+    border: '1px solid rgba(255,255,255,0.04)',
+    borderRadius: '20px',
+    padding: '32px',
+    boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+};
+
+const formHeaderStyle = { marginBottom: '32px' };
+
+const formTitleStyle = {
+    fontSize: '20px',
+    fontWeight: '800',
+    color: '#fff'
+};
+
+const formSubtitleStyle = {
+    fontSize: '13px',
+    color: '#71717a',
+    marginTop: '4px'
+};
+
+const formGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '24px',
+    marginBottom: '32px'
+};
+
+const inputGroupStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px'
+};
+
+const labelStyle = {
+    fontSize: '11px',
+    fontWeight: '700',
+    color: '#a1a1aa',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const inputWrapperStyle = { position: 'relative' };
+
+const inputStyle = {
+    width: '100%',
+    padding: '14px 16px',
+    background: 'rgba(255,255,255,0.02)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: '12px',
+    color: '#fff',
+    fontSize: '14px',
+    outline: 'none',
+    transition: 'all 0.2s ease'
+};
+
+const formFooterStyle = {
+    display: 'flex',
+    justifyContent: 'flex-end'
+};
+
+const submitBtnStyle = {
+    background: 'var(--primary, #fbbf24)',
+    color: '#000',
+    padding: '14px 32px',
+    borderRadius: '12px',
+    border: 'none',
+    fontSize: '14px',
+    fontWeight: '900',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+};
+
+const tableContainerStyle = {
+    background: 'rgba(15, 15, 20, 0.4)',
+    border: '1px solid rgba(255,255,255,0.04)',
+    borderRadius: '20px',
+    overflow: 'hidden'
+};
+
+const tableStyle = {
+    width: '100%',
+    borderCollapse: 'collapse',
+    textAlign: 'left'
+};
+
+const tableHeaderRowStyle = {
+    background: 'rgba(255,255,255,0.02)',
+    borderBottom: '1px solid rgba(255,255,255,0.04)'
+};
+
+const thStyle = {
+    padding: '20px 16px',
+    fontSize: '11px',
+    fontWeight: '800',
+    color: '#52525b',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em'
+};
+
+const thCenterStyle = {
+    ...thStyle,
+    textAlign: 'center'
+};
+
+const trStyle = {
+    borderBottom: '1px solid rgba(255,255,255,0.01)',
+    transition: 'background 0.2s ease'
+};
+
+const tdStyle = {
+    padding: '24px 16px'
+};
+
+const tdCenterStyle = {
+    ...tdStyle,
+    textAlign: 'center'
+};
+
+const userCellWrapperStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px'
+};
+
+const tableAvatarStyle = {
+    width: '40px',
+    height: '40px',
+    borderRadius: '10px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.05)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '800',
+    color: '#fff',
+    fontSize: '14px'
+};
+
+const userNameTextStyle = {
+    fontSize: '14px',
+    fontWeight: '700',
+    color: '#fff'
+};
+
+const userEmailTextStyle = {
+    fontSize: '12px',
+    color: '#52525b'
+};
+
+const statusBadgeStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 14px',
+    borderRadius: '20px',
+    border: '1px solid',
+    fontSize: '11px',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+};
+
+const dotStyle = {
+    width: '5px',
+    height: '5px',
+    borderRadius: '50%'
+};
+
+const countBadgeStyle = {
+    padding: '4px 10px',
+    background: 'rgba(255,255,255,0.03)',
+    borderRadius: '6px',
+    fontSize: '11px',
+    color: '#a1a1aa'
+};
+
+const currencySymbolStyle = {
+    color: '#52525b',
+    marginRight: '2px',
+    fontSize: '12px'
+};
+
+const deleteBtnStyle = {
+    padding: '10px',
+    background: 'rgba(239, 68, 68, 0.05)',
+    border: '1px solid rgba(239, 68, 68, 0.15)',
+    borderRadius: '10px',
+    color: '#f87171',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+};
+
+const loadingContainerStyle = {
+    padding: '80px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '24px'
+};
+
+const spinnerStyle = {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    border: '3px solid rgba(251, 191, 36, 0.1)',
+    borderTop: '3px solid #fbbf24',
+    animation: 'spin 1s linear infinite'
+};
+
+const loadingTextStyle = {
+    fontSize: '13px',
+    color: '#71717a',
+    fontWeight: '700',
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase'
+};
+
+const errorBannerStyle = {
+    padding: '12px 20px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.2)',
+    borderRadius: '10px',
+    color: '#f87171',
+    fontSize: '13px',
+    marginBottom: '20px'
+};
+
+const successBannerStyle = {
+    padding: '12px 20px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    border: '1px solid rgba(16, 185, 129, 0.2)',
+    borderRadius: '10px',
+    color: '#4ade80',
+    fontSize: '13px',
+    marginBottom: '20px'
+};
+
+const emptyStateStyle = {
+    padding: '100px 40px',
+    textAlign: 'center'
+};
+
+const emptyIconWrapperStyle = {
+    marginBottom: '20px',
+    opacity: 0.5
+};
+
+const emptyTitleStyle = {
+    fontSize: '18px',
+    fontWeight: '800',
+    color: '#fff',
+    marginBottom: '8px'
+};
+
+const emptyDescStyle = {
+    fontSize: '13px',
+    color: '#52525b'
+};

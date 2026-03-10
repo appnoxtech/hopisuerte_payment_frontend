@@ -71,20 +71,22 @@ export default function ResetPassword() {
     if (success) {
         return (
             <div style={mainStyle}>
-                <div style={{ ...glowStyle, background: 'rgba(74,222,128,0.12)' }} />
-
+                <div style={glowTopStyle} />
                 <div style={containerStyle}>
                     <div style={cardStyle}>
-                        <h1 style={{ ...titleStyle, color: '#4ade80' }}>Password Reset</h1>
+                        <div style={headerScope}>
+                            <div style={{ ...iconWrapper, background: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
+                                <svg width="24" height="24" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h1 style={{ ...titleStyle, color: '#10b981' }}>Reset Complete</h1>
+                            <p style={subtitleStyle}>Operational credentials have been successfully synchronized</p>
+                        </div>
 
-                        <p style={{ ...subtitleStyle, color: '#4ade80', opacity: 0.9 }}>
-                            Your password has been updated successfully.
-                        </p>
-
-                        <div style={{ textAlign: 'center', marginTop: 24 }}>
-                            <p style={{ color: '#71717a', fontSize: 14 }}>
-                                Redirecting to login in 3 seconds...
-                            </p>
+                        <div style={successFooter}>
+                            <div style={miniSpinnerStyle} />
+                            <span>Redirecting to Access Terminal...</span>
                         </div>
                     </div>
                 </div>
@@ -94,110 +96,84 @@ export default function ResetPassword() {
 
     return (
         <div style={mainStyle}>
-            <div style={glowStyle} />
+            <div style={glowTopStyle} />
+            <div style={glowBottomStyle} />
 
             <div style={containerStyle}>
                 <div style={cardStyle}>
-                    <h1 style={titleStyle}>Reset Password</h1>
-
-                    <p style={subtitleStyle}>
-                        Create a new secure password for your account
-                    </p>
+                    <div style={headerScope}>
+                        <div style={iconWrapper}>
+                            <svg width="24" height="24" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <h1 style={titleStyle}>Reset Password</h1>
+                        <p style={subtitleStyle}>Initialize new secure passcode for merchant identification</p>
+                    </div>
 
                     {error && (
-                        <div style={errorStyle}>
+                        <div style={errorBoxStyle}>
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                             {error}
                         </div>
                     )}
 
                     {email && (
-                        <div style={{
-                            background: 'rgba(255,255,255,0.03)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            borderRadius: 10,
-                            padding: 12,
-                            marginBottom: 16,
-                        }}>
-                            <label style={{ ...labelStyle, marginBottom: 4 }}>Account</label>
-                            <div style={{ color: '#fff', fontSize: 14, fontWeight: 500 }}>
-                                {email}
-                            </div>
+                        <div style={accountBatchStyle}>
+                            <label style={labelSmallStyle}>Target Account</label>
+                            <div style={emailValueStyle}>{email}</div>
                         </div>
                     )}
 
-                    <form onSubmit={handleReset} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        {/* New Password */}
-                        <div>
-                            <label style={labelStyle}>New Password</label>
-
-                            <div style={{ position: 'relative' }}>
+                    <form onSubmit={handleReset} style={formStyle}>
+                        <div style={inputScope}>
+                            <label style={labelStyle}>New Secure Passcode</label>
+                            <div style={fieldWrapper}>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
-                                    style={{
-                                        ...inputStyle,
-                                        paddingRight: 44,
-                                    }}
+                                    style={inputStyle}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    style={toggleBtn}
+                                    style={visibilityToggle}
                                 >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
                             </div>
                         </div>
 
-                        {/* Password Requirements */}
                         {password.length > 0 && (
-                            <div style={{
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255,255,255,0.06)',
-                                borderRadius: 10,
-                                padding: 12,
-                            }}>
-                                <p style={{ fontSize: 11, color: '#71717a', marginBottom: 8 }}>Password must contain:</p>
-                                {passwordRules.map((rule, index) => {
-                                    const passed = rule.test(password);
-                                    return (
-                                        <div key={index} style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 8,
-                                            marginBottom: 4,
-                                        }}>
-                                            <div style={{
-                                                width: 14,
-                                                height: 14,
-                                                borderRadius: 4,
-                                                background: passed ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.04)',
-                                                border: `1px solid ${passed ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.1)'}`,
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}>
-                                                {passed && <div style={{ width: 6, height: 6, background: '#4ade80', borderRadius: 2 }} />}
+                            <div style={rulesCardStyle}>
+                                <p style={rulesTitleStyle}>Passcode Complexity Matrix</p>
+                                <div style={rulesGridStyle}>
+                                    {passwordRules.map((rule, index) => {
+                                        const passed = rule.test(password);
+                                        return (
+                                            <div key={index} style={ruleItemStyle}>
+                                                <div style={{
+                                                    ...ruleIndicatorStyle,
+                                                    background: passed ? '#10b981' : 'rgba(255,255,255,0.05)',
+                                                    borderColor: passed ? '#10b981' : 'rgba(255,255,255,0.1)'
+                                                }} />
+                                                <span style={{ color: passed ? '#10b981' : '#52525b', fontSize: '11px', fontWeight: '700' }}>
+                                                    {rule.label}
+                                                </span>
                                             </div>
-                                            <span style={{
-                                                fontSize: 12,
-                                                color: passed ? '#4ade80' : '#71717a',
-                                            }}>
-                                                {rule.label}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
+                                </div>
                             </div>
                         )}
 
-                        {/* Confirm Password */}
-                        <div>
-                            <label style={labelStyle}>Confirm Password</label>
-
-                            <div style={{ position: 'relative' }}>
+                        <div style={inputScope}>
+                            <label style={labelStyle}>Confirm Passcode</label>
+                            <div style={fieldWrapper}>
                                 <input
                                     type={showConfirm ? "text" : "password"}
                                     value={passwordConfirmation}
@@ -205,58 +181,46 @@ export default function ResetPassword() {
                                     placeholder="••••••••"
                                     style={{
                                         ...inputStyle,
-                                        paddingRight: 44,
-                                        border: passwordConfirmation.length > 0
-                                            ? (passwordsMatch ? '1px solid rgba(74,222,128,0.4)' : '1px solid #ef4444')
-                                            : inputStyle.border,
+                                        borderColor: passwordConfirmation.length > 0
+                                            ? (passwordsMatch ? 'rgba(16, 185, 129, 0.4)' : 'rgba(244, 63, 94, 0.4)')
+                                            : 'rgba(255,255,255,0.06)'
                                     }}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirm(!showConfirm)}
-                                    style={toggleBtn}
+                                    style={visibilityToggle}
                                 >
-                                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
                             </div>
-
                             {passwordConfirmation.length > 0 && (
                                 <p style={{
-                                    ...fieldErrorStyle,
-                                    color: passwordsMatch ? '#4ade80' : '#f87171',
-                                    marginTop: 6,
+                                    fontSize: '11px',
+                                    fontWeight: '800',
+                                    marginTop: '6px',
+                                    color: passwordsMatch ? '#10b981' : '#f43f5e'
                                 }}>
-                                    {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
+                                    {passwordsMatch ? 'IDENTICAL' : 'MISMATCH'}
                                 </p>
                             )}
                         </div>
 
-                        {/* Submit */}
                         <button
                             type="submit"
                             disabled={loading || !token || !allRulesPassed || !passwordsMatch}
                             style={{
-                                ...submitStyle,
-                                opacity: (loading || !allRulesPassed || !passwordsMatch) ? 0.6 : 1,
-                                cursor: (loading || !allRulesPassed || !passwordsMatch) ? 'not-allowed' : 'pointer',
+                                ...submitBtnStyle,
+                                opacity: (loading || !allRulesPassed || !passwordsMatch) ? 0.5 : 1
                             }}
                         >
-                            {loading ? 'Resetting...' : 'Reset Password'}
+                            {loading ? (
+                                <div style={loadingScope}>
+                                    <div style={miniSpinnerStyle} />
+                                    <span>Updating...</span>
+                                </div>
+                            ) : 'Finalize Passcode Reset'}
                         </button>
-
-                        <div style={{ textAlign: 'center' }}>
-                            <a
-                                href="/admin/login"
-                                style={{
-                                    ...forgotStyle,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 6,
-                                }}
-                            >
-                                ← Back to Login
-                            </a>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -265,7 +229,7 @@ export default function ResetPassword() {
 }
 
 /* ────────────────────────────────────────────── */
-/*          Reused Styles (same as Login page)     */
+/*                  PREMIUM STYLES                  */
 /* ────────────────────────────────────────────── */
 
 const mainStyle = {
@@ -273,108 +237,251 @@ const mainStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#000',
-    padding: 20,
-    position: 'relative'
+    background: '#050506',
+    padding: '24px',
+    position: 'relative',
+    overflow: 'hidden',
+    fontFamily: "'Inter', sans-serif"
 };
 
-const glowStyle = {
+const glowTopStyle = {
     position: 'absolute',
-    top: 0,
+    top: '-150px',
     left: '50%',
     transform: 'translateX(-50%)',
-    width: 600,
-    height: 300,
-    background: 'rgba(250,204,21,0.12)',
-    borderRadius: '50%',
-    filter: 'blur(120px)'
+    width: '800px',
+    height: '400px',
+    background: 'radial-gradient(circle, rgba(251, 191, 36, 0.06) 0%, transparent 70%)',
+    pointerEvents: 'none',
+    zIndex: 1
+};
+
+const glowBottomStyle = {
+    position: 'absolute',
+    bottom: '-250px',
+    right: '-100px',
+    width: '600px',
+    height: '600px',
+    background: 'radial-gradient(circle, rgba(99, 102, 241, 0.02) 0%, transparent 70%)',
+    pointerEvents: 'none',
+    zIndex: 1
 };
 
 const containerStyle = {
     width: '100%',
-    maxWidth: 420,
-    zIndex: 2
+    maxWidth: '460px',
+    zIndex: 2,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '24px'
 };
 
 const cardStyle = {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 18,
-    padding: 28
+    background: 'rgba(15, 15, 20, 0.4)',
+    backdropFilter: 'blur(32px)',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    borderRadius: '28px',
+    padding: '44px',
+    boxShadow: '0 24px 80px rgba(0, 0, 0, 0.4)'
 };
 
-const titleStyle = {
-    fontSize: 22,
-    fontWeight: 800,
-    color: '#fff',
+const headerScope = {
+    marginBottom: '32px',
     textAlign: 'center'
 };
 
+const iconWrapper = {
+    width: '48px',
+    height: '48px',
+    borderRadius: '14px',
+    background: 'rgba(251, 191, 36, 0.05)',
+    border: '1px solid rgba(251, 191, 36, 0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto 20px auto'
+};
+
+const titleStyle = {
+    fontSize: '24px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-0.02em',
+    marginBottom: '8px'
+};
+
 const subtitleStyle = {
-    fontSize: 12,
+    fontSize: '13px',
     color: '#71717a',
-    textAlign: 'center',
-    marginBottom: 20
+    lineHeight: '1.5',
+    maxWidth: '320px',
+    margin: '0 auto'
+};
+
+const successFooter = {
+    marginTop: '32px',
+    paddingTop: '24px',
+    borderTop: '1px solid rgba(255,255,255,0.04)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    fontSize: '13px',
+    color: '#10b981',
+    fontWeight: '700'
+};
+
+const errorBoxStyle = {
+    background: 'rgba(244, 63, 94, 0.06)',
+    border: '1px solid rgba(244, 63, 94, 0.2)',
+    borderRadius: '12px',
+    padding: '14px 18px',
+    color: '#f43f5e',
+    fontSize: '13px',
+    fontWeight: '700',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '28px'
+};
+
+const accountBatchStyle = {
+    padding: '16px',
+    borderRadius: '14px',
+    background: 'rgba(0,0,0,0.2)',
+    border: '1px solid rgba(255,255,255,0.04)',
+    marginBottom: '28px'
+};
+
+const labelSmallStyle = {
+    display: 'block',
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#52525b',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginBottom: '4px'
+};
+
+const emailValueStyle = {
+    fontSize: '14px',
+    fontWeight: '700',
+    color: '#fbbf24'
+};
+
+const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '24px'
+};
+
+const inputScope = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px'
 };
 
 const labelStyle = {
-    fontSize: 12,
-    color: '#cbd5f5',
-    marginBottom: 6,
-    display: 'block'
+    fontSize: '11px',
+    fontWeight: '800',
+    color: '#52525b',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginLeft: '4px'
+};
+
+const fieldWrapper = {
+    position: 'relative'
 };
 
 const inputStyle = {
     width: '100%',
-    padding: 12,
-    borderRadius: 10,
-    background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'rgba(0, 0, 0, 0.25)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '14px',
+    padding: '14px 44px 14px 18px',
     color: '#fff',
-    fontSize: 14,
-    outline: 'none'
+    fontSize: '14px',
+    fontWeight: '600',
+    outline: 'none',
+    transition: 'all 0.2s ease'
 };
 
-const toggleBtn = {
+const visibilityToggle = {
     position: 'absolute',
-    right: 10,
+    right: '14px',
     top: '50%',
     transform: 'translateY(-50%)',
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    color: '#71717a'
+    color: '#52525b',
+    display: 'flex'
 };
 
-const submitStyle = {
-    marginTop: 6,
-    padding: 14,
-    background: '#facc15',
+const rulesCardStyle = {
+    padding: '16px',
+    borderRadius: '14px',
+    background: 'rgba(255,255,255,0.02)',
+    border: '1px solid rgba(255,255,255,0.04)'
+};
+
+const rulesTitleStyle = {
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#3f3f46',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    marginBottom: '12px'
+};
+
+const rulesGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '10px 20px'
+};
+
+const ruleItemStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
+};
+
+const ruleIndicatorStyle = {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    border: '1px solid'
+};
+
+const submitBtnStyle = {
+    marginTop: '12px',
+    padding: '16px',
+    background: '#fbbf24',
     border: 'none',
-    borderRadius: 10,
-    fontWeight: 700,
+    borderRadius: '14px',
     color: '#000',
-    fontSize: 14
+    fontSize: '14px',
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: '0.02em',
+    cursor: 'pointer',
+    boxShadow: '0 8px 30px rgba(251, 191, 36, 0.2)',
+    transition: 'all 0.2s ease'
 };
 
-const forgotStyle = {
-    fontSize: 12,
-    color: '#71717a',
-    textDecoration: 'none'
+const loadingScope = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px'
 };
 
-const fieldErrorStyle = {
-    color: '#f87171',
-    fontSize: 11,
-    marginTop: 4
-};
-
-const errorStyle = {
-    marginBottom: 16,
-    padding: 10,
-    background: 'rgba(239,68,68,0.1)',
-    border: '1px solid rgba(239,68,68,0.2)',
-    color: '#ef4444',
-    borderRadius: 8,
-    fontSize: 12
+const miniSpinnerStyle = {
+    width: '14px',
+    height: '14px',
+    borderRadius: '50%',
+    border: '2px solid rgba(0, 0, 0, 0.1)',
+    borderTop: '2px solid #000',
+    animation: 'spin 0.8s linear infinite'
 };

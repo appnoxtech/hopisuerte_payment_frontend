@@ -2,9 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
+import Link from 'next/navigation';
 import api from '@/utils/api';
 import Image from 'next/image';
+import {
+    LayoutDashboard,
+    Users,
+    ShoppingBag,
+    CreditCard,
+    LogOut,
+    ShieldAlert
+} from 'lucide-react';
+import NextLink from 'next/link';
 
 export default function SuperAdminLayout({ children }) {
     const [user, setUser] = useState(null);
@@ -32,8 +41,6 @@ export default function SuperAdminLayout({ children }) {
                 });
 
                 const userData = response.data;
-
-                // You might want to use a more specific role like 'super_admin'
                 if (userData.role !== 'admin' && userData.role !== 'super_admin') {
                     localStorage.removeItem('super_admin_token');
                     router.push('/super-admin/login');
@@ -61,14 +68,13 @@ export default function SuperAdminLayout({ children }) {
                 });
             }
         } catch (err) {
-            // silent fail is ok for logout
+            // silent fail
         } finally {
             localStorage.removeItem('super_admin_token');
             router.push('/super-admin/login');
         }
     };
 
-    // Public pages (login, forgot password) → no layout
     if (['/super-admin/login', '/super-admin/forgot-password'].includes(pathname)) {
         return <>{children}</>;
     }
@@ -82,83 +88,97 @@ export default function SuperAdminLayout({ children }) {
     }
 
     const navLinks = [
-        { name: 'Dashboard', href: '/super-admin', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-        { name: 'Users', href: '/super-admin/users', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-        { name: 'Products', href: '/super-admin/products', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-        { name: 'Payments', href: '/super-admin/payments', icon: 'M17 9V7a5 5 0 00-10 0v2m-2 0h14a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2z' },
+        { name: 'Dashboard', href: '/super-admin', icon: LayoutDashboard },
+        { name: 'Freelancers', href: '/super-admin/users', icon: Users },
+        { name: 'Products', href: '/super-admin/products', icon: ShoppingBag },
+        { name: 'Capital Flow', href: '/super-admin/payments', icon: CreditCard },
     ];
 
     const isActive = (href) => pathname === href;
 
     return (
         <div style={layoutStyle}>
-            {/* Fixed Sidebar – never scrolls */}
+            {/* Background Effects */}
+            <div style={overlayGlowStyle} />
+
+            {/* Sidebar */}
             <aside style={sidebarStyle}>
-                {/* Logo / Brand */}
-                <div style={brandStyle}>
-                    <Image
-                        src="/paysigur.png"
-                        alt="Paysigur"
-                        width={160}
-                        height={46}
-                        priority
-                        style={{ objectFit: 'contain' }}
-                    />
+                <div style={sidebarHeaderStyle}>
+                    <div style={logoWrapperStyle}>
+                        <Image
+                            src="/paysigur.png"
+                            alt="Paysigur"
+                            width={110}
+                            height={40}
+                            priority
+                            style={{ objectFit: 'contain' }}
+                        />
+                    </div>
                 </div>
 
-                {/* Navigation */}
-                <div style={navContainerStyle}>
-                    <p style={sectionTitleStyle}>MAIN SYSTEM</p>
+                <div style={navDividerStyle} />
 
-                    <nav style={navStyle}>
-                        {navLinks.map((item) => (
-                            <Link
+                <nav style={navContainerStyle}>
+                    {navLinks.map((item) => {
+                        const active = isActive(item.href);
+                        const Icon = item.icon;
+                        return (
+                            <NextLink
                                 key={item.href}
                                 href={item.href}
                                 style={{
                                     ...navItemStyle,
-                                    background: isActive(item.href) ? 'rgba(250,204,21,0.08)' : 'transparent',
-                                    border: isActive(item.href) ? '1px solid rgba(250,204,21,0.18)' : '1px solid transparent',
-                                    color: isActive(item.href) ? '#facc15' : '#d1d5db',
+                                    background: active ? 'rgba(251, 191, 36, 0.12)' : 'transparent',
+                                    color: active ? '#fbbf24' : '#a1a1aa',
+                                    border: `1px solid ${active ? 'rgba(251, 191, 36, 0.2)' : 'transparent'}`,
                                 }}
                             >
-                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={item.icon} />
-                                </svg>
-                                <span style={navLabelStyle}>{item.name}</span>
-                            </Link>
-                        ))}
-                    </nav>
-                </div>
+                                <Icon size={18} style={{ opacity: active ? 1 : 0.6 }} />
+                                <span>{item.name}</span>
+                                {active && <div style={activeIndicatorStyle} />}
+                            </NextLink>
+                        );
+                    })}
+                </nav>
 
-                {/* User & Logout – pushed to bottom */}
-                <div style={userSectionStyle}>
-                    <div style={userCardStyle}>
-                        <div style={avatarStyle}>
+                <div style={userFooterStyle}>
+                    <div style={userBriefStyle}>
+                        <div style={userAvatarStyle}>
                             {user?.name?.[0]?.toUpperCase() || 'S'}
                         </div>
-                        <div style={userInfoStyle}>
+                        <div style={userDetailsStyle}>
                             <p style={userNameStyle}>{user?.name || 'Super Admin'}</p>
-                            <p style={userRoleStyle}>Full Access</p>
+                            <p style={userBadgeStyle}>Super User</p>
                         </div>
                     </div>
-
-                    <button onClick={handleLogout} style={logoutButtonStyle}>
-                        Logout
+                    <button onClick={handleLogout} style={logoutBtnStyle}>
+                        <LogOut size={16} />
+                        <span>Terminate Session</span>
                     </button>
                 </div>
             </aside>
 
-            {/* Main Content Area – this scrolls */}
-            <div style={mainContentStyle}>
-                <header style={headerStyle}>
-                    <h1 style={pageTitleStyle}>
-                        {navLinks.find(l => l.href === pathname)?.name || 'Dashboard'}
-                    </h1>
+            {/* Main Content Area */}
+            <div style={mainContentAreaStyle}>
+                <header style={topHeaderStyle}>
+                    <div style={headerLeftStyle}>
+                        <h2 style={headerTitleStyle}>
+                            {navLinks.find(l => l.href === pathname)?.name || 'Control Terminal'}
+                        </h2>
+                        <div style={breadcrumbStyle}>
+                            <span>Nexus Admin</span>
+                            <span style={{ color: '#52525b' }}>/</span>
+                            <span>{navLinks.find(l => l.href === pathname)?.name || 'Home'}</span>
+                        </div>
+                    </div>
+                    <div style={headerRightStyle}>
+                        <ShieldAlert size={14} color="#fbbf24" />
+                        <span style={statusTextStyle}>Full System Access</span>
+                    </div>
                 </header>
 
-                <main style={mainStyle}>
-                    <div style={contentWrapperStyle}>
+                <main style={mainViewStyle}>
+                    <div style={pageInnerStyle}>
                         {children}
                     </div>
                 </main>
@@ -167,208 +187,243 @@ export default function SuperAdminLayout({ children }) {
     );
 }
 
-/* ────────────────────────────────────────────── */
-/*                  STYLES                          */
-/* ────────────────────────────────────────────── */
-
 const layoutStyle = {
     minHeight: '100vh',
-    background: '#000',
+    background: '#050506',
     color: '#fff',
     display: 'flex',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    position: 'relative',
+    fontFamily: "'Inter', sans-serif"
+};
+
+const overlayGlowStyle = {
+    position: 'absolute',
+    top: -200,
+    right: -200,
+    width: 600,
+    height: 600,
+    background: 'radial-gradient(circle, rgba(251, 191, 36, 0.03) 0%, transparent 70%)',
+    pointerEvents: 'none',
+    zIndex: 0
 };
 
 const sidebarStyle = {
-    width: '280px',
-    background: 'rgba(15,15,20,0.98)',
+    width: '260px',
+    background: '#0a0a0c',
     borderRight: '1px solid rgba(255,255,255,0.04)',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
     height: '100vh',
-    zIndex: 30
+    zIndex: 50,
+    boxShadow: '10px 0 30px rgba(0,0,0,0.5)'
 };
 
-const brandStyle = {
-    padding: '32px 24px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16
+const sidebarHeaderStyle = {
+    padding: '20px 24px',
 };
 
-const logoCircleStyle = {
-    width: 48,
-    height: 48,
-    background: 'linear-gradient(135deg, #facc15, #ca8a04)',
-    borderRadius: 14,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 4px 20px rgba(250,204,21,0.25)'
-};
-
-const logoTextStyle = {
-    color: '#000',
-    fontWeight: 900,
-    fontSize: 26
-};
-
-const brandTitleStyle = {
-    fontSize: 18,
-    fontWeight: 900,
-    letterSpacing: '0.5px',
-    textTransform: 'uppercase'
-};
-
-const brandSubtitleStyle = {
-    fontSize: 10,
-    color: '#71717a',
-    letterSpacing: '1.5px',
-    fontWeight: 700,
-    textTransform: 'uppercase'
-};
-
-const navContainerStyle = {
-    padding: '0 24px'
-};
-
-const sectionTitleStyle = {
-    fontSize: 10,
-    color: '#71717a',
-    fontWeight: 900,
-    letterSpacing: '1.8px',
-    textTransform: 'uppercase',
-    marginBottom: 20
-};
-
-const navStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 6
-};
-
-const navItemStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 14,
-    padding: '12px 16px',
-    borderRadius: 10,
-    textDecoration: 'none',
-    transition: 'all 0.15s ease'
-};
-
-const navLabelStyle = {
-    fontSize: 13,
-    fontWeight: 700,
-    letterSpacing: '0.4px',
-    textTransform: 'uppercase'
-};
-
-const userSectionStyle = {
-    marginTop: 'auto',
-    padding: '24px'
-};
-
-const userCardStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 14,
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)'
-};
-
-const avatarStyle = {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    background: '#111',
-    border: '1px solid rgba(250,204,21,0.15)',
-    color: '#facc15',
-    fontSize: 20,
-    fontWeight: 900,
+const logoWrapperStyle = {
+    marginBottom: '8px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
 };
 
-const userInfoStyle = { flex: 1 };
+const navDividerStyle = {
+    height: '1px',
+    background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.05) 50%, transparent)',
+    margin: '0 24px 24px'
+};
+
+const navContainerStyle = {
+    padding: '0 12px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    flex: 1
+};
+
+const navItemStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 16px',
+    borderRadius: '10px',
+    textDecoration: 'none',
+    fontSize: '13px',
+    fontWeight: '600',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    position: 'relative',
+    letterSpacing: '0.01em'
+};
+
+const activeIndicatorStyle = {
+    position: 'absolute',
+    left: '0',
+    top: '25%',
+    bottom: '25%',
+    width: '2px',
+    background: '#fbbf24',
+    borderRadius: '0 4px 4px 0',
+    boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
+};
+
+const userFooterStyle = {
+    padding: '20px',
+    borderTop: '1px solid rgba(255,255,255,0.04)',
+    background: 'rgba(255,255,255,0.01)'
+};
+
+const userBriefStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginBottom: '16px'
+};
+
+const userAvatarStyle = {
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    background: 'linear-gradient(135deg, #18181b, #09090b)',
+    border: '1px solid rgba(251, 191, 36, 0.15)',
+    color: '#fbbf24',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '800',
+    fontSize: '14px'
+};
+
+const userDetailsStyle = {
+    flex: 1,
+    overflow: 'hidden'
+};
 
 const userNameStyle = {
-    fontSize: 14,
-    fontWeight: 700
+    fontSize: '13px',
+    fontWeight: '700',
+    color: '#fff',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
 };
 
-const userRoleStyle = {
-    fontSize: 11,
-    color: '#71717a'
+const userBadgeStyle = {
+    fontSize: '10px',
+    color: '#71717a',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
-const logoutButtonStyle = {
+const logoutBtnStyle = {
     width: '100%',
-    padding: '12px',
-    background: 'rgba(239,68,68,0.08)',
-    border: '1px solid rgba(239,68,68,0.25)',
-    borderRadius: 10,
-    color: '#f87171',
-    fontWeight: 700,
-    fontSize: 13,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '10px',
+    background: 'transparent',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '8px',
+    color: '#a1a1aa',
+    fontSize: '12px',
+    fontWeight: '700',
     cursor: 'pointer',
-    transition: 'all 0.15s ease'
+    transition: 'all 0.2s ease'
 };
 
-const mainContentStyle = {
-    marginLeft: '280px',
+const mainContentAreaStyle = {
+    paddingLeft: '260px',
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    background: '#050506'
+    zIndex: 1
 };
 
-const headerStyle = {
-    height: '80px',
-    borderBottom: '1px solid rgba(255,255,255,0.04)',
+const topHeaderStyle = {
+    height: '64px',
+    padding: '0 32px',
     display: 'flex',
     alignItems: 'center',
-    padding: '0 40px',
-    background: 'rgba(0,0,0,0.4)',
-    backdropFilter: 'blur(8px)'
+    justifyContent: 'space-between',
+    background: 'rgba(5, 5, 6, 0.8)',
+    backdropFilter: 'blur(12px)',
+    borderBottom: '1px solid rgba(255,255,255,0.04)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 40
 };
 
-const pageTitleStyle = {
-    fontSize: 22,
-    fontWeight: 800,
-    letterSpacing: '-0.3px'
+const headerTitleStyle = {
+    fontSize: '16px',
+    fontWeight: '800',
+    color: '#fff',
+    margin: 0,
+    letterSpacing: '-0.02em'
 };
 
-const mainStyle = {
+const breadcrumbStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '10px',
+    fontWeight: '600',
+    color: '#52525b',
+    marginTop: '2px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const headerLeftStyle = { display: 'flex', flexDirection: 'column' };
+
+const headerRightStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 12px',
+    borderRadius: '20px',
+    background: 'rgba(251, 191, 36, 0.05)',
+    border: '1px solid rgba(251, 191, 36, 0.1)'
+};
+
+const statusTextStyle = {
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#fbbf24',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const mainViewStyle = {
     flex: 1,
-    overflowY: 'auto',
-    padding: '40px'
+    padding: '32px',
+    overflowY: 'auto'
 };
 
-const contentWrapperStyle = {
-    maxWidth: '1280px',
-    margin: '0 auto'
+const pageInnerStyle = {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    width: '100%'
 };
 
 const loadingStyle = {
     minHeight: '100vh',
-    background: '#000',
+    background: '#050506',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
 };
 
 const spinnerStyle = {
-    width: 56,
-    height: 56,
+    width: '32px',
+    height: '32px',
     borderRadius: '50%',
-    border: '4px solid rgba(250,204,21,0.1)',
-    borderTop: '4px solid #facc15',
+    border: '3px solid rgba(251, 191, 36, 0.1)',
+    borderTop: '3px solid #fbbf24',
     animation: 'spin 1s linear infinite'
 };

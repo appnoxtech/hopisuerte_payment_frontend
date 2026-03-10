@@ -2,6 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/utils/api';
+import {
+    User,
+    Mail,
+    ShieldCheck,
+    Save,
+    CheckCircle2,
+    AlertCircle,
+    Loader2,
+    Fingerprint
+} from 'lucide-react';
 
 export default function ProfileSettings() {
     const [name, setName] = useState('');
@@ -45,8 +55,8 @@ export default function ProfileSettings() {
 
         if (isSlugChanged || isProfileChanged) {
             const warningMessage = isSlugChanged
-                ? 'Are you sure you wanted to save these changes? This will change your public URL and make old links stop working.'
-                : 'Are you sure you want to save these profile changes?';
+                ? 'Changing your slug will update your public URLs and may break existing links. Continue?'
+                : 'Save these profile changes?';
 
             const confirmed = window.confirm(warningMessage);
             if (!confirmed) {
@@ -70,306 +80,313 @@ export default function ProfileSettings() {
     };
 
     if (loading) return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '400px'
-        }}>
-            <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                borderTop: '3px solid #facc15',
-                borderBottom: '3px solid #facc15',
-                animation: 'spin 1s linear infinite'
-            }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid #fbbf24', animation: 'spin 1s linear infinite' }} />
         </div>
     );
 
     return (
-        <div style={{
-            maxWidth: '1000px',
-            margin: '0 auto',
-            padding: '0 16px',
-            paddingBottom: '80px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '40px'
-        }}>
-
-            {/* Header */}
-            <header style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px'
-            }}>
+        <div style={pageContainerStyle}>
+            {/* Header Section */}
+            <header style={headerWrapperStyle}>
                 <div>
-                    <h1 style={{
-                        fontSize: '30px',
-                        fontWeight: '900',
-                        color: '#ffffff',
-                        textTransform: 'uppercase',
-                        letterSpacing: '-0.02em'
-                    }}>
-                        Profile Settings
-                    </h1>
-
-                    <p style={{
-                        color: '#71717a',
-                        fontSize: '10px',
-                        fontWeight: '700',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.2em',
-                        marginTop: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                    }}>
-                        <span style={{
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%',
-                            background: '#eab308'
-                        }}></span>
-                        Manage your account and public visibility
-                    </p>
+                    <h1 style={titleStyle}>Profile Settings</h1>
+                    <p style={subtitleStyle}>Manage your personal account details</p>
                 </div>
+               
             </header>
 
             {message.text && (
                 <div style={{
-                    padding: '16px',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    border: message.type === 'success' ? '1px solid #16a34a40' : '1px solid #dc262640',
-                    color: message.type === 'success' ? '#4ade80' : '#f87171',
-                    background: message.type === 'success' ? 'rgba(22,163,74,0.1)' : 'rgba(220,38,38,0.1)'
+                    ...messageBoxStyle,
+                    borderColor: message.type === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
+                    color: message.type === 'success' ? '#10b981' : '#f43f5e',
+                    background: message.type === 'success' ? 'rgba(16, 185, 129, 0.05)' : 'rgba(244, 63, 94, 0.05)',
                 }}>
+                    {message.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
                     {message.text}
                 </div>
             )}
 
-            {/* Account Section */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{
-                        width: '4px',
-                        height: '20px',
-                        background: '#eab308',
-                        borderRadius: '4px'
-                    }}></div>
-
-                    <h2 style={{
-                        fontSize: '12px',
-                        fontWeight: '900',
-                        color: '#a1a1aa',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.15em'
-                    }}>
-                        Account Details
-                    </h2>
-                </div>
-
-                <div style={{
-                    padding: '40px',
-                    borderRadius: '14px',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.05)'
-                }}>
-
-                    <form onSubmit={handleUpdate} style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '40px'
-                    }}>
-
-                        {/* Name & Email */}
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 1fr',
-                            gap: '32px'
-                        }}>
-
-                            <div>
-                                <label style={{
-                                    display: 'block',
-                                    fontSize: '9px',
-                                    fontWeight: '900',
-                                    color: '#71717a',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.15em',
-                                    marginBottom: '6px'
-                                }}>
-                                    Full Name
-                                </label>
-
-                                <input
-                                    type="text"
-                                    required
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="Your Name"
-                                    style={{
-                                        width: '100%',
-                                        padding: '14px 20px',
-                                        borderRadius: '10px',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        background: 'rgba(0,0,0,0.4)',
-                                        color: '#fff',
-                                        fontWeight: '600'
-                                    }}
-                                />
-                            </div>
-
-                            <div>
-                                <label style={{
-                                    display: 'block',
-                                    fontSize: '9px',
-                                    fontWeight: '900',
-                                    color: '#71717a',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.15em',
-                                    marginBottom: '6px'
-                                }}>
-                                    Email Address
-                                </label>
-
-                                <input
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="your@email.com"
-                                    style={{
-                                        width: '100%',
-                                        padding: '14px 20px',
-                                        borderRadius: '10px',
-                                        border: '1px solid rgba(255,255,255,0.1)',
-                                        background: 'rgba(0,0,0,0.4)',
-                                        color: '#fff',
-                                        fontWeight: '600'
-                                    }}
-                                />
-                            </div>
+            {/* Profile Form */}
+            <section style={formSectionStyle}>
+                <div style={formCardStyle}>
+                    <div style={formHeaderStyle}>
+                        <div style={avatarCircleStyle}>{name?.[0]?.toUpperCase() || 'A'}</div>
+                        <div>
+                            <h2 style={formTitleStyle}>Account Information</h2>
+                            <p style={formSubStyle}>These details are visible to customers on link pages</p>
                         </div>
+                    </div>
 
-                        {/* Slug */}
-                        {/* <div style={{
-                            paddingTop: '30px',
-                            borderTop: '1px solid rgba(255,255,255,0.05)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '20px'
-                        }}>
-
-                            <div>
-                                <label style={{
-                                    fontSize: '9px',
-                                    fontWeight: '900',
-                                    color: '#71717a',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.15em'
-                                }}>
-                                    Public URL Slug
-                                </label>
-
-                                <div style={{
-                                    display: 'flex',
-                                    marginTop: '8px',
-                                    borderRadius: '12px',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    overflow: 'hidden',
-                                    maxWidth: '500px'
-                                }}>
-                                    <div style={{
-                                        padding: '12px 18px',
-                                        background: 'rgba(255,255,255,0.05)',
-                                        color: '#71717a',
-                                        fontWeight: '700'
-                                    }}>
-                                        /u/
-                                    </div>
-
+                    <form onSubmit={handleUpdate} style={formStyle}>
+                        <div style={inputGridStyle}>
+                            <div style={inputScopeStyle}>
+                                <label style={labelStyle}>Full Name</label>
+                                <div style={inputWrapperStyle}>
+                                    <User size={14} style={inputIconStyle} />
                                     <input
                                         type="text"
-                                        value={slug}
-                                        onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                                        style={{
-                                            flex: 1,
-                                            padding: '12px 18px',
-                                            background: 'transparent',
-                                            border: 'none',
-                                            outline: 'none',
-                                            color: '#fff'
-                                        }}
+                                        required
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="Your Name"
+                                        style={inputStyle}
                                     />
                                 </div>
                             </div>
 
-                            <div style={{
-                                padding: '14px',
-                                borderRadius: '10px',
-                                background: 'rgba(255,255,255,0.02)',
-                                border: '1px solid rgba(255,255,255,0.05)',
-                                maxWidth: '500px'
-                            }}>
-                                <p style={{
-                                    fontSize: '9px',
-                                    color: '#71717a',
-                                    fontWeight: '900',
-                                    textTransform: 'uppercase'
-                                }}>
-                                    Your Public Link
-                                </p>
-
-                                <code style={{
-                                    color: '#eab308',
-                                    fontFamily: 'monospace',
-                                    fontSize: '12px'
-                                }}>
-                                    {typeof window !== 'undefined'
-                                        ? `${window.location.origin}/u/${slug || '...'}`
-                                        : ''}
-                                </code>
+                            <div style={inputScopeStyle}>
+                                <label style={labelStyle}>Email Address</label>
+                                <div style={inputWrapperStyle}>
+                                    <Mail size={14} style={inputIconStyle} />
+                                    <input
+                                        type="email"
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="your@email.com"
+                                        style={inputStyle}
+                                    />
+                                </div>
                             </div>
-                        </div> */}
 
-                        {/* Save Button */}
-                        <div style={{
-                            paddingTop: '30px',
-                            borderTop: '1px solid rgba(255,255,255,0.05)',
-                            display: 'flex',
-                            gap: '20px',
-                            alignItems: 'center'
-                        }}>
+                            <div style={inputScopeStyle}>
+                                <label style={labelStyle}>Merchant Slug (Public URL)</label>
+                                <div style={inputWrapperStyle}>
+                                    <Fingerprint size={14} style={inputIconStyle} />
+                                    <input
+                                        type="text"
+                                        required
+                                        value={slug}
+                                        onChange={(e) => setSlug(e.target.value)}
+                                        placeholder="merchant-slug"
+                                        style={inputStyle}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={actionScopeStyle}>
+                            <div style={disclaimerStyle}>
+                                <AlertCircle size={12} style={{ marginTop: '2px' }} />
+                                <span>Slug changes will break any previous payment links you have shared.</span>
+                            </div>
 
                             <button
                                 type="submit"
                                 disabled={saving}
                                 style={{
-                                    padding: '14px 50px',
-                                    borderRadius: '10px',
-                                    border: 'none',
-                                    background: '#eab308',
-                                    color: '#000',
-                                    fontWeight: '800',
-                                    cursor: 'pointer'
+                                    ...submitButtonStyle,
+                                    opacity: saving ? 0.7 : 1,
+                                    cursor: saving ? 'wait' : 'pointer'
                                 }}
                             >
-                                {saving ? 'Saving...' : 'Save Profile Changes'}
+                                {saving ? (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                                        <span>Saving...</span>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <Save size={16} />
+                                        <span>Save Changes</span>
+                                    </div>
+                                )}
                             </button>
-
-
                         </div>
-
                     </form>
                 </div>
             </section>
-
-            {/* Warning */}
         </div>
     );
 }
+
+// ──────────────────────────────────────────────
+// STYLES DEFINITION
+// ──────────────────────────────────────────────
+
+const pageContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '24px',
+    animation: 'fadeIn 0.4s ease-out'
+};
+
+const headerWrapperStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '4px'
+};
+
+const titleStyle = {
+    fontSize: '20px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-0.02em'
+};
+
+const subtitleStyle = {
+    fontSize: '11px',
+    color: '#71717a',
+    marginTop: '2px',
+    fontWeight: '500'
+};
+
+const idBadgeStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '4px 12px',
+    background: 'rgba(16, 185, 129, 0.05)',
+    border: '1px solid rgba(16, 185, 129, 0.1)',
+    borderRadius: '20px',
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#10b981',
+    textTransform: 'uppercase'
+};
+
+const messageBoxStyle = {
+    padding: '12px 16px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: '700',
+    border: '1px solid',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    backdropFilter: 'blur(20px)'
+};
+
+const formSectionStyle = { marginTop: '4px' };
+
+const formCardStyle = {
+    background: 'rgba(15, 15, 20, 0.4)',
+    backdropFilter: 'blur(32px)',
+    border: '1px solid rgba(255,255,255,0.04)',
+    borderRadius: '16px',
+    padding: '24px',
+    position: 'relative',
+    overflow: 'hidden'
+};
+
+const formHeaderStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    marginBottom: '32px',
+    borderBottom: '1px solid rgba(255,255,255,0.04)',
+    paddingBottom: '24px'
+};
+
+const avatarCircleStyle = {
+    width: '48px',
+    height: '48px',
+    borderRadius: '12px',
+    background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.02))',
+    border: '1px solid rgba(251, 191, 36, 0.2)',
+    color: '#fbbf24',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '20px',
+    fontWeight: '900'
+};
+
+const formTitleStyle = {
+    fontSize: '16px',
+    fontWeight: '800',
+    color: '#fff',
+    margin: 0
+};
+
+const formSubStyle = {
+    fontSize: '11px',
+    color: '#52525b',
+    marginTop: '2px'
+};
+
+const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '24px'
+};
+
+const inputGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '20px'
+};
+
+const inputScopeStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px'
+};
+
+const labelStyle = {
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#52525b',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em'
+};
+
+const inputWrapperStyle = {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center'
+};
+
+const inputIconStyle = {
+    position: 'absolute',
+    left: '12px',
+    color: '#52525b'
+};
+
+const inputStyle = {
+    width: '100%',
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '8px',
+    padding: '10px 12px 10px 36px',
+    color: '#fff',
+    fontSize: '13px',
+    fontWeight: '600',
+    outline: 'none',
+    transition: 'all 0.2s ease'
+};
+
+const actionScopeStyle = {
+    paddingTop: '24px',
+    borderTop: '1px solid rgba(255,255,255,0.04)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: '16px'
+};
+
+const disclaimerStyle = {
+    fontSize: '10px',
+    color: '#52525b',
+    maxWidth: '320px',
+    lineHeight: '1.5',
+    display: 'flex',
+    gap: '8px'
+};
+
+const submitButtonStyle = {
+    background: '#fbbf24',
+    color: '#000',
+    padding: '12px 28px',
+    borderRadius: '10px',
+    border: 'none',
+    fontSize: '12px',
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    boxShadow: '0 4px 15px rgba(251, 191, 36, 0.15)',
+    transition: 'transform 0.2s ease',
+};

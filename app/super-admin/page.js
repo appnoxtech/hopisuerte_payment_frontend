@@ -3,6 +3,18 @@
 import { useEffect, useState } from 'react';
 import api from '@/utils/api';
 import Link from 'next/link';
+import {
+    Users,
+    Zap,
+    TrendingUp,
+    BarChart3,
+    Download,
+    CreditCard,
+    Activity,
+    CheckCircle2,
+    Lock,
+    LayoutDashboard
+} from 'lucide-react';
 
 const getSuperAdminHeaders = () => ({
     headers: {
@@ -11,12 +23,10 @@ const getSuperAdminHeaders = () => ({
 });
 
 export default function SuperAdminDashboard() {
-
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-
         const fetchStats = async () => {
             try {
                 const response = await api.get('/super-admin/stats', getSuperAdminHeaders());
@@ -27,386 +37,433 @@ export default function SuperAdminDashboard() {
                 setLoading(false);
             }
         };
-
         fetchStats();
-
     }, []);
 
     const handleDownloadReport = async () => {
         try {
-
             const token = localStorage.getItem('super_admin_token');
-
             const response = await api.get('/super-admin/export-report', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
                 responseType: 'blob',
             });
-
             const url = window.URL.createObjectURL(new Blob([response.data]));
-
             const link = document.createElement('a');
-
             link.href = url;
-
-            link.setAttribute(
-                'download',
-                `paysigur_report_${new Date().toISOString().split('T')[0]}.csv`
-            );
-
+            link.setAttribute('download', `system_report_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
-
             link.click();
-
             link.remove();
-
             window.URL.revokeObjectURL(url);
-
         } catch (err) {
-
             console.error('Failed to download report:', err);
-
-            alert('Failed to generate report. Please try again.');
-
+            alert('Failed to generate report.');
         }
     };
 
-    if (loading)
+    if (loading) {
         return (
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '400px',
-                }}
-            >
-                <div
-                    style={{
-                        width: '30px',
-                        height: '30px',
-                        border: '4px solid #eab308',
-                        borderTop: '4px solid transparent',
-                        borderRadius: '50%',
-                        animation: 'spin 1s linear infinite',
-                    }}
-                />
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+                <div style={{ width: '32px', height: '32px', border: '4px solid #fbbf24', borderTop: '4px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
             </div>
         );
+    }
 
-    const StatCard = ({ title, value, unit = '', color = '#eab308', icon }) => (
-        <div
-            style={{
-                background: '#111',
-                borderRadius: '14px',
-                padding: '28px',
-                border: '1px solid rgba(255,255,255,0.05)',
-                position: 'relative',
-            }}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    marginBottom: '20px',
-                }}
-            >
-                <p
-                    style={{
-                        fontSize: '11px',
-                        color: '#888',
-                        fontWeight: 800,
-                        letterSpacing: '2px',
-                        textTransform: 'uppercase',
-                    }}
-                >
-                    {title}
-                </p>
-
-                <div
-                    style={{
-                        padding: '8px',
-                        borderRadius: '10px',
-                        background: `${color}22`,
-                    }}
-                >
-                    <svg width="18" height="18" fill="none" stroke={color} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d={icon} />
-                    </svg>
+    const StatCard = ({ title, value, unit = '', color = '#fbbf24', icon: Icon }) => (
+        <div style={cardStyle}>
+            <div style={{ ...cardHoverOverlay, background: `${color}05` }} />
+            <div style={cardHeaderStyle}>
+                <div style={{ ...iconContainerStyle, background: `${color}10`, borderColor: `${color}20` }}>
+                    <Icon size={20} color={color} />
+                </div>
+                <div style={cardBadgeStyle}>
+                    <div style={{ ...dotStyle, background: '#10b981' }} />
+                    <span>Real-time</span>
                 </div>
             </div>
-
-            <h3
-                style={{
-                    fontSize: '34px',
-                    fontWeight: 900,
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    gap: '6px',
-                }}
-            >
-                {value}
-
-                {unit && (
-                    <span
-                        style={{
-                            fontSize: '11px',
-                            color: '#777',
-                            letterSpacing: '2px',
-                            textTransform: 'uppercase',
-                        }}
-                    >
-                        {unit}
-                    </span>
-                )}
-            </h3>
-
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    marginTop: '6px',
-                }}
-            >
-                <div
-                    style={{
-                        width: '6px',
-                        height: '6px',
-                        background: '#22c55e',
-                        borderRadius: '50%',
-                    }}
-                />
-
-                <p
-                    style={{
-                        fontSize: '10px',
-                        color: '#666',
-                        fontWeight: 700,
-                        letterSpacing: '1px',
-                        textTransform: 'uppercase',
-                    }}
-                >
-                    Live Status
-                </p>
+            <div style={cardContentStyle}>
+                <p style={cardLabelStyle}>{title}</p>
+                <h3 style={cardValueStyle}>
+                    {value}
+                    {unit && <span style={unitStyle}>{unit}</span>}
+                </h3>
+            </div>
+            <div style={cardProgressContainer}>
+                <div style={{ ...cardProgressBar, background: color, width: '70%', boxShadow: `0 0 10px ${color}40` }} />
             </div>
         </div>
     );
 
     return (
-        <div
-            style={{
-                maxWidth: '1200px',
-                margin: '0 auto',
-                paddingBottom: '80px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '50px',
-            }}
-        >
-            {/* Header */}
-
-            <section
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                }}
-            >
+        <div style={containerStyle}>
+            <header style={headerSectionStyle}>
                 <div>
-                    <h1
-                        style={{
-                            fontSize: '40px',
-                            fontWeight: 900,
-                            color: '#fff',
-                        }}
-                    >
-                        Overview
-                    </h1>
-
-                    <p
-                        style={{
-                            fontSize: '12px',
-                            color: '#777',
-                            marginTop: '8px',
-                        }}
-                    >
-                        Platform Operations Active
-                    </p>
+                    <h1 style={titleStyle}>Command Center</h1>
+                    <p style={subtitleStyle}>Global oversight of system operations and capital flow</p>
                 </div>
-
-                <button
-                    onClick={handleDownloadReport}
-                    style={{
-                        padding: '14px 26px',
-                        background: '#27272a',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#fff',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                    }}
-                >
-                    Download Report
+                <button onClick={handleDownloadReport} style={reportBtnStyle}>
+                    <Download size={16} />
+                    <span>Generate Report</span>
                 </button>
+            </header>
+
+            <section style={statGridStyle}>
+                <StatCard title="Total Network Users" value={stats?.total_users || 0} color="#fbbf24" icon={Users} />
+                <StatCard title="Active Flux" value={stats?.total_transactions || 0} color="#f59e0b" icon={Zap} />
+                <StatCard title="Gross Volume" value={(stats?.total_volume || 0).toLocaleString()} unit="USD" color="#10b981" icon={BarChart3} />
+                <StatCard title="Success Metric" value={stats?.success_rate || 0} unit="%" color="#6366f1" icon={TrendingUp} />
             </section>
 
-            {/* Stats */}
-
-            <section>
-
-                <h2
-                    style={{
-                        color: '#aaa',
-                        fontSize: '12px',
-                        marginBottom: '16px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '2px',
-                    }}
-                >
-                    Global Statistics
-                </h2>
-
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))',
-                        gap: '20px',
-                    }}
-                >
-                    <StatCard
-                        title="Total Users"
-                        value={stats?.total_users || 0}
-                        color="#3b82f6"
-                        icon="M17 20h5v-2..."
-                    />
-
-                    <StatCard
-                        title="Total Transactions"
-                        value={stats?.total_transactions || 0}
-                        color="#eab308"
-                        icon="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-
-                    <StatCard
-                        title="Total Volume"
-                        value={(stats?.total_volume || 0).toLocaleString()}
-                        unit="USD"
-                        color="#22c55e"
-                        icon="M12 8c-1.657 0..."
-                    />
-
-                    <StatCard
-                        title="Platform Success"
-                        value={stats?.success_rate || 0}
-                        unit="%"
-                        color="#a855f7"
-                        icon="M9 12l2 2 4-4..."
-                    />
-                </div>
-
-            </section>
-
-            {/* Admin Section */}
-
-            <section
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit,minmax(350px,1fr))',
-                    gap: '30px',
-                }}
-            >
-                <div
-                    style={{
-                        background: '#111',
-                        padding: '30px',
-                        borderRadius: '14px',
-                        border: '1px solid rgba(255,255,255,0.05)',
-                    }}
-                >
-                    <h3
-                        style={{
-                            fontSize: '22px',
-                            fontWeight: 900,
-                            color: '#fff',
-                            marginBottom: '25px',
-                        }}
-                    >
-                        Management Access
-                    </h3>
-
-                    <div
-                        style={{
-                            display: 'grid',
-                            gap: '15px',
-                        }}
-                    >
-                        <Link
-                            href="/super-admin/users"
-                            style={{
-                                padding: '20px',
-                                background: '#000',
-                                borderRadius: '12px',
-                                border: '1px solid rgba(255,255,255,0.05)',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            <p style={{ color: '#fff', fontWeight: 800 }}>Manage Users</p>
-                            <p style={{ fontSize: '12px', color: '#777' }}>
-                                View and edit registered user profiles
-                            </p>
+            <section style={accessGridStyle}>
+                <div style={managementCardStyle}>
+                    <div style={managementHeaderStyle}>
+                        <h3 style={managementTitleStyle}>Operational Modules</h3>
+                        <p style={managementSubtitleStyle}>Direct access to core system entities</p>
+                    </div>
+                    <div style={moduleGridStyle}>
+                        <Link href="/super-admin/users" style={moduleItemStyle}>
+                            <div style={moduleIconStyle}><Users size={24} color="#fbbf24" /></div>
+                            <div>
+                                <h4 style={moduleNameStyle}>Freelancer Directory</h4>
+                                <p style={moduleDescStyle}>Verify identities and manage authorized agents</p>
+                            </div>
                         </Link>
-
-                        <Link
-                            href="/super-admin/payments"
-                            style={{
-                                padding: '20px',
-                                background: '#000',
-                                borderRadius: '12px',
-                                border: '1px solid rgba(255,255,255,0.05)',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            <p style={{ color: '#fff', fontWeight: 800 }}>Manage Payments</p>
-                            <p style={{ fontSize: '12px', color: '#777' }}>
-                                Monitor system wide transactions
-                            </p>
+                        <Link href="/super-admin/payments" style={moduleItemStyle}>
+                            <div style={moduleIconStyle}><CreditCard size={24} color="#fbbf24" /></div>
+                            <div>
+                                <h4 style={moduleNameStyle}>Global Transaction Vault</h4>
+                                <p style={moduleDescStyle}>Audit and monitor real-time fund movement</p>
+                            </div>
                         </Link>
                     </div>
                 </div>
 
-                <div
-                    style={{
-                        background: '#111',
-                        padding: '30px',
-                        borderRadius: '14px',
-                        border: '1px solid rgba(255,255,255,0.05)',
-                        textAlign: 'center',
-                    }}
-                >
-                    <h3
-                        style={{
-                            fontSize: '28px',
-                            color: '#fff',
-                            fontWeight: 900,
-                        }}
-                    >
-                        System Monitor
-                    </h3>
-
-                    <p
-                        style={{
-                            fontSize: '13px',
-                            color: '#777',
-                            marginTop: '10px',
-                        }}
-                    >
-                        All services are functioning normally
-                    </p>
+                <div style={statusCardStyle}>
+                    <div style={radialContainerStyle}>
+                        <div style={{ position: 'relative', width: 120, height: 120 }}>
+                            <svg width="120" height="120" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#10b981" strokeWidth="6" strokeDasharray="210 283" strokeLinecap="round" />
+                            </svg>
+                            <div style={radialLabelStyle}>
+                                <span style={radialValueStyle}>99.9</span>
+                                <span style={radialUnitStyle}>Uptime</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ marginTop: '24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
+                            <Activity size={18} color="#10b981" />
+                            <h3 style={statusTitleStyle}>System Health</h3>
+                        </div>
+                        <p style={statusDescStyle}>All core infrastructure components are operational</p>
+                    </div>
+                    <div style={statusGridStyle}>
+                        <div style={statusIndicatorStyle}>
+                            <div style={{ ...smallDotStyle, background: '#10b981' }} />
+                            <span>Payment API</span>
+                        </div>
+                        <div style={statusIndicatorStyle}>
+                            <div style={{ ...smallDotStyle, background: '#10b981' }} />
+                            <span>Vault Security</span>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
     );
 }
+
+// ──────────────────────────────────────────────
+// STYLES
+// ──────────────────────────────────────────────
+
+const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '40px',
+    padding: '20px 0',
+    animation: 'fadeIn 0.5s ease-out'
+};
+
+const headerSectionStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+};
+
+const titleStyle = {
+    fontSize: '32px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-0.02em',
+    marginBottom: '4px'
+};
+
+const subtitleStyle = {
+    fontSize: '14px',
+    color: '#71717a',
+    fontWeight: '500'
+};
+
+const reportBtnStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 24px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '12px',
+    color: '#fff',
+    fontSize: '13px',
+    fontWeight: '800',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+};
+
+const statGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '24px'
+};
+
+const cardStyle = {
+    background: 'rgba(15,15,20,0.4)',
+    backdropFilter: 'blur(24px)',
+    border: '1px solid rgba(255,255,255,0.04)',
+    borderRadius: '20px',
+    padding: '24px',
+    position: 'relative',
+    overflow: 'hidden',
+    transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+};
+
+const cardHoverOverlay = {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0.1,
+    transition: 'opacity 0.3s ease'
+};
+
+const cardHeaderStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    position: 'relative'
+};
+
+const iconContainerStyle = {
+    width: '44px',
+    height: '44px',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '1px solid'
+};
+
+const cardBadgeStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 12px',
+    background: 'rgba(16, 185, 129, 0.05)',
+    borderRadius: '20px',
+    fontSize: '10px',
+    color: '#10b981',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const dotStyle = {
+    width: '4px',
+    height: '4px',
+    borderRadius: '50%'
+};
+
+const cardContentStyle = { position: 'relative' };
+
+const cardLabelStyle = {
+    fontSize: '12px',
+    color: '#71717a',
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    marginBottom: '8px'
+};
+
+const cardValueStyle = {
+    fontSize: '24px',
+    fontWeight: '900',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '6px'
+};
+
+const unitStyle = {
+    fontSize: '12px',
+    color: '#52525b',
+    fontWeight: '700'
+};
+
+const cardProgressContainer = {
+    width: '100%',
+    height: '2px',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '10px',
+    marginTop: '20px',
+    overflow: 'hidden'
+};
+
+const cardProgressBar = {
+    height: '100%',
+    transition: 'width 1s ease-out'
+};
+
+const accessGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+    gap: '30px'
+};
+
+const managementCardStyle = {
+    background: 'rgba(15,15,20,0.6)',
+    borderRadius: '24px',
+    padding: '32px',
+    border: '1px solid rgba(255,255,255,0.04)'
+};
+
+const managementHeaderStyle = { marginBottom: '32px' };
+
+const managementTitleStyle = {
+    fontSize: '20px',
+    fontWeight: '800',
+    color: '#fff',
+    marginBottom: '4px'
+};
+
+const managementSubtitleStyle = {
+    fontSize: '13px',
+    color: '#71717a'
+};
+
+const moduleGridStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px'
+};
+
+const moduleItemStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    padding: '20px',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '20px',
+    border: '1px solid rgba(255,255,255,0.04)',
+    textDecoration: 'none',
+    transition: 'all 0.2s ease'
+};
+
+const moduleIconStyle = {
+    width: '48px',
+    height: '48px',
+    borderRadius: '14px',
+    background: 'rgba(251, 191, 36, 0.05)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+};
+
+const moduleNameStyle = {
+    fontSize: '15px',
+    fontWeight: '800',
+    color: '#fff',
+    marginBottom: '2px'
+};
+
+const moduleDescStyle = {
+    fontSize: '12px',
+    color: '#71717a'
+};
+
+const statusCardStyle = {
+    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(15,15,20,0.6) 100%)',
+    borderRadius: '24px',
+    padding: '40px',
+    border: '1px solid rgba(16, 185, 129, 0.1)',
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+};
+
+const radialContainerStyle = {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+};
+
+const radialLabelStyle = {
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+};
+
+const radialValueStyle = {
+    fontSize: '24px',
+    fontWeight: '900',
+    color: '#10b981'
+};
+
+const radialUnitStyle = {
+    fontSize: '9px',
+    color: '#71717a',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em'
+};
+
+const statusTitleStyle = {
+    fontSize: '20px',
+    fontWeight: '800',
+    color: '#fff'
+};
+
+const statusDescStyle = {
+    fontSize: '13px',
+    color: '#71717a',
+    maxWidth: '240px'
+};
+
+const statusGridStyle = {
+    display: 'flex',
+    gap: '24px',
+    marginTop: '32px'
+};
+
+const statusIndicatorStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '11px',
+    fontWeight: '800',
+    color: '#a1a1aa',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const smallDotStyle = {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%'
+};

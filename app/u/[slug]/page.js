@@ -7,7 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '@/components/CheckoutForm';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_placeholder');
+import CustomDropdown from '@/components/CustomDropdown';
 
 export default function UserPaymentPage() {
 
@@ -15,6 +15,7 @@ export default function UserPaymentPage() {
 
     const [user, setUser] = useState(null);
     const [products, setProducts] = useState([]);
+    const [selectedProduct, setSelectedProduct] = useState(null);
     const [amount, setAmount] = useState('');
     const [currency, setCurrency] = useState('USD');
     const [customer, setCustomer] = useState({
@@ -23,6 +24,12 @@ export default function UserPaymentPage() {
         phone: '',
         notes: ''
     });
+
+    const currencyOptions = [
+        { label: 'USD', value: 'USD' },
+        { label: 'EUR', value: 'EUR' },
+        { label: 'XCG', value: 'XCG' }
+    ];
 
     const [clientSecret, setClientSecret] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -310,15 +317,15 @@ export default function UserPaymentPage() {
                                             {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
                                         </span>
                                     </div>
-                                    <select
-                                        style={{ ...inputStyle, width: '120px', padding: '0 16px', fontWeight: 900 }}
-                                        value={currency}
-                                        onChange={(e) => setCurrency(e.target.value)}
-                                    >
-                                        <option value="USD">USD</option>
-                                        <option value="EUR">EUR</option>
-                                        <option value="XCG">XCG</option>
-                                    </select>
+                                    <div style={{ width: 140 }}>
+                                        <CustomDropdown
+                                            options={currencyOptions}
+                                            value={currency}
+                                            onChange={(val) => setCurrency(val)}
+                                            showSearch={false}
+                                            placeholder="USD"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 

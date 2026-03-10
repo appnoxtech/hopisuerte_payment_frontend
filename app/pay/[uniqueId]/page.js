@@ -10,6 +10,8 @@ import Image from 'next/image';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_placeholder');
 
+import CustomDropdown from '@/components/CustomDropdown';
+
 export default function UniqueProductPaymentPage() {
 
     const { uniqueId } = useParams();
@@ -23,6 +25,12 @@ export default function UniqueProductPaymentPage() {
     const [currency, setCurrency] = useState(urlCurrency || 'USD');
     const [isCurrencyLocked, setIsCurrencyLocked] = useState(!!urlCurrency);
     const [isAmountPreFilled, setIsAmountPreFilled] = useState(!!urlAmount);
+
+    const currencyOptions = [
+        { label: 'USD', value: 'USD' },
+        { label: 'EUR', value: 'EUR' },
+        { label: 'XCG', value: 'XCG' }
+    ];
 
     const [customer, setCustomer] = useState({
         name: '',
@@ -143,16 +151,15 @@ export default function UniqueProductPaymentPage() {
                                                 style={{ ...inputStyle, paddingLeft: 34 }}
                                             />
                                         </div>
-                                        <select
-                                            style={{ ...inputStyle, width: 100, opacity: isCurrencyLocked ? 0.6 : 1, cursor: isCurrencyLocked ? 'not-allowed' : 'pointer' }}
-                                            value={currency}
-                                            disabled={isCurrencyLocked}
-                                            onChange={(e) => setCurrency(e.target.value)}
-                                        >
-                                            <option value="USD">USD</option>
-                                            <option value="EUR">EUR</option>
-                                            <option value="XCG">XCG</option>
-                                        </select>
+                                        <div style={{ width: 100, opacity: isCurrencyLocked ? 0.6 : 1, pointerEvents: isCurrencyLocked ? 'none' : 'auto' }}>
+                                            <CustomDropdown
+                                                options={currencyOptions}
+                                                value={currency}
+                                                onChange={(val) => setCurrency(val)}
+                                                showSearch={false}
+                                                placeholder="USD"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             )}

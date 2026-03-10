@@ -2,6 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/utils/api';
+import {
+    RefreshCcw,
+    Search,
+    ChevronRight,
+    User,
+    History,
+    DollarSign,
+    CheckCircle2,
+    Clock,
+    ShieldCheck,
+    CreditCard
+} from 'lucide-react';
 
 const getSuperAdminHeaders = () => ({
     headers: {
@@ -50,10 +62,10 @@ export default function GlobalPayments() {
                 };
             }
 
-            const amount = p.amount || 0;
+            const amount = Number(p.amount) || 0;
             const currency = p.currency || 'USD';
 
-            groups[freelancerId].totalByCurrency[currency] = (groups[freelancerId].totalByCurrency[currency] || 0) + amount;
+            groups[freelancerId].totalByCurrency[currency] = (Number(groups[freelancerId].totalByCurrency[currency]) || 0) + amount;
             groups[freelancerId].totalTransactions += 1;
             groups[freelancerId].payments.push(p);
         });
@@ -68,330 +80,390 @@ export default function GlobalPayments() {
 
     if (loading && payments.length === 0) {
         return (
-            <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "400px"
-            }}>
-                <div style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    borderTop: "2px solid #eab308",
-                    borderBottom: "2px solid #eab308",
-                    animation: "spin 1s linear infinite"
-                }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "50%", borderTop: "2px solid #fbbf24", borderBottom: "2px solid #fbbf24", animation: "spin 1s linear infinite" }} />
             </div>
         );
     }
 
     return (
-        <div style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            paddingBottom: "80px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "48px"
-        }}>
+        <div style={pageContainerStyle}>
+            <header style={headerWrapperStyle}>
+                <div>
+                    <h1 style={titleStyle}>Payment Monitoring</h1>
+                    <p style={subtitleStyle}>Overview of all transactions across the platform</p>
+                </div>
 
-            {/* Header */}
-            <section style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "24px",
-                padding: "0 8px"
-            }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                    <div>
-                        <h1 style={{
-                            fontSize: "36px",
-                            fontWeight: "900",
-                            color: "#ffffff",
-                            textTransform: "uppercase",
-                            letterSpacing: "-0.03em",
-                            fontStyle: "italic"
-                        }}>
-                            {view === 'summary' ? 'Global Payments' : 'Freelancer Activity'}
-                        </h1>
-
-                        <p style={{
-                            color: "#71717a",
-                            fontSize: "12px",
-                            fontWeight: "700",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.2em",
-                            marginTop: "8px",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px"
-                        }}>
-                            <span style={{
-                                width: "6px",
-                                height: "6px",
-                                borderRadius: "50%",
-                                background: "#eab308",
-                                display: "inline-block"
-                            }}></span>
-                            {view === 'summary' ? 'Grouped by Freelancer' : `Detailed View: ${activeFreelancer?.name}`}
-                        </p>
-                    </div>
-
-                    {view === 'detailed' && (
+                <div style={headerActionsStyle}>
+                    <div style={viewToggleStyle}>
                         <button
-                            onClick={() => {
-                                setView('summary');
-                                setSelectedFreelancerId(null);
-                            }}
+                            onClick={() => { setView('summary'); setSelectedFreelancerId(null); }}
                             style={{
-                                background: 'transparent',
-                                border: '1px solid #333',
-                                color: '#aaa',
-                                padding: '10px 20px',
-                                borderRadius: '8px',
-                                fontWeight: '700',
-                                fontSize: '11px',
-                                textTransform: 'uppercase',
-                                cursor: 'pointer',
-                                letterSpacing: '1px'
+                                ...toggleBtnStyle,
+                                background: view === 'summary' ? 'rgba(251, 191, 36, 0.12)' : 'transparent',
+                                color: view === 'summary' ? '#fbbf24' : '#71717a',
+                                border: `1px solid ${view === 'summary' ? 'rgba(251, 191, 36, 0.2)' : 'transparent'}`
                             }}
                         >
-                            ← Back to Overview
+                            Global Summary
                         </button>
-                    )}
-                </div>
-
-                <button
-                    onClick={fetchPayments}
-                    disabled={loading}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        padding: "16px 32px",
-                        fontSize: "10px",
-                        fontWeight: "900",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.15em",
-                        background: "#111",
-                        color: "#fff",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        cursor: "pointer",
-                        opacity: loading ? 0.5 : 1
-                    }}
-                >
-                    Refresh Data
-                </button>
-            </section>
-
-            {/* Main Content Area */}
-            <section style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "0 8px" }}>
-                    <div style={{
-                        width: "6px",
-                        height: "24px",
-                        background: view === 'summary' ? "#3b82f6" : "#22c55e",
-                        borderRadius: "999px"
-                    }}></div>
-
-                    <h2 style={{
-                        fontSize: "12px",
-                        fontWeight: "900",
-                        color: "#a1a1aa",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.15em"
-                    }}>
-                        {view === 'summary' ? 'Freelancer Performance Directory' : 'Individual Transaction History'}
-                    </h2>
-                </div>
-
-                <div style={{ display: 'flex', gap: '15px', padding: '0 8px' }}>
-                    <div style={{
-                        flex: 1,
-                        position: 'relative'
-                    }}>
-                        <span style={{
-                            position: 'absolute',
-                            left: '16px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            color: '#71717a'
-                        }}>
-                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Find freelancer by name or email..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                        <button
+                            onClick={() => setView('detailed')}
                             style={{
-                                width: '100%',
-                                padding: '14px 14px 14px 44px',
-                                background: '#111',
-                                border: '1px solid rgba(255,255,255,0.05)',
-                                borderRadius: '10px',
-                                color: '#fff',
-                                fontSize: '14px',
-                                outline: 'none'
+                                ...toggleBtnStyle,
+                                background: view === 'detailed' ? 'rgba(251, 191, 36, 0.12)' : 'transparent',
+                                color: view === 'detailed' ? '#fbbf24' : '#71717a',
+                                border: `1px solid ${view === 'detailed' ? 'rgba(251, 191, 36, 0.2)' : 'transparent'}`
                             }}
-                        />
+                        >
+                            Recent Transactions
+                        </button>
                     </div>
+                    <button onClick={fetchPayments} style={refreshBtnStyle} title="Reload Data">
+                        <RefreshCcw size={18} />
+                    </button>
                 </div>
+            </header>
 
-                <div style={{
-                    overflow: "hidden",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                    borderRadius: "12px",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
-                    background: '#09090b'
-                }}>
-                    <div style={{ overflowX: "auto" }}>
-
-                        {view === 'summary' ? (
-                            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                                <thead>
-                                    <tr style={{
-                                        background: "rgba(255,255,255,0.03)",
-                                        color: "#71717a",
-                                        fontSize: "10px",
-                                        textTransform: "uppercase",
-                                        letterSpacing: "0.2em",
-                                        fontWeight: "900"
-                                    }}>
-                                        <th style={{ padding: "24px 40px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Freelancer</th>
-                                        <th style={{ padding: "24px 40px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Transactions</th>
-                                        <th style={{ padding: "24px 40px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {groupedFreelancers.length === 0 ? (
-                                        <tr>
-                                            <td colSpan="3" style={{ padding: "120px 40px", textAlign: "center" }}>
-                                                <h3 style={{ color: "#52525b", fontWeight: "900", textTransform: "uppercase" }}>{searchQuery ? 'No Results Found' : 'No Payments Found'}</h3>
-                                                <p style={{ color: '#3f3f46', fontSize: '12px', marginTop: '8px' }}>
-                                                    {searchQuery ? 'Try adjusting your search criteria' : 'Transactions will appear here once recorded'}
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        groupedFreelancers.map((freelancer) => (
-                                            <tr key={freelancer.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                                                <td style={{ padding: "32px 40px" }}>
-                                                    <div
-                                                        onClick={() => {
-                                                            setSelectedFreelancerId(freelancer.id);
-                                                            setView('detailed');
-                                                        }}
-                                                        style={{ cursor: 'pointer' }}
-                                                    >
-                                                        <strong style={{ color: "#eab308", fontSize: "18px", display: 'block' }}>
-                                                            {freelancer.name}
-                                                        </strong>
-                                                        <span style={{ fontSize: "12px", color: "#71717a" }}>{freelancer.email}</span>
-                                                    </div>
-                                                </td>
-                                                <td style={{ padding: "32px 40px", textAlign: "center" }}>
-                                                    <span style={{
-                                                        padding: "6px 16px",
-                                                        background: 'rgba(59,130,246,0.1)',
-                                                        color: '#3b82f6',
-                                                        borderRadius: '20px',
-                                                        fontWeight: '900',
-                                                        fontSize: '12px'
-                                                    }}>
-                                                        {freelancer.totalTransactions} Records
-                                                    </span>
-                                                </td>
-                                                <td style={{ padding: "32px 40px", textAlign: "right" }}>
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedFreelancerId(freelancer.id);
-                                                            setView('detailed');
-                                                        }}
-                                                        style={{
-                                                            padding: "10px 18px",
-                                                            borderRadius: "8px",
-                                                            border: "1px solid rgba(234,179,8,0.3)",
-                                                            background: "rgba(234,179,8,0.05)",
-                                                            color: "#eab308",
-                                                            fontWeight: "800",
-                                                            fontSize: "11px",
-                                                            textTransform: "uppercase",
-                                                            cursor: "pointer"
-                                                        }}
-                                                    >
-                                                        View History
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                                <thead>
-                                    <tr style={{
-                                        background: "rgba(255,255,255,0.03)",
-                                        color: "#71717a",
-                                        fontSize: "10px",
-                                        textTransform: "uppercase",
-                                        letterSpacing: "0.2em",
-                                        fontWeight: "900"
-                                    }}>
-                                        <th style={{ padding: "24px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Customer</th>
-                                        <th style={{ padding: "24px 20px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Product</th>
-                                        <th style={{ padding: "24px 20px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Amount</th>
-                                        <th style={{ padding: "24px 20px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Payment</th>
-                                        <th style={{ padding: "24px 20px", textAlign: "right", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {activeFreelancer?.payments.map((payment) => (
-                                        <tr key={payment.id} style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                                            <td style={{ padding: "32px 20px" }}>
-                                                <div style={{ color: "#fff", fontWeight: "700" }}>{payment.customer_name}</div>
-                                                <div style={{ fontSize: "12px", color: "#71717a" }}>{payment.customer_email}</div>
-                                            </td>
-                                            <td style={{ padding: "32px 20px" }}>
-                                                <span style={{ padding: "6px 12px", background: "rgba(255,255,255,0.05)", borderRadius: "8px", fontSize: "12px", color: '#fff' }}>
-                                                    {payment.product?.name || 'Deleted Product'}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: "32px 20px", textAlign: "right", fontWeight: "900", color: "#fff", fontSize: "16px" }}>
-                                                {(payment.amount || 0).toLocaleString()} {payment.currency}
-                                            </td>
-                                            <td style={{ padding: "32px 20px", textAlign: "center" }}>
-                                                <span style={{
-                                                    padding: "4px 12px",
-                                                    borderRadius: "4px",
-                                                    fontSize: "10px",
-                                                    fontWeight: 'bold',
-                                                    textTransform: 'uppercase',
-                                                    background: payment.status === "success" ? "rgba(22, 163, 74, 0.1)" : payment.status === "failed" ? "rgba(220, 38, 38, 0.1)" : "rgba(234, 179, 8, 0.1)",
-                                                    color: payment.status === "success" ? "#22c55e" : payment.status === "failed" ? "#ef4444" : "#facc15"
-                                                }}>
-                                                    {payment.status}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: "32px 20px", textAlign: "right", color: "#a1a1aa", fontSize: "12px" }}>
-                                                {new Date(payment.created_at).toLocaleDateString()}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-
-                    </div>
+            {/* Search Bar */}
+            <section style={searchContainerStyle}>
+                <div style={searchIconStyle}>
+                    <Search size={18} color="#52525b" />
                 </div>
-
+                <input
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={searchInputStyle}
+                />
             </section>
 
+            <div style={tableContainerStyle}>
+                {view === 'summary' ? (
+                    <table style={tableStyle}>
+                        <thead>
+                            <tr style={tableHeaderRowStyle}>
+                                <th style={{ ...thStyle, paddingLeft: '32px' }}>User Profile</th>
+                                <th style={thCenterStyle}>Total Payments</th>
+                                <th style={thCenterStyle}>Total Volume</th>
+                                <th style={{ ...thStyle, textAlign: 'right', paddingRight: '32px' }}>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {groupedFreelancers.length === 0 ? (
+                                <tr>
+                                    <td colSpan="4" style={emptyStateStyle}>No active users found.</td>
+                                </tr>
+                            ) : (
+                                groupedFreelancers.map((freelancer) => (
+                                    <tr key={freelancer.id} style={trStyle}>
+                                        <td style={{ ...tdStyle, paddingLeft: '32px' }}>
+                                            <div style={userCellWrapperStyle}>
+                                                <div style={tableAvatarStyle}>{freelancer.name[0]}</div>
+                                                <div>
+                                                    <div style={userNameTextStyle}>{freelancer.name}</div>
+                                                    <div style={userEmailTextStyle}>{freelancer.email}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={countBadgeStyle}>
+                                                <CreditCard size={12} />
+                                                <span>{freelancer.totalTransactions} Payments</span>
+                                            </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={amountGroupStyle}>
+                                                <DollarSign size={14} color="#71717a" />
+                                                <span style={amountTextStyle}>{(freelancer.totalByCurrency['USD'] || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                            </div>
+                                        </td>
+                                        <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '32px' }}>
+                                            <button
+                                                onClick={() => { setSelectedFreelancerId(freelancer.id); setView('detailed'); }}
+                                                style={historyBtnStyle}
+                                            >
+                                                <span>View History</span>
+                                                <ChevronRight size={14} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                ) : (
+                    <table style={tableStyle}>
+                        <thead>
+                            <tr style={tableHeaderRowStyle}>
+                                <th style={{ ...thStyle, paddingLeft: '32px' }}>ID</th>
+                                <th style={thStyle}>User</th>
+                                <th style={thStyle}>Product</th>
+                                <th style={thCenterStyle}>Amount</th>
+                                <th style={thCenterStyle}>Status</th>
+                                <th style={{ ...thStyle, textAlign: 'right', paddingRight: '32px' }}>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {payments.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" style={emptyStateStyle}>No transactions recorded.</td>
+                                </tr>
+                            ) : (
+                                (activeFreelancer ? activeFreelancer.payments : payments).map((p) => (
+                                    <tr key={p.id} style={trStyle}>
+                                        <td style={{ ...tdStyle, paddingLeft: '32px' }}>
+                                            <span style={idTextStyle}>#{p.id.toString().slice(-6)}</span>
+                                        </td>
+                                        <td style={tdStyle}>
+                                            <div style={userEmailTextStyle}>{p.user_email || 'System'}</div>
+                                        </td>
+                                        <td style={tdStyle}>
+                                            <span style={productBadgeStyle}>{p.product_name || 'Direct Payment'}</span>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={amountGroupStyle}>
+                                                <span style={currencySymbolStyle}>{p.currency === 'USD' ? '$' : p.currency}</span>
+                                                <span style={amountTextStyle}>{(p.amount || 0).toLocaleString()}</span>
+                                            </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={{
+                                                ...statusBadgeStyle,
+                                                background: p.status === 'success' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(251, 191, 36, 0.08)',
+                                                color: p.status === 'success' ? '#10b981' : '#fbbf24',
+                                                borderColor: p.status === 'success' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(251, 191, 36, 0.2)'
+                                            }}>
+                                                <div style={{ ...dotStyle, background: p.status === 'success' ? '#10b981' : '#fbbf24' }} />
+                                                {p.status}
+                                            </div>
+                                        </td>
+                                        <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '32px' }}>
+                                            <div style={dateTextStyle}>{new Date(p.created_at).toLocaleDateString()}</div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                )}
+            </div>
         </div>
     );
 }
+
+// ──────────────────────────────────────────────
+// STYLES
+// ──────────────────────────────────────────────
+
+const pageContainerStyle = {
+    animation: 'fadeIn 0.5s ease-out',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '32px',
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '20px 0'
+};
+
+const headerWrapperStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: '20px'
+};
+
+const titleStyle = {
+    fontSize: '32px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-0.02em',
+    marginBottom: '4px'
+};
+
+const subtitleStyle = {
+    fontSize: '14px',
+    color: '#71717a',
+    fontWeight: '500'
+};
+
+const headerActionsStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px'
+};
+
+const viewToggleStyle = {
+    display: 'flex',
+    background: 'rgba(255, 255, 255, 0.02)',
+    padding: '4px',
+    borderRadius: '12px',
+    border: '1px solid rgba(255, 255, 255, 0.04)'
+};
+
+const toggleBtnStyle = {
+    padding: '8px 16px',
+    borderRadius: '8px',
+    border: '1px solid transparent',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+};
+
+const refreshBtnStyle = {
+    width: '40px',
+    height: '40px',
+    borderRadius: '10px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    color: '#71717a',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+};
+
+const searchContainerStyle = {
+    position: 'relative',
+    maxWidth: '400px'
+};
+
+const searchIconStyle = {
+    position: 'absolute',
+    left: '16px',
+    top: '50%',
+    transform: 'translateY(-50%)'
+};
+
+const searchInputStyle = {
+    width: '100%',
+    padding: '12px 16px 12px 48px',
+    background: 'rgba(255,255,255,0.02)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: '14px',
+    color: '#fff',
+    fontSize: '14px',
+    outline: 'none',
+    transition: 'all 0.2s ease'
+};
+
+const tableContainerStyle = {
+    background: 'rgba(15, 15, 20, 0.4)',
+    backdropFilter: 'blur(24px)',
+    border: '1px solid rgba(255, 255, 255, 0.04)',
+    borderRadius: '24px',
+    overflow: 'hidden'
+};
+
+const tableStyle = {
+    width: '100%',
+    borderCollapse: 'collapse',
+    textAlign: 'left'
+};
+
+const tableHeaderRowStyle = {
+    background: 'rgba(255, 255, 255, 0.02)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.04)'
+};
+
+const thStyle = {
+    padding: '20px 16px',
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#52525b',
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em'
+};
+
+const thCenterStyle = { ...thStyle, textAlign: 'center' };
+
+const trStyle = {
+    borderBottom: '1px solid rgba(255, 255, 255, 0.01)',
+    transition: 'background 0.2s ease'
+};
+
+const tdStyle = { padding: '24px 16px' };
+const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
+
+const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '16px' };
+
+const tableAvatarStyle = {
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.05)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '800',
+    color: '#fbbf24'
+};
+
+const userNameTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
+const userEmailTextStyle = { fontSize: '12px', color: '#52525b', fontWeight: '500' };
+
+const amountGroupStyle = { display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' };
+const currencySymbolStyle = { fontSize: '12px', color: '#52525b', fontWeight: '700' };
+const amountTextStyle = { fontSize: '16px', fontWeight: '900', color: '#fff' };
+
+const countBadgeStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    padding: '6px 12px',
+    background: 'rgba(59, 130, 246, 0.06)',
+    borderRadius: '8px',
+    fontSize: '11px',
+    color: '#3b82f6',
+    fontWeight: '800'
+};
+
+const historyBtnStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 18px',
+    background: 'rgba(255,255,255,0.02)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '12px',
+    color: '#fff',
+    fontSize: '13px',
+    fontWeight: '800',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+};
+
+const idTextStyle = {
+    fontSize: '10px',
+    fontFamily: 'monospace',
+    color: '#52525b',
+    background: 'rgba(255,255,255,0.02)',
+    padding: '4px 8px',
+    borderRadius: '6px',
+    fontWeight: '700'
+};
+
+const productBadgeStyle = { fontSize: '12px', color: '#a1a1aa', fontWeight: '700' };
+
+const statusBadgeStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 14px',
+    borderRadius: '20px',
+    border: '1px solid',
+    fontSize: '10px',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
+const dateTextStyle = { fontSize: '12px', color: '#52525b', fontWeight: '700' };
+
+const emptyStateStyle = { padding: '100px 40px', textAlign: 'center', color: '#52525b', fontSize: '14px', fontWeight: '600' };

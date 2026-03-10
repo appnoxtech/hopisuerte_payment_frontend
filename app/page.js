@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import CustomDropdown from '@/components/CustomDropdown';
+
 export default function Home() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
@@ -13,6 +15,14 @@ export default function Home() {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [loading, setLoading] = useState(true);
+
+  const productOptions = products.map(p => ({ label: p.name, value: p.id }));
+
+  const currencyOptions = [
+    { label: 'USD - US Dollar', value: 'USD' },
+    { label: 'EUR - Euro', value: 'EUR' },
+    { label: 'XCG - Curacao Guilder', value: 'XCG' }
+  ];
 
   useEffect(() => {
     api.get('/products')
@@ -59,7 +69,6 @@ export default function Home() {
       <div style={containerStyle}>
 
         {/* Logo */}
-        {/* Logo */}
         <div
           style={{
             display: 'flex',
@@ -78,16 +87,6 @@ export default function Home() {
             priority
             style={{ objectFit: 'contain' }}
           />
-
-          {/* <p
-            style={{
-              color: '#71717a',
-              fontSize: 12,
-              letterSpacing: 1
-            }}
-          >
-            Secure Payment Portal
-          </p> */}
         </div>
 
         {/* Payment Card */}
@@ -97,26 +96,22 @@ export default function Home() {
             {/* Product */}
             <div style={fieldStyle}>
               <label style={labelStyle}>Product</label>
-              <select
-                style={inputStyle}
+              <CustomDropdown
+                options={productOptions}
                 value={selectedProduct?.id || ''}
-                onChange={(e) =>
-                  setSelectedProduct(products.find(p => p.id == e.target.value))
+                onChange={(val) =>
+                  setSelectedProduct(products.find(p => p.id == val))
                 }
-              >
-                {products.map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="Select a product"
+                showSearch={true}
+              />
             </div>
 
             {/* Amount */}
             <div style={fieldStyle}>
               <label style={labelStyle}>Amount</label>
 
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
 
                 <div style={{ position: 'relative', flex: 1 }}>
                   <span style={currencySymbol}>
@@ -125,7 +120,7 @@ export default function Home() {
 
                   <input
                     type="number"
-                    min="1"
+                    min="0.51"
                     step="0.01"
                     required
                     placeholder="0.00"
@@ -135,15 +130,15 @@ export default function Home() {
                   />
                 </div>
 
-                <select
-                  style={{ ...inputStyle, width: 100 }}
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="XCG">XCG</option>
-                </select>
+                <div style={{ width: 140 }}>
+                  <CustomDropdown
+                    options={currencyOptions}
+                    value={currency}
+                    onChange={(val) => setCurrency(val)}
+                    showSearch={false}
+                    placeholder="USD"
+                  />
+                </div>
 
               </div>
             </div>
