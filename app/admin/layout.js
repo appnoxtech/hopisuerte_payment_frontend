@@ -38,7 +38,7 @@ export default function AdminLayout({ children }) {
         } catch (err) {
             // silent fail
         } finally {
-            contextLogout();
+            localStorage.removeItem('auth_token');
             router.push('/admin/login');
         }
     };
@@ -141,11 +141,11 @@ export default function AdminLayout({ children }) {
                 <div style={userFooterStyle}>
                     <div style={userBriefStyle}>
                         <div style={userAvatarStyle}>
-                            {user?.name?.[0]?.toUpperCase() || 'A'}
+                            {user?.name?.[0]?.toUpperCase() || ''}
                         </div>
                         <div style={userDetailsStyle}>
-                            <p style={userNameStyle}>{user?.name || 'Admin'}</p>
-                            <p style={userBadgeStyle}>{user?.slug || 'Agent'}</p>
+                            <p style={userNameStyle}>{user?.name || ''}</p>
+                            <p style={userBadgeStyle}>{user?.slug || ''}</p>
                         </div>
                     </div>
                     <button onClick={handleLogout} style={logoutBtnStyle}>

@@ -91,9 +91,9 @@ export default function AdminDashboard() {
             {/* Dashboard Header */}
             <div style={dashboardHeaderStyle}>
                 <div>
-                    <h1 style={titleStyle}>{user?.name || 'Admin'}'s Dashboard</h1>
+                    <h1 style={titleStyle}>{user?.name || ''}'s Dashboard</h1>
                 </div>
-                
+
             </div>
 
             {/* Performance Metrics */}

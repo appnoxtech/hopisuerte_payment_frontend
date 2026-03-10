@@ -8,9 +8,11 @@ import { validateEmail } from '@/utils/validation';
 import { Eye, EyeOff } from 'lucide-react';
 
 import { useToast } from '@/context/ToastContext';
+import { useUser } from '@/context/UserContext';
 
 export default function SuperAdminLogin() {
     const { showToast } = useToast();
+    const { refreshUser } = useUser();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -44,7 +46,9 @@ export default function SuperAdminLogin() {
             const response = await api.post('/super-admin/login', { email, password });
 
             localStorage.setItem('super_admin_token', response.data.access_token);
+            localStorage.removeItem('auth_token');
             showToast('Executive Protocol Initialized', 'success');
+            await refreshUser();
             router.push('/super-admin');
         } catch (err) {
             let msg = 'Server error. Please try again later.';

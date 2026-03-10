@@ -67,7 +67,7 @@ export default function SuperAdminLayout({ children }) {
         { name: 'Dashboard', href: '/super-admin', icon: LayoutDashboard },
         { name: 'Freelancers', href: '/super-admin/users', icon: Users },
         { name: 'Products', href: '/super-admin/products', icon: ShoppingBag },
-        { name: 'Capital Flow', href: '/super-admin/payments', icon: CreditCard },
+        { name: 'Transactions', href: '/super-admin/payments', icon: CreditCard },
         { name: 'Reports', href: '/super-admin/reports', icon: BarChart3 }
     ];
 
@@ -121,16 +121,16 @@ export default function SuperAdminLayout({ children }) {
                 <div style={userFooterStyle}>
                     <div style={userBriefStyle}>
                         <div style={userAvatarStyle}>
-                            {user?.name?.[0]?.toUpperCase() || 'S'}
+                            {user?.name?.[0]?.toUpperCase() || ''}
                         </div>
                         <div style={userDetailsStyle}>
-                            <p style={userNameStyle}>{user?.name || 'Super Admin'}</p>
+                            <p style={userNameStyle}>{user?.name || ''}</p>
                             <p style={userBadgeStyle}>Super User</p>
                         </div>
                     </div>
                     <button onClick={handleLogout} style={logoutBtnStyle}>
                         <LogOut size={16} />
-                        <span>Terminate Session</span>
+                        <span>Logout</span>
                     </button>
                 </div>
             </aside>
@@ -143,15 +143,12 @@ export default function SuperAdminLayout({ children }) {
                             {navLinks.find(l => l.href === pathname)?.name || 'Control Terminal'}
                         </h2>
                         <div style={breadcrumbStyle}>
-                            <span>Nexus Admin</span>
+                            <span>Super Admin</span>
                             <span style={{ color: '#52525b' }}>/</span>
                             <span>{navLinks.find(l => l.href === pathname)?.name || 'Home'}</span>
                         </div>
                     </div>
-                    <div style={headerRightStyle}>
-                        <ShieldAlert size={14} color="#fbbf24" />
-                        <span style={statusTextStyle}>Full System Access</span>
-                    </div>
+
                 </header>
 
                 <main style={mainViewStyle}>

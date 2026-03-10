@@ -103,8 +103,8 @@ export default function SuperAdminReportsPage() {
         <div style={pageStyle}>
             <header style={headerStyle}>
                 <div>
-                    <h1 style={titleStyle}>Nexus Analytics</h1>
-                    <p style={subtitleStyle}>Global intelligence and parameter-based ledger exports</p>
+                    <h1 style={titleStyle}>Reports Analytics</h1>
+                    {/* <p style={subtitleStyle}>Global intelligence and parameter-based ledger exports</p> */}
                 </div>
             </header>
 
@@ -124,10 +124,10 @@ export default function SuperAdminReportsPage() {
                     <div style={formGridStyle}>
                         {/* Merchant Search Dropdown */}
                         <div style={fieldStyle}>
-                            <label style={labelStyle}>Target Merchant Hub</label>
+                            <label style={labelStyle}>Select Freelancer</label>
                             <CustomDropdown
                                 options={[
-                                    { label: 'All Platform Accounts', value: '' },
+                                    { label: 'All Freelancer Accounts', value: '' },
                                     ...freelancers.map(f => ({ label: `${f.name} (${f.email})`, value: f.id.toString() }))
                                 ]}
                                 value={freelancerId}
@@ -140,7 +140,7 @@ export default function SuperAdminReportsPage() {
                         {/* Date Parameters */}
                         <div style={rowStyle}>
                             <div style={{ ...fieldStyle, flex: 1 }}>
-                                <label style={labelStyle}>Fiscal Year</label>
+                                <label style={labelStyle}>Year</label>
                                 <CustomDropdown
                                     options={years}
                                     value={year}
@@ -150,7 +150,7 @@ export default function SuperAdminReportsPage() {
                                 />
                             </div>
                             <div style={{ ...fieldStyle, flex: 1 }}>
-                                <label style={labelStyle}>Specific Month</label>
+                                <label style={labelStyle}>Month (optional)</label>
                                 <CustomDropdown
                                     options={months}
                                     value={month}
@@ -163,28 +163,43 @@ export default function SuperAdminReportsPage() {
                     </div>
 
                     <div style={footerActionStyle}>
-                        <p style={auditInfoStyle}>
+                        {/* <p style={auditInfoStyle}>
                             {freelancerId ? `Auditing Hub: ${freelancers.find(f => f.id.toString() === freelancerId)?.name}` : 'Auditing Platform-Wide Intelligence'}
                             {month ? ` • ${months.find(m => m.value === month)?.label} ${year}` : ` • Cycle ${year}`}
-                        </p>
-                        <button onClick={() => handleDownload('csv')} style={btnStyle} disabled={loading}>
-                            {loading ? (
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                                    <div style={{ ...spinnerStyle, borderTopColor: '#000', borderBottomColor: 'transparent', width: 14, height: 14 }} />
-                                    <span>Processing...</span>
-                                </div>
-                            ) : (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-                                    <Download size={14} />
-                                    <span>Export Complete CSV</span>
-                                </div>
-                            )}
-                        </button>
+                        </p> */}
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <button onClick={() => handleDownload('csv')} style={{ ...btnStyle, flex: 1, background: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.3)' }} disabled={loading}>
+                                {loading ? (
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                                        <div style={{ ...spinnerStyle, borderTopColor: '#fbbf24', borderBottomColor: 'transparent', width: 14, height: 14 }} />
+                                        <span>Processing...</span>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                                        <FileText size={14} />
+                                        <span>Download CSV</span>
+                                    </div>
+                                )}
+                            </button>
+                            <button onClick={() => handleDownload('pdf')} style={{ ...btnStyle, flex: 1 }} disabled={loading}>
+                                {loading ? (
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                                        <div style={{ ...spinnerStyle, borderTopColor: '#000', borderBottomColor: 'transparent', width: 14, height: 14 }} />
+                                        <span>Processing...</span>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                                        <Download size={14} />
+                                        <span>Export PDF</span>
+                                    </div>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Flux & Conversion (Placeholder) */}
-                <div style={cardStyle}>
+                {/* <div style={cardStyle}>
                     <div style={cardHeaderStyle}>
                         <div style={iconWrapStyle}>
                             <Zap size={18} color="#6366f1" />
@@ -200,13 +215,13 @@ export default function SuperAdminReportsPage() {
                         <div style={placeholderBadgeStyle}>Visual Nexus Implementation Pending</div>
                         <p style={{ fontSize: 11, color: '#3f3f46', textAlign: 'center', maxWidth: '200px' }}>Real-time graph analytics for capital velocity are currently under sync.</p>
                     </div>
-                </div>
+                </div> */}
             </div>
 
-            <div style={infoBoxStyle}>
+            {/* <div style={infoBoxStyle}>
                 <ShieldCheck size={14} color="#10b981" />
                 <span>Analytics processing is performed on secondary replication nodes to ensure live system stability and sub-microsecond latency.</span>
-            </div>
+            </div> */}
         </div>
     );
 }

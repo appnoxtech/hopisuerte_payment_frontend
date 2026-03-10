@@ -94,8 +94,7 @@ export default function GlobalPayments() {
         <div style={containerStyle}>
             <header style={headerWrapperStyle}>
                 <div>
-                    <h1 style={titleStyle}>Capital Flow</h1>
-                    <p style={subtitleStyle}>Global audit of real-time transactional movement</p>
+                    <h1 style={titleStyle}>Transactions</h1>
                 </div>
 
                 <div style={headerActionsStyle}>
@@ -108,7 +107,7 @@ export default function GlobalPayments() {
                                 color: view === 'summary' ? '#fbbf24' : '#52525b',
                             }}
                         >
-                            Global Summary
+                            Freelancers Transactions
                         </button>
                         <button
                             onClick={() => setView('detailed')}
@@ -118,7 +117,7 @@ export default function GlobalPayments() {
                                 color: view === 'detailed' ? '#fbbf24' : '#52525b',
                             }}
                         >
-                            Recent Stream
+                            View All
                         </button>
                     </div>
                     <button onClick={() => fetchPayments(true)} style={refreshBtnStyle}>
@@ -138,14 +137,14 @@ export default function GlobalPayments() {
                 <div style={searchBoxStyle}>
                     <Search style={searchIconStyle} size={14} />
                     <input
-                        placeholder={view === 'summary' ? "Search merchant..." : "Quick filter stream..."}
+                        placeholder={view === 'summary' ? "Search freelancer..." : "Search..."}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         style={filterInputStyle}
                     />
                 </div>
                 <div style={countBadgeWrap}>
-                    <span>{view === 'summary' ? groupedFreelancers.length : (activeFreelancer ? activeFreelancer.payments.length : payments.length)} Nodes Detected</span>
+                    {/* <span>{view === 'summary' ? groupedFreelancers.length : (activeFreelancer ? activeFreelancer.payments.length : payments.length)} Nodes Detected</span> */}
                 </div>
             </div>
 
@@ -154,10 +153,10 @@ export default function GlobalPayments() {
                     <table style={tableStyle}>
                         <thead>
                             <tr style={tableHeaderStyle}>
-                                <th style={{ ...thStyle, paddingLeft: '24px' }}>Merchant Hub</th>
-                                <th style={thCenterStyle}>Flux Count</th>
-                                <th style={thCenterStyle}>Gross Volume</th>
-                                <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Controls</th>
+                                <th style={{ ...thStyle, paddingLeft: '24px' }}>Freelancers</th>
+                                <th style={thCenterStyle}>Total Records</th>
+                                <th style={thCenterStyle}>Total Amount</th>
+                                <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -180,7 +179,7 @@ export default function GlobalPayments() {
                                         <td style={tdCenterStyle}>
                                             <div style={countBadgeStyle}>
                                                 <CreditCard size={10} />
-                                                <span>{freelancer.totalTransactions} Movements</span>
+                                                <span>{freelancer.totalTransactions} Transactions</span>
                                             </div>
                                         </td>
                                         <td style={tdCenterStyle}>
@@ -194,7 +193,7 @@ export default function GlobalPayments() {
                                                 onClick={() => { setSelectedFreelancerId(freelancer.id); setView('detailed'); }}
                                                 style={historyBtnStyle}
                                             >
-                                                <span>Audit History</span>
+                                                <span>View All</span>
                                                 <ArrowUpRight size={12} />
                                             </button>
                                         </td>
@@ -207,9 +206,9 @@ export default function GlobalPayments() {
                     <table style={tableStyle}>
                         <thead>
                             <tr style={tableHeaderStyle}>
-                                <th style={{ ...thStyle, paddingLeft: '24px' }}>Nexus ID</th>
-                                <th style={thStyle}>Target Hub</th>
-                                <th style={thStyle}>Asset</th>
+                                <th style={{ ...thStyle, paddingLeft: '24px' }}>ID</th>
+                                <th style={thStyle}>Freelancer</th>
+                                {/* <th style={thStyle}>Asset</th> */}
                                 <th style={thCenterStyle}>Capital</th>
                                 <th style={thCenterStyle}>Status</th>
                                 <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Timestamp</th>
@@ -229,9 +228,9 @@ export default function GlobalPayments() {
                                         <td style={tdStyle}>
                                             <div style={userEmailTextStyle}>{p.product?.user?.name || 'Direct'}</div>
                                         </td>
-                                        <td style={tdStyle}>
+                                        {/* <td style={tdStyle}>
                                             <span style={productBadgeStyle}>{p.product_name || 'System Link'}</span>
-                                        </td>
+                                        </td> */}
                                         <td style={tdCenterStyle}>
                                             <div style={amountGroupStyle}>
                                                 <span style={currencySymbolStyle}>{p.currency === 'USD' ? '$' : p.currency}</span>
@@ -300,7 +299,7 @@ const userNameTextStyle = { fontSize: '13px', fontWeight: '800', color: '#fff' }
 const userEmailTextStyle = { fontSize: '11px', color: '#3f3f46', fontWeight: '600' };
 
 const amountGroupStyle = { display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' };
-const currencySymbolStyle = { fontSize: '11px', color: '#3f3f46', fontWeight: '700' };
+const currencySymbolStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
 const amountTextStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
 
 const countBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '6px', fontSize: '9px', color: '#71717a', fontWeight: '800' };

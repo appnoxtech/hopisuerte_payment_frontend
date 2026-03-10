@@ -121,7 +121,7 @@ export default function UserManagement() {
                     <div style={statsOverviewStyle}>
                         <div style={miniStatStyle}>
                             <span style={miniStatValueStyle}>{users.length}</span>
-                            <span style={miniStatLabelStyle}>Registry</span>
+                            <span style={miniStatLabelStyle}>Total</span>
                         </div>
                         <div style={miniStatDividerStyle} />
                         <div style={miniStatStyle}>
@@ -131,7 +131,7 @@ export default function UserManagement() {
                     </div>
                     <button onClick={() => setShowModal(true)} style={addBtnStyle}>
                         <UserPlus size={14} />
-                        <span>Register Agent</span>
+                        <span>Create Freelancer</span>
                     </button>
                 </div>
             </header>
@@ -141,7 +141,7 @@ export default function UserManagement() {
                 <div style={searchBoxStyle}>
                     <Search style={searchIconStyle} size={14} />
                     <input
-                        placeholder="Search registry..."
+                        placeholder="Search Freelancer..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={filterInputStyle}
@@ -157,11 +157,11 @@ export default function UserManagement() {
                 <table style={tableStyle}>
                     <thead>
                         <tr style={tableHeaderRowStyle}>
-                            <th style={{ ...thStyle, paddingLeft: '24px' }}>Agent Profile</th>
-                            <th style={thStyle}>Verification</th>
-                            <th style={thCenterStyle}>Assets</th>
-                            <th style={thCenterStyle}>Net Volume</th>
-                            <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Control</th>
+                            <th style={{ ...thStyle, paddingLeft: '24px' }}>Freelancer Profiles</th>
+                            <th style={thStyle}>Status</th>
+                            <th style={thCenterStyle}>Products</th>
+                            <th style={thCenterStyle}>Amount</th>
+                            <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -231,45 +231,45 @@ export default function UserManagement() {
                     <div style={modalCardStyle}>
                         <div style={modalHeaderStyle}>
                             <div>
-                                <h2 style={modalTitleStyle}>Agent Provisioning</h2>
-                                <p style={modalSubTitle}>Enter identity parameters for new agent</p>
+                                <h2 style={modalTitleStyle}>Add Freelancer</h2>
+
                             </div>
                             <button onClick={() => setShowModal(false)} style={modalCloseBtnStyle}><X size={18} /></button>
                         </div>
 
                         <form onSubmit={handleCreateUser} style={modalFormStyle}>
                             <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Full Identity Name</label>
+                                <label style={labelStyle}>Full Name</label>
                                 <div style={inputWrapperStyle}>
                                     <input
                                         type="text"
                                         required
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="e.g. Marcus Aurelius"
+                                        placeholder="Enter Name"
                                         style={modalInputStyle}
                                     />
                                 </div>
                             </div>
 
                             <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Secure Email Address</label>
+                                <label style={labelStyle}>Email Address</label>
                                 <div style={inputWrapperStyle}>
                                     <input
                                         type="email"
                                         required
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        placeholder="nexus.agent@secure.net"
+                                        placeholder="Enter email"
                                         style={modalInputStyle}
                                     />
                                 </div>
                             </div>
 
                             <div style={modalFooterStyle}>
-                                <button type="button" onClick={() => setShowModal(false)} style={cancelBtnStyle}>Discard</button>
+                                <button type="button" onClick={() => setShowModal(false)} style={cancelBtnStyle}>Cancel</button>
                                 <button type="submit" disabled={formLoading} style={submitBtnStyle}>
-                                    {formLoading ? 'Synchronizing...' : 'Finalize Registration'}
+                                    {formLoading ? 'Creating...' : 'Create'}
                                 </button>
                             </div>
                         </form>

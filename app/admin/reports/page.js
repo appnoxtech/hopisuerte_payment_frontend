@@ -1,89 +1,213 @@
 'use client';
 
-import { BarChart3, Download, FileText, Info, ArrowUpRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '@/utils/api';
+import {
+    BarChart3,
+    Download,
+    FileText,
+    Info,
+    Calendar,
+    Filter,
+    Loader2,
+    History,
+    CheckCircle2,
+    XCircle,
+    Clock
+} from 'lucide-react';
+import CustomDropdown from '@/components/CustomDropdown';
 
 export default function ReportsPage() {
-    const [generating, setGenerating] = useState(false);
+    const [month, setMonth] = useState('');
+    const [year, setYear] = useState(new Date().getFullYear().toString());
+    const [loading, setLoading] = useState(false);
+    const [payments, setPayments] = useState([]);
+    const [fetching, setFetching] = useState(true);
 
-    const handleDownload = () => {
-        setGenerating(true);
-        setTimeout(() => setGenerating(false), 2000);
+    const months = [
+        { label: 'All Months', value: '' },
+        { label: 'January', value: '1' },
+        { label: 'February', value: '2' },
+        { label: 'March', value: '3' },
+        { label: 'April', value: '4' },
+        { label: 'May', value: '5' },
+        { label: 'June', value: '6' },
+        { label: 'July', value: '7' },
+        { label: 'August', value: '8' },
+        { label: 'September', value: '9' },
+        { label: 'October', value: '10' },
+        { label: 'November', value: '11' },
+        { label: 'December', value: '12' },
+    ];
+
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 5 }, (_, i) => ({
+        label: (currentYear - i).toString(),
+        value: (currentYear - i).toString()
+    }));
+
+    useEffect(() => {
+        fetchRecentActivity();
+    }, []);
+
+    const fetchRecentActivity = async () => {
+        try {
+            const response = await api.get('/admin/payments');
+            setPayments(response.data.slice(0, 10)); // Just 10 recent
+        } catch (err) {
+            console.error('Failed to fetch activity', err);
+        } finally {
+            setFetching(false);
+        }
+    };
+
+    const handleDownload = async (format) => {
+        setLoading(true);
+        try {
+            const response = await api.get('/admin/export-report', {
+                params: { format, month, year },
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const dateLabel = month ? months.find(m => m.value === month)?.label : 'All_Time';
+            link.setAttribute('download', `sales_report_${dateLabel}_${year}.${format}`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (err) {
+            alert('Failed to generate report. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div style={pageStyle}>
             <header style={headerStyle}>
                 <div>
-                    <h1 style={titleStyle}>Operational Reports</h1>
-                    <p style={subtitleStyle}>Analytics and merchant performance exports</p>
+                    <h1 style={titleStyle}>Operational Intelligence</h1>
+                    <p style={subtitleStyle}>Export sales data and merchant performance metrics</p>
                 </div>
             </header>
 
-            <div style={gridStyle}>
+            <div style={mainGridStyle}>
+                {/* Export Controls */}
                 <div style={cardStyle}>
-                    <div style={iconWrapStyle}>
-                        <FileText size={18} color="#fbbf24" />
+                    <div style={cardHeaderStyle}>
+                        <div style={iconWrapStyle}><Filter size={18} color="#fbbf24" /></div>
+                        <div>
+                            <h3 style={cardTitleStyle}>Report Generation</h3>
+                            <p style={cardDescStyle}>Configure reporting parameters for your data export.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 style={cardTitleStyle}>Monthly Performance</h3>
-                        <p style={cardDescStyle}>Comprehensive summary of successful payments and merchant volume for the current cycle.</p>
-                        <button onClick={handleDownload} style={btnStyle} disabled={generating}>
-                            {generating ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                                    <div style={spinnerStyle} />
-                                    <span>Syncing...</span>
-                                </div>
-                            ) : (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
-                                    <Download size={14} />
-                                    <span>Export CSV</span>
-                                </div>
-                            )}
+
+                    <div style={controlsGridStyle}>
+                        <div style={inputScopeStyle}>
+                            <label style={labelStyle}>Period (Month)</label>
+                            <CustomDropdown
+                                options={months}
+                                value={month}
+                                onChange={setMonth}
+                                placeholder="All Time"
+                            />
+                        </div>
+                        <div style={inputScopeStyle}>
+                            <label style={labelStyle}>Financial Year</label>
+                            <CustomDropdown
+                                options={years}
+                                value={year}
+                                onChange={setYear}
+                            />
+                        </div>
+                    </div>
+
+                    <div style={btnGroupStyle}>
+                        <button
+                            onClick={() => handleDownload('csv')}
+                            style={{ ...btnStyle, background: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.3)' }}
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 size={16} className="spin" /> : <FileText size={16} />}
+                            Download CSV
+                        </button>
+                        <button
+                            onClick={() => handleDownload('pdf')}
+                            style={{ ...btnStyle, background: '#fbbf24', color: '#000' }}
+                            disabled={loading}
+                        >
+                            {loading ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+                            Export PDF
                         </button>
                     </div>
                 </div>
 
+                {/* Recent Activity Mini-Feed */}
                 <div style={cardStyle}>
-                    <div style={iconWrapStyle}>
-                        <BarChart3 size={18} color="#6366f1" />
+                    <div style={cardHeaderStyle}>
+                        <div style={iconWrapStyle}><History size={18} color="#6366f1" /></div>
+                        <div>
+                            <h3 style={cardTitleStyle}>Recent Ledger Status</h3>
+                            <p style={cardDescStyle}>Snapshot of the latest synchronized transactions.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 style={cardTitleStyle}>Traffic Analytics</h3>
-                        <p style={cardDescStyle}>View click-through rates and conversion statistics for your active payment links.</p>
-                        <div style={placeholderBadgeStyle}>Visual Nexus Coming Soon</div>
+
+                    <div style={activityListStyle}>
+                        {fetching ? (
+                            <div style={loadingWrapStyle}><Loader2 size={24} className="spin" color="#3f3f46" /></div>
+                        ) : payments.length === 0 ? (
+                            <div style={emptyTextStyle}>No recent activity found.</div>
+                        ) : (
+                            payments.map((p) => (
+                                <div key={p.id} style={activityItemStyle}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                        {p.status === 'success' ? <CheckCircle2 size={14} color="#10b981" /> : (p.status === 'failed' ? <XCircle size={14} color="#f43f5e" /> : <Clock size={14} color="#fbbf24" />)}
+                                        <div style={{ overflow: 'hidden' }}>
+                                            <div style={primaryTextStyle}>{p.customer_name}</div>
+                                            <div style={secondaryTextStyle}>{new Date(p.created_at).toLocaleDateString()}</div>
+                                        </div>
+                                    </div>
+                                    <div style={amountValueStyle}>{p.amount} <span style={{ fontSize: 9 }}>{p.currency}</span></div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
 
             <div style={infoBoxStyle}>
-                <Info size={14} color="#3f3f46" />
-                <span>Reports are generated in real-time based on your current merchant ledger data.</span>
+                <Info size={14} color="#71717a" />
+                <span>Reports only include 'Success' status payments by default for financial accuracy.</span>
             </div>
         </div>
     );
 }
 
-const pageStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' };
+const pageStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease' };
 const headerStyle = { marginBottom: '8px' };
-const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
+const titleStyle = { fontSize: '22px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
 const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
-const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' };
+const mainGridStyle = { display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px', alignItems: 'start' };
+
 const cardStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
+    backdropFilter: 'blur(32px)',
     borderRadius: '16px',
     padding: '24px',
     border: '1px solid rgba(255,255,255,0.04)',
     display: 'flex',
-    alignItems: 'flex-start',
-    gap: '20px'
+    flexDirection: 'column',
+    gap: '24px'
 };
 
+const cardHeaderStyle = { display: 'flex', gap: '16px', alignItems: 'center' };
 const iconWrapStyle = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '10px',
+    width: '42px',
+    height: '42px',
+    borderRadius: '12px',
     background: 'rgba(255, 255, 255, 0.02)',
     display: 'flex',
     alignItems: 'center',
@@ -92,43 +216,46 @@ const iconWrapStyle = {
     flexShrink: 0
 };
 
-const cardTitleStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', marginBottom: '4px' };
-const cardDescStyle = { fontSize: '11px', color: '#52525b', lineHeight: '1.6', marginBottom: '20px', fontWeight: '600' };
+const cardTitleStyle = { fontSize: '15px', fontWeight: '800', color: '#fff', margin: 0 };
+const cardDescStyle = { fontSize: '11px', color: '#52525b', margin: '4px 0 0', fontWeight: '600' };
 
+const controlsGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' };
+const inputScopeStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
+const labelStyle = { fontSize: '9px', fontWeight: '800', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.05em' };
+
+const btnGroupStyle = { display: 'flex', gap: '12px' };
 const btnStyle = {
-    width: '100%',
-    padding: '10px',
-    background: '#fbbf24',
-    border: 'none',
+    flex: 1,
+    padding: '12px',
     borderRadius: '10px',
-    color: '#000',
+    border: 'none',
     fontWeight: '900',
     fontSize: '12px',
     cursor: 'pointer',
-    transition: 'all 0.2s'
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
 };
 
-const spinnerStyle = {
-    width: '12px',
-    height: '12px',
-    border: '2px solid rgba(0,0,0,0.1)',
-    borderTop: '2px solid #000',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite'
-};
-
-const placeholderBadgeStyle = {
-    textAlign: 'center',
-    padding: '10px',
-    background: 'rgba(255,255,255,0.01)',
-    borderRadius: '10px',
-    color: '#3f3f46',
-    fontSize: '9px',
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
+const activityListStyle = { display: 'flex', flexDirection: 'column', gap: '12px' };
+const activityItemStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '12px',
+    background: 'rgba(255,255,255,0.02)',
+    borderRadius: '12px',
     border: '1px solid rgba(255,255,255,0.02)'
 };
+
+const primaryTextStyle = { fontSize: '12px', fontWeight: '700', color: '#fff' };
+const secondaryTextStyle = { fontSize: '9px', color: '#52525b', fontWeight: '700' };
+const amountValueStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
+
+const loadingWrapStyle = { padding: '40px', display: 'flex', justifyContent: 'center' };
+const emptyTextStyle = { padding: '40px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '700' };
 
 const infoBoxStyle = {
     display: 'flex',
@@ -137,7 +264,7 @@ const infoBoxStyle = {
     padding: '16px',
     background: 'rgba(255,255,255,0.01)',
     borderRadius: '12px',
-    color: '#3f3f46',
+    color: '#52525b',
     fontSize: '11px',
     fontWeight: '600',
     border: '1px solid rgba(255,255,255,0.02)'

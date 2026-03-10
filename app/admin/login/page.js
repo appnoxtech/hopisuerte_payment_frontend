@@ -9,9 +9,11 @@ import { validateEmail } from '@/utils/validation';
 import { Eye, EyeOff } from 'lucide-react';
 
 import { useToast } from '@/context/ToastContext';
+import { useUser } from '@/context/UserContext';
 
 export default function AdminLogin() {
     const { showToast } = useToast();
+    const { refreshUser } = useUser();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -47,8 +49,9 @@ export default function AdminLogin() {
             const response = await api.post('/login', { email, password });
 
             localStorage.setItem('auth_token', response.data.access_token);
-            showToast('Gateway Access Authorized', 'success');
+            localStorage.removeItem('super_admin_token');
 
+            await refreshUser();
             router.push('/admin');
 
         } catch (err) {

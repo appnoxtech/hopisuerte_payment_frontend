@@ -158,12 +158,12 @@ export default function SuperAdminProducts() {
         <div style={containerStyle}>
             <header style={headerSectionStyle}>
                 <div>
-                    <h1 style={titleStyle}>Nexus Inventory</h1>
-                    <p style={subtitleStyle}>Global configuration of merchant assets</p>
+                    <h1 style={titleStyle}>Products Management</h1>
+
                 </div>
                 <button onClick={() => handleOpenModal()} style={addBtnStyle}>
                     <Plus size={14} />
-                    <span>New Module</span>
+                    <span>Add Product</span>
                 </button>
             </header>
 
@@ -181,7 +181,7 @@ export default function SuperAdminProducts() {
                 <div style={searchBoxStyle}>
                     <User style={searchIconStyle} size={14} />
                     <input
-                        placeholder="Filter merchant..."
+                        placeholder="Search Freelancer..."
                         value={filterAssignedTo}
                         onChange={(e) => setFilterAssignedTo(e.target.value)}
                         style={filterInputStyle}
@@ -196,11 +196,11 @@ export default function SuperAdminProducts() {
                 <table style={tableStyle}>
                     <thead>
                         <tr style={tableHeaderStyle}>
-                            <th style={{ ...thStyle, paddingLeft: '24px' }}>Asset Module</th>
-                            <th style={thStyle}>Merchant Admin</th>
-                            <th style={thStyle}>Payment Access</th>
+                            <th style={{ ...thStyle, paddingLeft: '24px' }}>Products</th>
+                            <th style={thStyle}>Freelancer</th>
+                            <th style={thStyle}>Links</th>
                             <th style={thCenterStyle}>Status</th>
-                            <th style={{ ...thStyle, paddingRight: '24px', textAlign: 'right' }}>Controls</th>
+                            <th style={{ ...thStyle, paddingRight: '24px', textAlign: 'right' }}>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -237,7 +237,7 @@ export default function SuperAdminProducts() {
                                                 style={{ ...viewBtnStyle, color: isExpanded ? '#fbbf24' : '#71717a' }}
                                             >
                                                 <LinkIcon size={12} />
-                                                <span>{isExpanded ? 'Collapse' : 'Currency Links'}</span>
+                                                <span>{isExpanded ? 'Collapse' : 'View Links'}</span>
                                             </button>
 
                                             {isExpanded && (
@@ -296,37 +296,37 @@ export default function SuperAdminProducts() {
                     <div style={modalCardStyle}>
                         <div style={modalHeaderStyle}>
                             <div>
-                                <h2 style={modalTitleStyle}>{editingProduct ? "Edit Configuration" : "New Nexus Asset"}</h2>
-                                <p style={{ fontSize: 11, color: '#52525b', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 }}>System Resource Allocator</p>
+                                <h2 style={modalTitleStyle}>{editingProduct ? "Edit Product" : "New Product"}</h2>
+
                             </div>
                             <button onClick={() => setIsModalOpen(false)} style={modalCloseBtnStyle}><X size={18} /></button>
                         </div>
                         <form onSubmit={handleSubmit} style={modalFormStyle}>
                             <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Assign Merchant Hub</label>
+                                <label style={labelStyle}>Freelancer</label>
                                 <CustomDropdown
                                     options={userOptions}
                                     value={formData.user_id}
                                     onChange={(val) => setFormData({ ...formData, user_id: val })}
                                     showSearch={true}
-                                    placeholder="Search registry..."
+                                    placeholder="Search freelancer..."
                                 />
                             </div>
                             <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Display Identity</label>
-                                <input placeholder="e.g. VIP Subscription" value={formData.name} required onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={modalInputStyle} />
+                                <label style={labelStyle}>Product Name</label>
+                                <input placeholder="Enter product name" value={formData.name} required onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={modalInputStyle} />
                             </div>
                             <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Ledger Description</label>
-                                <textarea placeholder="Describe asset nature..." value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, height: '80px', resize: 'none' }} />
+                                <label style={labelStyle}>Product Description</label>
+                                <textarea placeholder="Add description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, height: '80px', resize: 'none' }} />
                             </div>
                             <div style={checkboxWrapper}>
                                 <input type="checkbox" id="active" checked={formData.active} onChange={(e) => setFormData({ ...formData, active: e.target.checked })} style={checkboxStyle} />
-                                <label htmlFor="active" style={checkboxLabel}>Enable payment routing for this asset</label>
+                                <label htmlFor="active" style={checkboxLabel}>Mark as active</label>
                             </div>
                             <div style={modalFooterStyle}>
-                                <button type="button" onClick={() => setIsModalOpen(false)} style={cancelBtnStyle}>Discard</button>
-                                <button type="submit" style={saveBtnStyle}>{editingProduct ? "Save Changes" : "Commit to Nexus"}</button>
+                                <button type="button" onClick={() => setIsModalOpen(false)} style={cancelBtnStyle}>Cancel</button>
+                                <button type="submit" style={saveBtnStyle}>{editingProduct ? "Save Changes" : "Add Product"}</button>
                             </div>
                         </form>
                     </div>

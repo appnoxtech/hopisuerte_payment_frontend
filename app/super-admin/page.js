@@ -62,27 +62,19 @@ export default function SuperAdminDashboard() {
                 {unit && <span style={unitStyle}>{unit}</span>}
                 {value}
             </div>
-            <div style={{ ...cardFooterStyle, color }}>
-                <ArrowUpRight size={10} />
-                <span>Steady Stream</span>
-            </div>
+
         </div>
     );
 
     return (
         <div style={containerStyle}>
-            <header style={headerSectionStyle}>
-                <div>
-                    <h1 style={titleStyle}>{user?.name || 'Super Admin'}'s Terminal</h1>
-                    <p style={subtitleStyle}>Nexus-level oversight and global capital flow</p>
-                </div>
-            </header>
+
 
             {/* Matrix Stats */}
             <section style={statGridStyle}>
-                <StatCard title="Total Network" value={stats?.total_users || 0} icon={Users} color="#6366f1" />
-                <StatCard title="Global Volume" value={(stats?.total_volume || 0).toLocaleString()} unit="$" icon={Globe} color="#10b981" />
-                <StatCard title="Active Flux" value={stats?.total_transactions || 0} icon={Zap} color="#f59e0b" />
+                <StatCard title="Total Freelancers" value={stats?.total_users || 0} icon={Users} color="#6366f1" />
+                <StatCard title="Total Amount" value={(stats?.total_volume || 0).toLocaleString()} unit="$" icon={Globe} color="#10b981" />
+                <StatCard title="Active Transactions" value={stats?.total_transactions || 0} icon={Zap} color="#f59e0b" />
                 <StatCard title="Success Rate" value={stats?.success_rate || 0} unit="%" icon={TrendingUp} color="#fbbf24" />
             </section>
 
@@ -107,7 +99,7 @@ export default function SuperAdminDashboard() {
                         <Link href="/super-admin/payments" style={nodeItemStyle}>
                             <div style={nodeIconBox}><CreditCard size={18} color="#10b981" /></div>
                             <div style={{ flex: 1 }}>
-                                <div style={nodeNameStyle}>Capital Flow Ledger</div>
+                                <div style={nodeNameStyle}>Transactions</div>
                                 <div style={nodeDescStyle}>Global audit of transactional movement</div>
                             </div>
                             <ArrowUpRight size={14} color="#52525b" />
@@ -116,7 +108,7 @@ export default function SuperAdminDashboard() {
                         <Link href="/super-admin/products" style={nodeItemStyle}>
                             <div style={nodeIconBox}><BarChart3 size={18} color="#6366f1" /></div>
                             <div style={{ flex: 1 }}>
-                                <div style={nodeNameStyle}>Inventory Nexus</div>
+                                <div style={nodeNameStyle}>Products</div>
                                 <div style={nodeDescStyle}>Global product and asset management</div>
                             </div>
                             <ArrowUpRight size={14} color="#52525b" />
@@ -125,7 +117,7 @@ export default function SuperAdminDashboard() {
                 </div>
 
                 {/* System Health */}
-                <div style={healthCardStyle}>
+                {/* <div style={healthCardStyle}>
                     <div style={healthCircleWrap}>
                         <div style={healthCenter}>
                             <span style={healthValue}>99.9%</span>
@@ -155,7 +147,7 @@ export default function SuperAdminDashboard() {
                             <span>Vault Secure</span>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </section>
         </div>
     );
@@ -236,9 +228,12 @@ const cardValueStyle = {
 };
 
 const unitStyle = {
-    fontSize: '14px',
-    color: '#3f3f46',
-    fontWeight: '700'
+    fontSize: '22px',
+    fontWeight: '600',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '4px'
 };
 
 const cardFooterStyle = {
@@ -253,7 +248,7 @@ const cardFooterStyle = {
 
 const mainGridStyle = {
     display: 'grid',
-    gridTemplateColumns: '1.2fr 1fr',
+    // gridTemplateColumns: '1.2fr 1fr',
     gap: '24px',
     marginTop: '8px'
 };

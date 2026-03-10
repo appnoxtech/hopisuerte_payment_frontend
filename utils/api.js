@@ -10,16 +10,26 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     // If the request already has an explicit Authorization header, don't overwrite it.
-    // This is critical for super-admin requests that pass their own token.
     if (config.headers.Authorization) {
         return config;
     }
 
     if (typeof window !== 'undefined') {
-        // Check for super_admin_token first, then fall back to auth_token
+        const pathname = window.location.pathname;
+
+        // Determine which token to prioritize based on the route
         const superAdminToken = localStorage.getItem('super_admin_token');
         const authToken = localStorage.getItem('auth_token');
-        const token = superAdminToken || authToken;
+
+        let token = null;
+
+        if (pathname.startsWith('/super-admin')) {
+            // In super-admin area, always prefer super-admin token
+            token = superAdminToken || authToken;
+        } else {
+            // Everywhere else, prefer auth_token (standard login)
+            token = authToken || superAdminToken;
+        }
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
