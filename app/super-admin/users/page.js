@@ -2,6 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/utils/api';
+import {
+    Users,
+    UserPlus,
+    ShieldCheck,
+    Trash2,
+    Mail,
+    Activity,
+    TrendingUp,
+    Package,
+    DollarSign,
+    X,
+    Filter,
+    Search
+} from 'lucide-react';
 
 const getSuperAdminHeaders = () => ({
     headers: {
@@ -12,8 +26,9 @@ const getSuperAdminHeaders = () => ({
 export default function UserManagement() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const [showForm, setShowForm] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: ''
@@ -51,9 +66,9 @@ export default function UserManagement() {
             fetchUsers();
 
             setTimeout(() => {
-                setShowForm(false);
+                setShowModal(false);
                 setFormSuccess('');
-            }, 5000);
+            }, 3000);
         } catch (err) {
             setFormError(err.response?.data?.message || 'Failed to create user account');
         } finally {
@@ -87,25 +102,30 @@ export default function UserManagement() {
         return (
             <div style={loadingContainerStyle}>
                 <div style={spinnerStyle} />
-                <p style={loadingTextStyle}>Accessing User Directory...</p>
+                <p style={loadingTextStyle}>Accessing Registry...</p>
             </div>
         );
     }
 
+    const filteredUsers = users.filter(u =>
+        u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div style={pageContainerStyle}>
-            {/* Header Section */}
+            {/* Professional Header */}
             <header style={headerWrapperStyle}>
                 <div>
-                    <h1 style={titleStyle}>User Management</h1>
-                    <p style={subtitleStyle}>Command center for platform participants</p>
+                    <h1 style={titleStyle}>Freelancer Nexus</h1>
+                    <p style={subtitleStyle}>Manage and provision authorized merchant identities</p>
                 </div>
 
                 <div style={headerActionsStyle}>
                     <div style={statsOverviewStyle}>
                         <div style={miniStatStyle}>
                             <span style={miniStatValueStyle}>{users.length}</span>
-                            <span style={miniStatLabelStyle}>Total</span>
+                            <span style={miniStatLabelStyle}>Registry</span>
                         </div>
                         <div style={miniStatDividerStyle} />
                         <div style={miniStatStyle}>
@@ -113,104 +133,50 @@ export default function UserManagement() {
                             <span style={miniStatLabelStyle}>Active</span>
                         </div>
                     </div>
-                    <button
-                        onClick={() => setShowForm(!showForm)}
-                        style={{
-                            ...addBtnStyle,
-                            background: showForm ? 'rgba(239, 68, 68, 0.1)' : 'var(--primary, #fbbf24)',
-                            color: showForm ? '#f43f5e' : '#000',
-                            borderColor: showForm ? 'rgba(239, 68, 68, 0.2)' : 'transparent'
-                        }}
-                    >
-                        {showForm ? (
-                            <><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg> Close Registration</>
-                        ) : (
-                            <><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg> Add Participant</>
-                        )}
+                    <button onClick={() => setShowModal(true)} style={addBtnStyle}>
+                        <UserPlus size={14} />
+                        <span>Register Agent</span>
                     </button>
                 </div>
             </header>
 
-            {/* Registration Form - Animated/Drawer Style */}
-            {showForm && (
-                <div style={formCardStyle}>
-                    <div style={formHeaderStyle}>
-                        <h2 style={formTitleStyle}>Register New User</h2>
-                        <p style={formSubtitleStyle}>Invite a new freelancer to the platform</p>
-                    </div>
-
-                    {formError && <div style={errorBannerStyle}>{formError}</div>}
-                    {formSuccess && <div style={successBannerStyle}>{formSuccess}</div>}
-
-                    <form onSubmit={handleCreateUser}>
-                        <div style={formGridStyle}>
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Full Name</label>
-                                <div style={inputWrapperStyle}>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="e.g. Alexander Pierce"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                            </div>
-
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Email Address</label>
-                                <div style={inputWrapperStyle}>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        placeholder="pierce@example.com"
-                                        style={inputStyle}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style={formFooterStyle}>
-                            <button type="submit" disabled={formLoading} style={submitBtnStyle}>
-                                {formLoading ? 'Synchronizing...' : 'Finalize Registration'}
-                            </button>
-                        </div>
-                    </form>
+            {/* Quick Filter Row */}
+            <div style={filterRowStyle}>
+                <div style={searchBoxStyle}>
+                    <Search style={searchIconStyle} size={14} />
+                    <input
+                        placeholder="Search registry..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={filterInputStyle}
+                    />
                 </div>
-            )}
+                <div style={countBadgeWrap}>
+                    <span>{filteredUsers.length} Active Participants</span>
+                </div>
+            </div>
 
-            {/* Main Data Table */}
+            {/* Main Data Perspective */}
             <div style={tableContainerStyle}>
                 <table style={tableStyle}>
                     <thead>
                         <tr style={tableHeaderRowStyle}>
-                            <th style={{ ...thStyle, paddingLeft: '32px' }}>Participant Profile</th>
-                            <th style={thStyle}>Verification Status</th>
-                            <th style={thCenterStyle}>Inventory</th>
-                            <th style={thCenterStyle}>Net Earnings</th>
-                            <th style={{ ...thStyle, textAlign: 'right', paddingRight: '32px' }}>Command</th>
+                            <th style={{ ...thStyle, paddingLeft: '24px' }}>Agent Profile</th>
+                            <th style={thStyle}>Verification</th>
+                            <th style={thCenterStyle}>Assets</th>
+                            <th style={thCenterStyle}>Net Volume</th>
+                            <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Control</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {users.length === 0 ? (
+                        {filteredUsers.length === 0 ? (
                             <tr>
-                                <td colSpan="5" style={emptyStateStyle}>
-                                    <div style={emptyIconWrapperStyle}>
-                                        <svg width="40" height="40" fill="none" stroke="#27272a" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                    </div>
-                                    <h3 style={emptyTitleStyle}>Database Empty</h3>
-                                    <p style={emptyDescStyle}>No registered participants found in the system</p>
-                                </td>
+                                <td colSpan="5" style={emptyStateStyle}>Zero agents found in active registry</td>
                             </tr>
                         ) : (
-                            users.map(user => (
+                            filteredUsers.map(user => (
                                 <tr key={user.id} style={trStyle}>
-                                    <td style={{ ...tdStyle, paddingLeft: '32px' }}>
+                                    <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                         <div style={userCellWrapperStyle}>
                                             <div style={tableAvatarStyle}>
                                                 {user.name[0].toUpperCase()}
@@ -226,9 +192,9 @@ export default function UserManagement() {
                                             onClick={() => handleToggleStatus(user.id)}
                                             style={{
                                                 ...statusBadgeStyle,
-                                                background: user.status === 'active' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(244, 63, 94, 0.08)',
+                                                background: user.status === 'active' ? 'rgba(16, 185, 129, 0.05)' : 'rgba(244, 63, 94, 0.05)',
                                                 color: user.status === 'active' ? '#10b981' : '#f43f5e',
-                                                borderColor: user.status === 'active' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
+                                                borderColor: user.status === 'active' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(244, 63, 94, 0.1)',
                                             }}
                                         >
                                             <div style={{ ...dotStyle, background: user.status === 'active' ? '#10b981' : '#f43f5e' }} />
@@ -236,21 +202,24 @@ export default function UserManagement() {
                                         </div>
                                     </td>
                                     <td style={tdCenterStyle}>
-                                        <span style={countBadgeStyle}>{user.products_count || 0} Products</span>
+                                        <div style={assetBadgeStyle}>
+                                            <Package size={10} strokeWidth={3} />
+                                            <span>{user.products_count || 0} Modules</span>
+                                        </div>
                                     </td>
-                                    <td style={{ ...tdCenterStyle, fontWeight: '800', color: '#fff' }}>
-                                        <span style={currencySymbolStyle}>$</span>
-                                        {(user.total_earnings || 0).toLocaleString()}
+                                    <td style={{ ...tdCenterStyle }}>
+                                        <div style={earningsStyle}>
+                                            <span style={currencySymbolStyle}>$</span>
+                                            {(user.total_earnings || 0).toLocaleString()}
+                                        </div>
                                     </td>
-                                    <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '32px' }}>
+                                    <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
                                         <button
                                             onClick={() => handleDeleteUser(user.id, user.name)}
                                             style={deleteBtnStyle}
-                                            title="Revoke Access"
+                                            title="Revoke Permission"
                                         >
-                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
+                                            <Trash2 size={14} />
                                         </button>
                                     </td>
                                 </tr>
@@ -259,358 +228,152 @@ export default function UserManagement() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Registration Modal */}
+            {showModal && (
+                <div style={modalOverlayStyle}>
+                    <div style={modalCardStyle}>
+                        <div style={modalHeaderStyle}>
+                            <div>
+                                <h2 style={modalTitleStyle}>Agent Provisioning</h2>
+                                <p style={modalSubTitle}>Enter identity parameters for new agent</p>
+                            </div>
+                            <button onClick={() => setShowModal(false)} style={modalCloseBtnStyle}><X size={18} /></button>
+                        </div>
+
+                        {formError && <div style={errorBannerStyle}>{formError}</div>}
+                        {formSuccess && <div style={successBannerStyle}>{formSuccess}</div>}
+
+                        <form onSubmit={handleCreateUser} style={modalFormStyle}>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Full Identity Name</label>
+                                <div style={inputWrapperStyle}>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        placeholder="e.g. Marcus Aurelius"
+                                        style={modalInputStyle}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Secure Email Address</label>
+                                <div style={inputWrapperStyle}>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        placeholder="nexus.agent@secure.net"
+                                        style={modalInputStyle}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={modalFooterStyle}>
+                                <button type="button" onClick={() => setShowModal(false)} style={cancelBtnStyle}>Discard</button>
+                                <button type="submit" disabled={formLoading} style={submitBtnStyle}>
+                                    {formLoading ? 'Synchronizing...' : 'Finalize Registration'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-/* ────────────────────────────────────────────── */
-/*                  STYLES                          */
-/* ────────────────────────────────────────────── */
+// ──────────────────────────────────────────────
+// STYLES
+// ──────────────────────────────────────────────
 
-const pageContainerStyle = {
-    animation: 'fadeIn 0.4s ease-out',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '40px'
-};
-
-const headerWrapperStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '24px'
-};
-
-const titleStyle = {
-    fontSize: '32px',
-    fontWeight: '900',
-    color: '#fff',
-    letterSpacing: '-0.02em'
-};
-
-const subtitleStyle = {
-    fontSize: '14px',
-    color: '#71717a',
-    marginTop: '4px'
-};
-
-const headerActionsStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '24px'
-};
+const pageContainerStyle = { display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.4s ease' };
+const headerWrapperStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
+const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
+const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const headerActionsStyle = { display: 'flex', alignItems: 'center', gap: '16px' };
 
 const statsOverviewStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
-    background: 'rgba(255,255,255,0.02)',
-    padding: '8px 20px',
-    borderRadius: '12px',
+    gap: '12px',
+    background: 'rgba(255,255,255,0.01)',
+    padding: '6px 14px',
+    borderRadius: '10px',
     border: '1px solid rgba(255,255,255,0.04)'
 };
 
-const miniStatStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-};
-
-const miniStatValueStyle = {
-    fontSize: '16px',
-    fontWeight: '900',
-    color: '#fff'
-};
-
-const miniStatLabelStyle = {
-    fontSize: '10px',
-    color: '#52525b',
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
-};
-
-const miniStatDividerStyle = {
-    width: '1px',
-    height: '20px',
-    background: 'rgba(255,255,255,0.1)'
-};
+const miniStatStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center' };
+const miniStatValueStyle = { fontSize: '13px', fontWeight: '900', color: '#fff' };
+const miniStatLabelStyle = { fontSize: '8px', color: '#3f3f46', fontWeight: '800', textTransform: 'uppercase' };
+const miniStatDividerStyle = { width: '1px', height: '16px', background: 'rgba(255,255,255,0.05)' };
 
 const addBtnStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    padding: '12px 24px',
-    borderRadius: '12px',
-    border: '1px solid transparent',
-    fontSize: '14px',
-    fontWeight: '800',
-    cursor: 'pointer',
-    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-};
-
-const formCardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255,255,255,0.04)',
-    borderRadius: '20px',
-    padding: '32px',
-    boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
-};
-
-const formHeaderStyle = { marginBottom: '32px' };
-
-const formTitleStyle = {
-    fontSize: '20px',
-    fontWeight: '800',
-    color: '#fff'
-};
-
-const formSubtitleStyle = {
-    fontSize: '13px',
-    color: '#71717a',
-    marginTop: '4px'
-};
-
-const formGridStyle = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '24px',
-    marginBottom: '32px'
-};
-
-const inputGroupStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px'
-};
-
-const labelStyle = {
-    fontSize: '11px',
-    fontWeight: '700',
-    color: '#a1a1aa',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
-};
-
-const inputWrapperStyle = { position: 'relative' };
-
-const inputStyle = {
-    width: '100%',
-    padding: '14px 16px',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '12px',
-    color: '#fff',
-    fontSize: '14px',
-    outline: 'none',
-    transition: 'all 0.2s ease'
-};
-
-const formFooterStyle = {
-    display: 'flex',
-    justifyContent: 'flex-end'
-};
-
-const submitBtnStyle = {
-    background: 'var(--primary, #fbbf24)',
-    color: '#000',
-    padding: '14px 32px',
-    borderRadius: '12px',
+    gap: 8,
+    background: '#fbbf24',
     border: 'none',
-    fontSize: '14px',
+    padding: '10px 18px',
+    color: '#000',
     fontWeight: '900',
+    borderRadius: '10px',
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    fontSize: '11px'
 };
 
-const tableContainerStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    border: '1px solid rgba(255,255,255,0.04)',
-    borderRadius: '20px',
-    overflow: 'hidden'
-};
+const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '8px' };
+const searchBoxStyle = { position: 'relative', width: '200px' };
+const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
+const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '12px', outline: 'none' };
+const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
 
-const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    textAlign: 'left'
-};
+const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };
+const tableStyle = { width: '100%', borderCollapse: 'collapse' };
+const tableHeaderRowStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' };
+const thStyle = { padding: '16px', fontSize: '9px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
+const thCenterStyle = { ...thStyle, textAlign: 'center' };
+const trStyle = { borderBottom: '1px solid rgba(255, 255, 255, 0.01)', transition: 'background 0.2s ease' };
+const tdStyle = { padding: '16px' };
+const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
-const tableHeaderRowStyle = {
-    background: 'rgba(255,255,255,0.02)',
-    borderBottom: '1px solid rgba(255,255,255,0.04)'
-};
+const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
+const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '12px' };
+const userNameTextStyle = { fontSize: '13px', fontWeight: '800', color: '#fff' };
+const userEmailTextStyle = { fontSize: '10px', color: '#3f3f46', fontWeight: '600' };
 
-const thStyle = {
-    padding: '20px 16px',
-    fontSize: '11px',
-    fontWeight: '800',
-    color: '#52525b',
-    textTransform: 'uppercase',
-    letterSpacing: '0.1em'
-};
+const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' };
+const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
+const assetBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '9px', color: '#a1a1aa', fontWeight: '800' };
+const earningsStyle = { fontSize: '14px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 };
+const currencySymbolStyle = { color: '#3f3f46', fontSize: '11px' };
+const deleteBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', cursor: 'pointer' };
 
-const thCenterStyle = {
-    ...thStyle,
-    textAlign: 'center'
-};
+const loadingContainerStyle = { padding: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' };
+const spinnerStyle = { width: '30px', height: '30px', borderRadius: '50%', border: '3px solid rgba(251, 191, 36, 0.05)', borderTop: '3px solid #fbbf24', animation: 'spin 1s linear infinite' };
+const loadingTextStyle = { fontSize: '10px', color: '#3f3f46', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' };
 
-const trStyle = {
-    borderBottom: '1px solid rgba(255,255,255,0.01)',
-    transition: 'background 0.2s ease'
-};
+const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
-const tdStyle = {
-    padding: '24px 16px'
-};
+const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 0, 0, 0.8)", backdropFilter: 'blur(12px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
+const modalCardStyle = { background: "#050506", width: "420px", borderRadius: "24px", padding: '32px', border: '1px solid rgba(255, 255, 255, 0.04)', boxShadow: '0 32px 128px rgba(0, 0, 0, 0.8)' };
+const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' };
+const modalTitleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
+const modalSubTitle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 };
+const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#3f3f46', cursor: 'pointer' };
+const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
+const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '6px' };
+const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
+const inputWrapperStyle = { position: 'relative' };
+const modalInputStyle = { width: "100%", padding: "12px 14px", background: 'rgba(255, 255, 255, 0.01)', border: '1px solid rgba(255, 255, 255, 0.04)', color: 'white', borderRadius: 10, fontSize: '13px', outline: 'none' };
+const modalFooterStyle = { display: "flex", justifyContent: "flex-end", gap: 12, marginTop: "8px" };
 
-const tdCenterStyle = {
-    ...tdStyle,
-    textAlign: 'center'
-};
+const submitBtnStyle = { padding: "12px 24px", background: "#fbbf24", color: '#000', border: "none", fontWeight: "900", borderRadius: 10, cursor: "pointer", fontSize: '12px' };
+const cancelBtnStyle = { padding: "12px 24px", background: 'rgba(255, 255, 255, 0.02)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: 10, cursor: 'pointer', fontSize: '12px', fontWeight: '800' };
 
-const userCellWrapperStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px'
-};
-
-const tableAvatarStyle = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '10px',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.05)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontWeight: '800',
-    color: '#fff',
-    fontSize: '14px'
-};
-
-const userNameTextStyle = {
-    fontSize: '14px',
-    fontWeight: '700',
-    color: '#fff'
-};
-
-const userEmailTextStyle = {
-    fontSize: '12px',
-    color: '#52525b'
-};
-
-const statusBadgeStyle = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '6px 14px',
-    borderRadius: '20px',
-    border: '1px solid',
-    fontSize: '11px',
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-};
-
-const dotStyle = {
-    width: '5px',
-    height: '5px',
-    borderRadius: '50%'
-};
-
-const countBadgeStyle = {
-    padding: '4px 10px',
-    background: 'rgba(255,255,255,0.03)',
-    borderRadius: '6px',
-    fontSize: '11px',
-    color: '#a1a1aa'
-};
-
-const currencySymbolStyle = {
-    color: '#52525b',
-    marginRight: '2px',
-    fontSize: '12px'
-};
-
-const deleteBtnStyle = {
-    padding: '10px',
-    background: 'rgba(239, 68, 68, 0.05)',
-    border: '1px solid rgba(239, 68, 68, 0.15)',
-    borderRadius: '10px',
-    color: '#f87171',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-};
-
-const loadingContainerStyle = {
-    padding: '80px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '24px'
-};
-
-const spinnerStyle = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    border: '3px solid rgba(251, 191, 36, 0.1)',
-    borderTop: '3px solid #fbbf24',
-    animation: 'spin 1s linear infinite'
-};
-
-const loadingTextStyle = {
-    fontSize: '13px',
-    color: '#71717a',
-    fontWeight: '700',
-    letterSpacing: '0.05em',
-    textTransform: 'uppercase'
-};
-
-const errorBannerStyle = {
-    padding: '12px 20px',
-    background: 'rgba(239, 68, 68, 0.1)',
-    border: '1px solid rgba(239, 68, 68, 0.2)',
-    borderRadius: '10px',
-    color: '#f87171',
-    fontSize: '13px',
-    marginBottom: '20px'
-};
-
-const successBannerStyle = {
-    padding: '12px 20px',
-    background: 'rgba(16, 185, 129, 0.1)',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
-    borderRadius: '10px',
-    color: '#4ade80',
-    fontSize: '13px',
-    marginBottom: '20px'
-};
-
-const emptyStateStyle = {
-    padding: '100px 40px',
-    textAlign: 'center'
-};
-
-const emptyIconWrapperStyle = {
-    marginBottom: '20px',
-    opacity: 0.5
-};
-
-const emptyTitleStyle = {
-    fontSize: '18px',
-    fontWeight: '800',
-    color: '#fff',
-    marginBottom: '8px'
-};
-
-const emptyDescStyle = {
-    fontSize: '13px',
-    color: '#52525b'
-};
+const errorBannerStyle = { padding: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '10px', color: '#f87171', fontSize: '12px', marginBottom: '16px', fontWeight: '700' };
+const successBannerStyle = { padding: '12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', color: '#4ade80', fontSize: '12px', marginBottom: '16px', fontWeight: '700' };

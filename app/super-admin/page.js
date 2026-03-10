@@ -8,12 +8,11 @@ import {
     Zap,
     TrendingUp,
     BarChart3,
-    Download,
     CreditCard,
     Activity,
-    CheckCircle2,
-    Lock,
-    LayoutDashboard
+    ShieldCheck,
+    Globe,
+    ArrowUpRight
 } from 'lucide-react';
 
 const getSuperAdminHeaders = () => ({
@@ -24,52 +23,48 @@ const getSuperAdminHeaders = () => ({
 
 export default function SuperAdminDashboard() {
     const [stats, setStats] = useState(null);
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchStats = async () => {
+        const fetchData = async () => {
             try {
-                const response = await api.get('/super-admin/stats', getSuperAdminHeaders());
-                setStats(response.data);
+                const [statsRes, userRes] = await Promise.all([
+                    api.get('/super-admin/stats', getSuperAdminHeaders()),
+                    api.get('/user', getSuperAdminHeaders())
+                ]);
+                setStats(statsRes.data);
+                setUser(userRes.data);
             } catch (err) {
-                console.error('Failed to fetch stats:', err);
+                console.error('Failed to fetch data:', err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchStats();
+        fetchData();
     }, []);
-
 
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-                <div style={{ width: '32px', height: '32px', border: '4px solid #fbbf24', borderTop: '4px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <div style={{ width: '24px', height: '24px', border: '3px solid rgba(251, 191, 36, 0.1)', borderTop: '3px solid #fbbf24', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }
 
     const StatCard = ({ title, value, unit = '', color = '#fbbf24', icon: Icon }) => (
         <div style={cardStyle}>
-            <div style={{ ...cardHoverOverlay, background: `${color}05` }} />
             <div style={cardHeaderStyle}>
-                <div style={{ ...iconContainerStyle, background: `${color}10`, borderColor: `${color}20` }}>
-                    <Icon size={20} color={color} />
-                </div>
-                <div style={cardBadgeStyle}>
-                    <div style={{ ...dotStyle, background: '#10b981' }} />
-                    <span>Real-time</span>
-                </div>
+                <div style={cardLabelStyle}>{title}</div>
+                <Icon size={14} color={color} style={{ opacity: 0.6 }} />
             </div>
-            <div style={cardContentStyle}>
-                <p style={cardLabelStyle}>{title}</p>
-                <h3 style={cardValueStyle}>
-                    {value}
-                    {unit && <span style={unitStyle}>{unit}</span>}
-                </h3>
+            <div style={cardValueStyle}>
+                {unit && <span style={unitStyle}>{unit}</span>}
+                {value}
             </div>
-            <div style={cardProgressContainer}>
-                <div style={{ ...cardProgressBar, background: color, width: '70%', boxShadow: `0 0 10px ${color}40` }} />
+            <div style={{ ...cardFooterStyle, color }}>
+                <ArrowUpRight size={10} />
+                <span>Steady Stream</span>
             </div>
         </div>
     );
@@ -78,63 +73,86 @@ export default function SuperAdminDashboard() {
         <div style={containerStyle}>
             <header style={headerSectionStyle}>
                 <div>
-                    <h1 style={titleStyle}>Command Center</h1>
-                    <p style={subtitleStyle}>Global oversight of system operations and capital flow</p>
+                    <h1 style={titleStyle}>{user?.name || 'Super Admin'}'s Terminal</h1>
+                    <p style={subtitleStyle}>Nexus-level oversight and global capital flow</p>
                 </div>
             </header>
 
-            <section style={accessGridStyle}>
-                <div style={managementCardStyle}>
-                    <div style={managementHeaderStyle}>
-                        <h3 style={managementTitleStyle}>Operational Modules</h3>
-                        <p style={managementSubtitleStyle}>Direct access to core system entities</p>
+            {/* Matrix Stats */}
+            <section style={statGridStyle}>
+                <StatCard title="Total Network" value={stats?.total_users || 0} icon={Users} color="#6366f1" />
+                <StatCard title="Global Volume" value={(stats?.total_volume || 0).toLocaleString()} unit="$" icon={Globe} color="#10b981" />
+                <StatCard title="Active Flux" value={stats?.total_transactions || 0} icon={Zap} color="#f59e0b" />
+                <StatCard title="Success Rate" value={stats?.success_rate || 0} unit="%" icon={TrendingUp} color="#fbbf24" />
+            </section>
+
+            <section style={mainGridStyle}>
+                {/* Control Nodes */}
+                <div style={nodesCardStyle}>
+                    <div style={sectionHeaderStyle}>
+                        <h3 style={sectionTitleStyle}>System Control Nodes</h3>
+                        <p style={sectionSubStyle}>Direct access to core infrastructure</p>
                     </div>
-                    <div style={moduleGridStyle}>
-                        <Link href="/super-admin/users" style={moduleItemStyle}>
-                            <div style={moduleIconStyle}><Users size={24} color="#fbbf24" /></div>
-                            <div>
-                                <h4 style={moduleNameStyle}>Freelancer Directory</h4>
-                                <p style={moduleDescStyle}>Verify identities and manage authorized agents</p>
+
+                    <div style={nodeListStyle}>
+                        <Link href="/super-admin/users" style={nodeItemStyle}>
+                            <div style={nodeIconBox}><Users size={18} color="#fbbf24" /></div>
+                            <div style={{ flex: 1 }}>
+                                <div style={nodeNameStyle}>Freelancer Directory</div>
+                                <div style={nodeDescStyle}>Manage authorized merchant identities</div>
                             </div>
+                            <ArrowUpRight size={14} color="#52525b" />
                         </Link>
-                        <Link href="/super-admin/payments" style={moduleItemStyle}>
-                            <div style={moduleIconStyle}><CreditCard size={24} color="#fbbf24" /></div>
-                            <div>
-                                <h4 style={moduleNameStyle}>Global Transaction Vault</h4>
-                                <p style={moduleDescStyle}>Audit and monitor real-time fund movement</p>
+
+                        <Link href="/super-admin/payments" style={nodeItemStyle}>
+                            <div style={nodeIconBox}><CreditCard size={18} color="#10b981" /></div>
+                            <div style={{ flex: 1 }}>
+                                <div style={nodeNameStyle}>Capital Flow Ledger</div>
+                                <div style={nodeDescStyle}>Global audit of transactional movement</div>
                             </div>
+                            <ArrowUpRight size={14} color="#52525b" />
+                        </Link>
+
+                        <Link href="/super-admin/products" style={nodeItemStyle}>
+                            <div style={nodeIconBox}><BarChart3 size={18} color="#6366f1" /></div>
+                            <div style={{ flex: 1 }}>
+                                <div style={nodeNameStyle}>Inventory Nexus</div>
+                                <div style={nodeDescStyle}>Global product and asset management</div>
+                            </div>
+                            <ArrowUpRight size={14} color="#52525b" />
                         </Link>
                     </div>
                 </div>
 
-                <div style={statusCardStyle}>
-                    <div style={radialContainerStyle}>
-                        <div style={{ position: 'relative', width: 120, height: 120 }}>
-                            <svg width="120" height="120" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
-                                <circle cx="50" cy="50" r="45" fill="none" stroke="#10b981" strokeWidth="6" strokeDasharray="210 283" strokeLinecap="round" />
-                            </svg>
-                            <div style={radialLabelStyle}>
-                                <span style={radialValueStyle}>99.9</span>
-                                <span style={radialUnitStyle}>Uptime</span>
-                            </div>
+                {/* System Health */}
+                <div style={healthCardStyle}>
+                    <div style={healthCircleWrap}>
+                        <div style={healthCenter}>
+                            <span style={healthValue}>99.9%</span>
+                            <span style={healthLabel}>Uptime</span>
                         </div>
+                        <svg width="100" height="100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="4" />
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#fbbf24" strokeWidth="4" strokeDasharray="282" strokeDashoffset="28" strokeLinecap="round" />
+                        </svg>
                     </div>
-                    <div style={{ marginTop: '24px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
-                            <Activity size={18} color="#10b981" />
-                            <h3 style={statusTitleStyle}>System Health</h3>
+
+                    <div style={{ textAlign: 'center', marginTop: 16 }}>
+                        <div style={healthStatusStyle}>
+                            <div style={activeDot} />
+                            <span>Nexus Operational</span>
                         </div>
-                        <p style={statusDescStyle}>All core infrastructure components are operational</p>
+                        <p style={healthDesc}>Security protocols and payment links are fully synchronized across all regions.</p>
                     </div>
-                    <div style={statusGridStyle}>
-                        <div style={statusIndicatorStyle}>
-                            <div style={{ ...smallDotStyle, background: '#10b981' }} />
-                            <span>Payment API</span>
+
+                    <div style={healthMetaGrid}>
+                        <div style={healthMetaItem}>
+                            <ShieldCheck size={12} color="#10b981" />
+                            <span>SSL Encrypted</span>
                         </div>
-                        <div style={statusIndicatorStyle}>
-                            <div style={{ ...smallDotStyle, background: '#10b981' }} />
-                            <span>Vault Security</span>
+                        <div style={healthMetaItem}>
+                            <Activity size={12} color="#10b981" />
+                            <span>Vault Secure</span>
                         </div>
                     </div>
                 </div>
@@ -150,8 +168,8 @@ export default function SuperAdminDashboard() {
 const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '40px',
-    padding: '20px 0',
+    gap: '24px',
+    padding: '10px 0',
     animation: 'fadeIn 0.5s ease-out'
 };
 
@@ -159,280 +177,230 @@ const headerSectionStyle = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: '8px'
 };
 
 const titleStyle = {
-    fontSize: '32px',
+    fontSize: '20px',
     fontWeight: '900',
     color: '#fff',
-    letterSpacing: '-0.02em',
-    marginBottom: '4px'
+    letterSpacing: '-0.02em'
 };
 
 const subtitleStyle = {
-    fontSize: '14px',
+    fontSize: '11px',
     color: '#71717a',
-    fontWeight: '500'
-};
-
-const reportBtnStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '12px 24px',
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.06)',
-    borderRadius: '12px',
-    color: '#fff',
-    fontSize: '13px',
-    fontWeight: '800',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+    fontWeight: '500',
+    marginTop: '2px'
 };
 
 const statGridStyle = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-    gap: '24px'
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '16px'
 };
 
 const cardStyle = {
     background: 'rgba(15,15,20,0.4)',
-    backdropFilter: 'blur(24px)',
     border: '1px solid rgba(255,255,255,0.04)',
-    borderRadius: '20px',
-    padding: '24px',
+    borderRadius: '16px',
+    padding: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
     position: 'relative',
-    overflow: 'hidden',
-    transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-};
-
-const cardHoverOverlay = {
-    position: 'absolute',
-    inset: 0,
-    opacity: 0.1,
-    transition: 'opacity 0.3s ease'
+    overflow: 'hidden'
 };
 
 const cardHeaderStyle = {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-    position: 'relative'
+    alignItems: 'center'
 };
 
-const iconContainerStyle = {
-    width: '44px',
-    height: '44px',
-    borderRadius: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: '1px solid'
-};
-
-const cardBadgeStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '6px 12px',
-    background: 'rgba(16, 185, 129, 0.05)',
-    borderRadius: '20px',
+const cardLabelStyle = {
     fontSize: '10px',
-    color: '#10b981',
+    color: '#52525b',
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
 };
 
-const dotStyle = {
-    width: '4px',
-    height: '4px',
-    borderRadius: '50%'
-};
-
-const cardContentStyle = { position: 'relative' };
-
-const cardLabelStyle = {
-    fontSize: '12px',
-    color: '#71717a',
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    marginBottom: '8px'
-};
-
 const cardValueStyle = {
-    fontSize: '24px',
+    fontSize: '22px',
     fontWeight: '900',
     color: '#fff',
     display: 'flex',
     alignItems: 'baseline',
-    gap: '6px'
+    gap: '4px'
 };
 
 const unitStyle = {
-    fontSize: '12px',
-    color: '#52525b',
+    fontSize: '14px',
+    color: '#3f3f46',
     fontWeight: '700'
 };
 
-const cardProgressContainer = {
-    width: '100%',
-    height: '2px',
-    background: 'rgba(255,255,255,0.02)',
-    borderRadius: '10px',
-    marginTop: '20px',
-    overflow: 'hidden'
-};
-
-const cardProgressBar = {
-    height: '100%',
-    transition: 'width 1s ease-out'
-};
-
-const accessGridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-    gap: '30px'
-};
-
-const managementCardStyle = {
-    background: 'rgba(15,15,20,0.6)',
-    borderRadius: '24px',
-    padding: '32px',
-    border: '1px solid rgba(255,255,255,0.04)'
-};
-
-const managementHeaderStyle = { marginBottom: '32px' };
-
-const managementTitleStyle = {
-    fontSize: '20px',
+const cardFooterStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontSize: '9px',
     fontWeight: '800',
-    color: '#fff',
-    marginBottom: '4px'
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
-const managementSubtitleStyle = {
-    fontSize: '13px',
-    color: '#71717a'
+const mainGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1.2fr 1fr',
+    gap: '24px',
+    marginTop: '8px'
 };
 
-const moduleGridStyle = {
+const nodesCardStyle = {
+    background: 'rgba(15,15,20,0.4)',
+    borderRadius: '20px',
+    padding: '24px',
+    border: '1px solid rgba(255,255,255,0.04)',
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px'
+    gap: '24px'
 };
 
-const moduleItemStyle = {
+const sectionHeaderStyle = { display: 'flex', flexDirection: 'column', gap: '2px' };
+
+const sectionTitleStyle = {
+    fontSize: '15px',
+    fontWeight: '900',
+    color: '#fff'
+};
+
+const sectionSubStyle = {
+    fontSize: '11px',
+    color: '#52525b'
+};
+
+const nodeListStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px'
+};
+
+const nodeItemStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: '16px',
-    padding: '20px',
-    background: 'rgba(255,255,255,0.02)',
-    borderRadius: '20px',
-    border: '1px solid rgba(255,255,255,0.04)',
+    padding: '16px',
+    background: 'rgba(255,255,255,0.01)',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.02)',
     textDecoration: 'none',
     transition: 'all 0.2s ease'
 };
 
-const moduleIconStyle = {
-    width: '48px',
-    height: '48px',
-    borderRadius: '14px',
-    background: 'rgba(251, 191, 36, 0.05)',
+const nodeIconBox = {
+    width: '40px',
+    height: '40px',
+    borderRadius: '10px',
+    background: 'rgba(255,255,255,0.02)',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    border: '1px solid rgba(255,255,255,0.04)'
 };
 
-const moduleNameStyle = {
-    fontSize: '15px',
+const nodeNameStyle = {
+    fontSize: '13px',
     fontWeight: '800',
     color: '#fff',
     marginBottom: '2px'
 };
 
-const moduleDescStyle = {
-    fontSize: '12px',
-    color: '#71717a'
+const nodeDescStyle = {
+    fontSize: '11px',
+    color: '#52525b'
 };
 
-const statusCardStyle = {
-    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(15,15,20,0.6) 100%)',
-    borderRadius: '24px',
-    padding: '40px',
-    border: '1px solid rgba(16, 185, 129, 0.1)',
+const healthCardStyle = {
+    background: 'rgba(251, 191, 36, 0.02)',
+    borderRadius: '20px',
+    padding: '32px',
+    border: '1px solid rgba(251, 191, 36, 0.05)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+};
+
+const healthCircleWrap = {
+    position: 'relative',
+    width: '100px',
+    height: '100px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+};
+
+const healthCenter = {
+    position: 'absolute',
     textAlign: 'center',
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
+    flexDirection: 'column'
 };
 
-const radialContainerStyle = {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-};
-
-const radialLabelStyle = {
-    position: 'absolute',
-    inset: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center'
-};
-
-const radialValueStyle = {
-    fontSize: '24px',
+const healthValue = {
+    fontSize: '18px',
     fontWeight: '900',
-    color: '#10b981'
+    color: '#fbbf24'
 };
 
-const radialUnitStyle = {
-    fontSize: '9px',
-    color: '#71717a',
-    fontWeight: '800',
+const healthLabel = {
+    fontSize: '8px',
+    color: '#52525b',
     textTransform: 'uppercase',
-    letterSpacing: '0.1em'
+    fontWeight: '800'
 };
 
-const statusTitleStyle = {
-    fontSize: '20px',
-    fontWeight: '800',
-    color: '#fff'
-};
-
-const statusDescStyle = {
-    fontSize: '13px',
-    color: '#71717a',
-    maxWidth: '240px'
-};
-
-const statusGridStyle = {
-    display: 'flex',
-    gap: '24px',
-    marginTop: '32px'
-};
-
-const statusIndicatorStyle = {
+const healthStatusStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    fontSize: '11px',
+    justifyContent: 'center',
+    fontSize: '12px',
     fontWeight: '800',
-    color: '#a1a1aa',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    color: '#fff',
+    marginBottom: '8px'
 };
 
-const smallDotStyle = {
+const activeDot = {
     width: '6px',
     height: '6px',
-    borderRadius: '50%'
+    borderRadius: '50%',
+    background: '#10b981',
+    boxShadow: '0 0 10px #10b981'
+};
+
+const healthDesc = {
+    fontSize: '11px',
+    color: '#52525b',
+    lineHeight: '1.6',
+    maxWidth: '220px',
+    margin: '0 auto'
+};
+
+const healthMetaGrid = {
+    display: 'flex',
+    gap: '16px',
+    marginTop: '24px'
+};
+
+const healthMetaItem = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '10px',
+    fontWeight: '800',
+    color: '#10b981',
+    textTransform: 'uppercase'
 };

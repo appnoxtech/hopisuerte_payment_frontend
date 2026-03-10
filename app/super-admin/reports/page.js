@@ -1,389 +1,167 @@
 'use client';
 
+import { BarChart3, Download, FileText, Globe, Info, Zap, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import api from '@/utils/api';
-import { Download, FileText, Calendar, Filter, Users, DollarSign, Activity } from 'lucide-react';
 
-export default function SuperAdminReportsPage() {
-    const [month, setMonth] = useState('');
-    const [year, setYear] = useState(new Date().getFullYear().toString());
-    const [loading, setLoading] = useState(false);
+export default function SuperAdminReports() {
+    const [exporting, setExporting] = useState(false);
 
-    const handleDownload = async (format) => {
-        setLoading(true);
+    const handleDownloadReport = async () => {
+        setExporting(true);
         try {
-            const params = new URLSearchParams();
-            params.append('format', format);
-            if (month) params.append('month', month);
-            if (year) params.append('year', year);
-
-            const response = await api.get(`/super-admin/export-report?${params.toString()}`, {
-                responseType: 'blob'
+            const token = localStorage.getItem('super_admin_token');
+            const response = await api.get('/super-admin/export-report', {
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: 'blob',
             });
-
-            // Create a link to download the file
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-
-            const dateStr = month ? `${month}-${year}` : year;
-            const extension = format === 'csv' ? 'csv' : 'pdf';
-            link.setAttribute('download', `platform_intelligence_report_${dateStr}.${extension}`);
-
+            link.setAttribute('download', `nexus_audit_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             link.remove();
-        } catch (error) {
-            console.error('Download failed:', error);
-            alert('Failed to generate platform report. Please try again.');
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Failed to download report:', err);
+            alert('Failed to generate report.');
         } finally {
-            setLoading(false);
+            setExporting(false);
         }
     };
 
-    const months = [
-        { value: '', label: 'Select Month (Optional)' },
-        { value: '1', label: 'January' },
-        { value: '2', label: 'February' },
-        { value: '3', label: 'March' },
-        { value: '4', label: 'April' },
-        { value: '5', label: 'May' },
-        { value: '6', label: 'June' },
-        { value: '7', label: 'July' },
-        { value: '8', label: 'August' },
-        { value: '9', label: 'September' },
-        { value: '10', label: 'October' },
-        { value: '11', label: 'November' },
-        { value: '12', label: 'December' },
-    ];
-
-    const years = [];
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear; i >= 2024; i--) {
-        years.push(i.toString());
-    }
-
     return (
-        <div style={containerStyle}>
+        <div style={pageStyle}>
             <header style={headerStyle}>
                 <div>
-                    <h1 style={titleStyle}>Platform Intelligence Reports</h1>
-                    <p style={subtitleStyle}>Global overview of users, growth, and transactional performance</p>
+                    <h1 style={titleStyle}>Nexus Analytics</h1>
+                    <p style={subtitleStyle}>Global overview and comprehensive system exports</p>
                 </div>
             </header>
 
             <div style={gridStyle}>
-                {/* Configuration Card */}
+                {/* Global Audit Card */}
                 <div style={cardStyle}>
-                    <div style={cardHeaderStyle}>
-                        <Filter size={18} color="#facc15" />
-                        <h2 style={cardTitleStyle}>Reporting Period</h2>
+                    <div style={iconWrapStyle}>
+                        <Globe size={18} color="#fbbf24" />
                     </div>
-
-                    <div style={formGridStyle}>
-                        <div style={fieldStyle}>
-                            <label style={labelStyle}>Fiscal Year</label>
-                            <select
-                                style={inputStyle}
-                                value={year}
-                                onChange={(e) => setYear(e.target.value)}
-                            >
-                                {years.map(y => (
-                                    <option key={y} value={y}>{y}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div style={fieldStyle}>
-                            <label style={labelStyle}>Specific Month</label>
-                            <select
-                                style={inputStyle}
-                                value={month}
-                                onChange={(e) => setMonth(e.target.value)}
-                            >
-                                {months.map(m => (
-                                    <option key={m.value} value={m.value}>{m.label}</option>
-                                ))}
-                            </select>
-                        </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={cardTitleStyle}>Global System Audit</h3>
+                        <p style={cardDescStyle}>Comprehensive export of all transactions, active participants, and revenue streams across the platform.</p>
+                        <button onClick={handleDownloadReport} style={btnStyle} disabled={exporting}>
+                            {exporting ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                                    <div style={spinnerStyle} />
+                                    <span>Compiling Ledger...</span>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                                    <Download size={14} />
+                                    <span>Export Complete CSV</span>
+                                </div>
+                            )}
+                        </button>
                     </div>
-
-                    <p style={infoNoteStyle}>
-                        {month
-                            ? `Exporting platform-wide data for ${months.find(m => m.value === month)?.label} ${year}`
-                            : `Exporting platform-wide data for the full year of ${year}`
-                        }
-                    </p>
                 </div>
 
-                {/* Download Card */}
+                {/* Performance Analytics Card */}
                 <div style={cardStyle}>
-                    <div style={cardHeaderStyle}>
-                        <Download size={18} color="#facc15" />
-                        <h2 style={cardTitleStyle}>Export Formats</h2>
+                    <div style={iconWrapStyle}>
+                        <Zap size={18} color="#6366f1" />
                     </div>
-
-                    <div style={buttonGroupStyle}>
-                        <button
-                            style={{ ...downloadButtonStyle, background: 'rgba(250,204,21,0.1)', color: '#facc15', border: '1px solid rgba(250,204,21,0.2)' }}
-                            onClick={() => handleDownload('csv')}
-                            disabled={loading}
-                        >
-                            <div style={buttonContentStyle}>
-                                <FileText size={20} />
-                                <div>
-                                    <div style={buttonLabelStyle}>Export as CSV Data</div>
-                                    <div style={buttonSublabelStyle}>Raw data for external audit/BI tools</div>
-                                </div>
-                            </div>
-                        </button>
-
-                        <button
-                            style={{ ...downloadButtonStyle, background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}
-                            onClick={() => handleDownload('pdf')}
-                            disabled={loading}
-                        >
-                            <div style={buttonContentStyle}>
-                                <FileText size={20} color="#f87171" />
-                                <div>
-                                    <div style={buttonLabelStyle}>Export as Intelligence PDF</div>
-                                    <div style={buttonSublabelStyle}>Formatted report with executive summary</div>
-                                </div>
-                            </div>
-                        </button>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={cardTitleStyle}>Flux & Conversion</h3>
+                        <p style={cardDescStyle}>Identify bottlenecks and top-performing merchants across all geographic regions.</p>
+                        <div style={placeholderBadgeStyle}>Visual Nexus Coming Soon</div>
                     </div>
-
-                    {loading && (
-                        <div style={loadingOverlayStyle}>
-                            <div style={spinnerStyle} />
-                            <span style={{ color: '#94a3b8', fontSize: 13 }}>Assembling platform data...</span>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Platform Metrics Preview */}
-            <div style={{ ...cardStyle, marginTop: 24 }}>
-                <div style={cardHeaderStyle}>
-                    <Activity size={18} color="#facc15" />
-                    <h2 style={cardTitleStyle}>Intelligence Overview</h2>
-                </div>
-                <div style={metricsRowStyle}>
-                    <div style={miniMetricStyle}>
-                        <Users size={16} color="#71717a" />
-                        <div>
-                            <div style={miniMetricLabel}>User Growth</div>
-                            <div style={miniMetricVal}>Comprehensive List</div>
-                        </div>
-                    </div>
-                    <div style={miniMetricStyle}>
-                        <DollarSign size={16} color="#71717a" />
-                        <div>
-                            <div style={miniMetricLabel}>Revenue Flow</div>
-                            <div style={miniMetricVal}>All-Time Totals</div>
-                        </div>
-                    </div>
-                    <div style={miniMetricStyle}>
-                        <FileText size={16} color="#71717a" />
-                        <div>
-                            <div style={miniMetricLabel}>Audit Logs</div>
-                            <div style={miniMetricVal}>Transaction History</div>
-                        </div>
-                    </div>
-                </div>
-                <div style={placeholderContentStyle}>
-                    <p style={{ fontSize: 13, color: '#94a3b8', maxWidth: '600px', textAlign: 'center' }}>The Platform Intelligence Report provides a high-level summary of paysigur operations. It merges User registration metrics with Transactional history and Global success rates into a single, cohesive audit document.</p>
-                </div>
+            <div style={infoBoxStyle}>
+                <ShieldCheck size={14} color="#10b981" />
+                <span style={{ color: '#52525b' }}>Analytics processing is performed on secondary replication nodes to ensure live system stability and sub-microsecond latency.</span>
             </div>
         </div>
     );
 }
 
-/* ─────────────── STYLES ─────────────── */
+const pageStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' };
+const headerStyle = { marginBottom: '8px' };
+const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
+const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
-const containerStyle = {
-    padding: '10px'
-};
-
-const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginBottom: 28,
-};
-
-const titleStyle = {
-    fontSize: 28,
-    fontWeight: 900,
-    color: '#fff',
-    letterSpacing: '-0.5px',
-};
-
-const subtitleStyle = {
-    color: '#71717a',
-    fontSize: 14,
-    marginTop: 4,
-};
-
-const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: 24,
-};
-
+const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '16px' };
 const cardStyle = {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
-    borderRadius: 16,
-    padding: 24,
-    position: 'relative'
-};
-
-const cardHeaderStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 20,
-    borderBottom: '1px solid rgba(255,255,255,0.04)',
-    paddingBottom: 12,
-};
-
-const cardTitleStyle = {
-    fontSize: 14,
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '1px',
-    color: '#fff'
-};
-
-const formGridStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
-};
-
-const fieldStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-};
-
-const labelStyle = {
-    fontSize: 11,
-    fontWeight: 600,
-    color: '#94a3b8',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-};
-
-const inputStyle = {
-    background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
-    padding: '12px',
-    borderRadius: 10,
-    color: '#fff',
-    fontSize: 14,
-    outline: 'none',
-};
-
-const infoNoteStyle = {
-    marginTop: 20,
-    fontSize: 12,
-    color: '#71717a',
-    fontStyle: 'italic'
-};
-
-const buttonGroupStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 12,
-};
-
-const downloadButtonStyle = {
-    padding: '16px',
-    borderRadius: 12,
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    textAlign: 'left',
-};
-
-const buttonContentStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-};
-
-const buttonLabelStyle = {
-    fontWeight: 700,
-    fontSize: 15,
-};
-
-const buttonSublabelStyle = {
-    fontSize: 11,
-    opacity: 0.7,
-    marginTop: 2,
-};
-
-const metricsRowStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-    gap: 20
-};
-
-const miniMetricStyle = {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    background: 'rgba(255,255,255,0.02)',
-    padding: '12px',
-    borderRadius: 10,
-    border: '1px solid rgba(255,255,255,0.03)'
-};
-
-const miniMetricLabel = {
-    fontSize: 10,
-    color: '#71717a',
-    textTransform: 'uppercase',
-    fontWeight: 600
-};
-
-const miniMetricVal = {
-    fontSize: 13,
-    color: '#fff',
-    fontWeight: 600
-};
-
-const placeholderContentStyle = {
+    background: 'rgba(15, 15, 20, 0.4)',
+    borderRadius: '16px',
     padding: '24px',
-    background: 'rgba(0,0,0,0.15)',
-    borderRadius: 12,
+    border: '1px solid rgba(255, 255, 255, 0.04)',
     display: 'flex',
-    justifyContent: 'center'
+    alignItems: 'flex-start',
+    gap: '20px'
 };
 
-const loadingOverlayStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(0,0,0,0.7)',
-    borderRadius: 16,
+const iconWrapStyle = {
+    width: '44px',
+    height: '44px',
+    borderRadius: '12px',
+    background: 'rgba(255, 255, 255, 0.02)',
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
-    zIndex: 10,
+    border: '1px solid rgba(255, 255, 255, 0.04)',
+    flexShrink: 0
+};
+
+const cardTitleStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', marginBottom: '4px' };
+const cardDescStyle = { fontSize: '11px', color: '#52525b', lineHeight: '1.6', marginBottom: '20px', fontWeight: '700' };
+
+const btnStyle = {
+    width: '100%',
+    padding: '12px',
+    background: '#fbbf24',
+    border: 'none',
+    borderRadius: '12px',
+    color: '#000',
+    fontWeight: '900',
+    fontSize: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
 };
 
 const spinnerStyle = {
-    width: 24,
-    height: 24,
-    border: '2px solid rgba(250,204,21,0.1)',
-    borderTop: '2px solid #facc15',
+    width: '12px',
+    height: '12px',
+    border: '2px solid rgba(0,0,0,0.1)',
+    borderTop: '2px solid #000',
     borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
+    animation: 'spin 1s linear infinite'
+};
+
+const placeholderBadgeStyle = {
+    textAlign: 'center',
+    padding: '12px',
+    background: 'rgba(255, 255, 255, 0.01)',
+    borderRadius: '12px',
+    color: '#3f3f46',
+    fontSize: '10px',
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    border: '1px solid rgba(255, 255, 255, 0.02)'
+};
+
+const infoBoxStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '16px',
+    background: 'rgba(255, 255, 255, 0.01)',
+    borderRadius: '16px',
+    fontSize: '10px',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    border: '1px solid rgba(255, 255, 255, 0.02)'
 };

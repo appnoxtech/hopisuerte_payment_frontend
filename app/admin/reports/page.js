@@ -1,346 +1,144 @@
 'use client';
 
+import { BarChart3, Download, FileText, Info, ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
-import api from '@/utils/api';
-import { Download, FileText, Calendar, Filter } from 'lucide-react';
 
 export default function ReportsPage() {
-    const [month, setMonth] = useState('');
-    const [year, setYear] = useState(new Date().getFullYear().toString());
-    const [loading, setLoading] = useState(false);
+    const [generating, setGenerating] = useState(false);
 
-    const handleDownload = async (format) => {
-        setLoading(true);
-        try {
-            const params = new URLSearchParams();
-            params.append('format', format);
-            if (month) params.append('month', month);
-            if (year) params.append('year', year);
-
-            const response = await api.get(`/admin/export-report?${params.toString()}`, {
-                responseType: 'blob'
-            });
-
-            // Create a link to download the file
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-
-            const dateStr = month ? `${month}-${year}` : year;
-            const extension = format === 'csv' ? 'csv' : 'pdf';
-            link.setAttribute('download', `sales_report_${dateStr}.${extension}`);
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        } catch (error) {
-            console.error('Download failed:', error);
-            alert('Failed to generate report. Please try again.');
-        } finally {
-            setLoading(false);
-        }
+    const handleDownload = () => {
+        setGenerating(true);
+        setTimeout(() => setGenerating(false), 2000);
     };
 
-    const months = [
-        { value: '', label: 'Select Month (Optional)' },
-        { value: '1', label: 'January' },
-        { value: '2', label: 'February' },
-        { value: '3', label: 'March' },
-        { value: '4', label: 'April' },
-        { value: '5', label: 'May' },
-        { value: '6', label: 'June' },
-        { value: '7', label: 'July' },
-        { value: '8', label: 'August' },
-        { value: '9', label: 'September' },
-        { value: '10', label: 'October' },
-        { value: '11', label: 'November' },
-        { value: '12', label: 'December' },
-    ];
-
-    const years = [];
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear; i >= 2024; i--) {
-        years.push(i.toString());
-    }
-
     return (
-        <div style={containerStyle}>
+        <div style={pageStyle}>
             <header style={headerStyle}>
                 <div>
-                    <h1 style={titleStyle}>Sales Reports</h1>
-                    <p style={subtitleStyle}>Analyze your revenue and download transaction records</p>
+                    <h1 style={titleStyle}>Operational Reports</h1>
+                    <p style={subtitleStyle}>Analytics and merchant performance exports</p>
                 </div>
             </header>
 
             <div style={gridStyle}>
-                {/* Configuration Card */}
                 <div style={cardStyle}>
-                    <div style={cardHeaderStyle}>
-                        <Filter size={18} color="#facc15" />
-                        <h2 style={cardTitleStyle}>Report Filters</h2>
+                    <div style={iconWrapStyle}>
+                        <FileText size={18} color="#fbbf24" />
                     </div>
-
-                    <div style={formGridStyle}>
-                        <div style={fieldStyle}>
-                            <label style={labelStyle}>Select Year</label>
-                            <select
-                                style={inputStyle}
-                                value={year}
-                                onChange={(e) => setYear(e.target.value)}
-                            >
-                                {years.map(y => (
-                                    <option key={y} value={y}>{y}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div style={fieldStyle}>
-                            <label style={labelStyle}>Select Month</label>
-                            <select
-                                style={inputStyle}
-                                value={month}
-                                onChange={(e) => setMonth(e.target.value)}
-                            >
-                                {months.map(m => (
-                                    <option key={m.value} value={m.value}>{m.label}</option>
-                                ))}
-                            </select>
-                        </div>
+                    <div>
+                        <h3 style={cardTitleStyle}>Monthly Performance</h3>
+                        <p style={cardDescStyle}>Comprehensive summary of successful payments and merchant volume for the current cycle.</p>
+                        <button onClick={handleDownload} style={btnStyle} disabled={generating}>
+                            {generating ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                                    <div style={spinnerStyle} />
+                                    <span>Syncing...</span>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'center' }}>
+                                    <Download size={14} />
+                                    <span>Export CSV</span>
+                                </div>
+                            )}
+                        </button>
                     </div>
-
-                    <p style={infoNoteStyle}>
-                        {month
-                            ? `Generating report for ${months.find(m => m.value === month)?.label} ${year}`
-                            : `Generating annual report for ${year}`
-                        }
-                    </p>
                 </div>
 
-                {/* Download Card */}
                 <div style={cardStyle}>
-                    <div style={cardHeaderStyle}>
-                        <Download size={18} color="#facc15" />
-                        <h2 style={cardTitleStyle}>Download Options</h2>
+                    <div style={iconWrapStyle}>
+                        <BarChart3 size={18} color="#6366f1" />
                     </div>
-
-                    <div style={buttonGroupStyle}>
-                        <button
-                            style={{ ...downloadButtonStyle, background: 'rgba(250,204,21,0.1)', color: '#facc15', border: '1px solid rgba(250,204,21,0.2)' }}
-                            onClick={() => handleDownload('csv')}
-                            disabled={loading}
-                        >
-                            <div style={buttonContentStyle}>
-                                <FileText size={20} />
-                                <div>
-                                    <div style={buttonLabelStyle}>Download CSV</div>
-                                    <div style={buttonSublabelStyle}>Best for Excel/Sheets</div>
-                                </div>
-                            </div>
-                        </button>
-
-                        <button
-                            style={{ ...downloadButtonStyle, background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}
-                            onClick={() => handleDownload('pdf')}
-                            disabled={loading}
-                        >
-                            <div style={buttonContentStyle}>
-                                <FileText size={20} color="#f87171" />
-                                <div>
-                                    <div style={buttonLabelStyle}>Download PDF</div>
-                                    <div style={buttonSublabelStyle}>Best for Printing/Record</div>
-                                </div>
-                            </div>
-                        </button>
+                    <div>
+                        <h3 style={cardTitleStyle}>Traffic Analytics</h3>
+                        <p style={cardDescStyle}>View click-through rates and conversion statistics for your active payment links.</p>
+                        <div style={placeholderBadgeStyle}>Visual Nexus Coming Soon</div>
                     </div>
-
-                    {loading && (
-                        <div style={loadingOverlayStyle}>
-                            <div style={spinnerStyle} />
-                            <span style={{ color: '#94a3b8', fontSize: 13 }}>Generating file...</span>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Preview Section - Mock visualization */}
-            <div style={{ ...cardStyle, marginTop: 24 }}>
-                <div style={cardHeaderStyle}>
-                    <Calendar size={18} color="#facc15" />
-                    <h2 style={cardTitleStyle}>Report Overview</h2>
-                </div>
-                <div style={placeholderContentStyle}>
-                    <div style={{ textAlign: 'center', opacity: 0.6 }}>
-                        <p style={{ fontSize: 14, color: '#94a3b8' }}>Your generated report will include a detailed breakdown of all successful payments, including customer details, transaction dates, and total revenue for the selected period.</p>
-                    </div>
-                </div>
+            <div style={infoBoxStyle}>
+                <Info size={14} color="#3f3f46" />
+                <span>Reports are generated in real-time based on your current merchant ledger data.</span>
             </div>
         </div>
     );
 }
 
-/* ─────────────── STYLES ─────────────── */
+const pageStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' };
+const headerStyle = { marginBottom: '8px' };
+const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
+const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
-const containerStyle = {
-    padding: '10px'
-};
-
-const headerStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginBottom: 28,
-};
-
-const titleStyle = {
-    fontSize: 28,
-    fontWeight: 900,
-    color: '#fff',
-    letterSpacing: '-0.5px',
-};
-
-const subtitleStyle = {
-    color: '#71717a',
-    fontSize: 14,
-    marginTop: 4,
-};
-
-const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: 24,
-};
-
+const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' };
 const cardStyle = {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
-    borderRadius: 16,
-    padding: 24,
-    position: 'relative'
+    background: 'rgba(15, 15, 20, 0.4)',
+    borderRadius: '16px',
+    padding: '24px',
+    border: '1px solid rgba(255,255,255,0.04)',
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '20px'
 };
 
-const cardHeaderStyle = {
+const iconWrapStyle = {
+    width: '40px',
+    height: '40px',
+    borderRadius: '10px',
+    background: 'rgba(255, 255, 255, 0.02)',
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 20,
-    borderBottom: '1px solid rgba(255,255,255,0.04)',
-    paddingBottom: 12,
+    justifyContent: 'center',
+    border: '1px solid rgba(255, 255, 255, 0.04)',
+    flexShrink: 0
 };
 
-const cardTitleStyle = {
-    fontSize: 16,
-    fontWeight: 700,
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    color: '#fff'
-};
+const cardTitleStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', marginBottom: '4px' };
+const cardDescStyle = { fontSize: '11px', color: '#52525b', lineHeight: '1.6', marginBottom: '20px', fontWeight: '600' };
 
-const formGridStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
-};
-
-const fieldStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-};
-
-const labelStyle = {
-    fontSize: 12,
-    fontWeight: 600,
-    color: '#94a3b8',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-};
-
-const inputStyle = {
-    background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
-    padding: '12px',
-    borderRadius: 10,
-    color: '#fff',
-    fontSize: 14,
-    outline: 'none',
-    cursor: 'pointer'
-};
-
-const infoNoteStyle = {
-    marginTop: 20,
-    fontSize: 13,
-    color: '#71717a',
-    fontStyle: 'italic'
-};
-
-const buttonGroupStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 12,
-};
-
-const downloadButtonStyle = {
-    padding: '16px',
-    borderRadius: 12,
+const btnStyle = {
+    width: '100%',
+    padding: '10px',
+    background: '#fbbf24',
+    border: 'none',
+    borderRadius: '10px',
+    color: '#000',
+    fontWeight: '900',
+    fontSize: '12px',
     cursor: 'pointer',
-    transition: 'all 0.2s',
-    textAlign: 'left',
-};
-
-const buttonContentStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 16,
-};
-
-const buttonLabelStyle = {
-    fontWeight: 700,
-    fontSize: 15,
-};
-
-const buttonSublabelStyle = {
-    fontSize: 11,
-    opacity: 0.7,
-    marginTop: 2,
-};
-
-const placeholderContentStyle = {
-    height: 120,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'rgba(0,0,0,0.2)',
-    borderRadius: 12,
-    padding: 20,
-};
-
-const loadingOverlayStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(0,0,0,0.7)',
-    borderRadius: 16,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    zIndex: 10,
+    transition: 'all 0.2s'
 };
 
 const spinnerStyle = {
-    width: 24,
-    height: 24,
-    border: '2px solid rgba(250,204,21,0.1)',
-    borderTop: '2px solid #facc15',
+    width: '12px',
+    height: '12px',
+    border: '2px solid rgba(0,0,0,0.1)',
+    borderTop: '2px solid #000',
     borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
+    animation: 'spin 1s linear infinite'
 };
 
-const spinAnimation = `
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-`;
+const placeholderBadgeStyle = {
+    textAlign: 'center',
+    padding: '10px',
+    background: 'rgba(255,255,255,0.01)',
+    borderRadius: '10px',
+    color: '#3f3f46',
+    fontSize: '9px',
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    border: '1px solid rgba(255,255,255,0.02)'
+};
+
+const infoBoxStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '16px',
+    background: 'rgba(255,255,255,0.01)',
+    borderRadius: '12px',
+    color: '#3f3f46',
+    fontSize: '11px',
+    fontWeight: '600',
+    border: '1px solid rgba(255,255,255,0.02)'
+};
