@@ -58,15 +58,8 @@ export default function AdminDashboard() {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
-                <div style={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    borderTop: '2px solid #fbbf24',
-                    borderBottom: '2px solid #fbbf24',
-                    animation: 'spin 1s linear infinite'
-                }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }

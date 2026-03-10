@@ -46,8 +46,8 @@ export default function SuperAdminDashboard() {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-                <div style={{ width: '24px', height: '24px', border: '3px solid rgba(251, 191, 36, 0.1)', borderTop: '3px solid #fbbf24', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }

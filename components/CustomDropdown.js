@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Search, X } from 'lucide-react';
 
 export default function CustomDropdown({
@@ -14,8 +15,14 @@ export default function CustomDropdown({
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [menuStyles, setMenuStyles] = useState({});
+    const [portalCoords, setPortalCoords] = useState({ top: 0, left: 0, width: 0, direction: 'down' });
     const dropdownRef = useRef(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
 
     const selectedOption = useMemo(() =>
         options.find(opt => opt.value === value),
@@ -29,40 +36,47 @@ export default function CustomDropdown({
         );
     }, [options, searchQuery]);
 
-    // Close when clicking outside and handle position calc
+    // Calculate position taking viewport into account
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-
         if (isOpen && dropdownRef.current) {
             const rect = dropdownRef.current.getBoundingClientRect();
             const spaceBelow = window.innerHeight - rect.bottom;
             const spaceAbove = rect.top;
-            const preferredMaxHeight = 350;
-            const minSpaceNeeded = 200;
+            const minSpaceNeeded = 250;
 
-            let newStyles = {
-                maxHeight: `min(${preferredMaxHeight}px, 60vh)`
-            };
+            let direction = 'down';
+            let top = rect.bottom + window.scrollY + 4;
 
-            // If not enough space below, try opening upwards
             if (spaceBelow < minSpaceNeeded && spaceAbove > spaceBelow) {
-                newStyles.bottom = 'calc(100% + 4px)';
-                newStyles.top = 'auto';
-                newStyles.maxHeight = `min(${preferredMaxHeight}px, ${spaceAbove - 20}px)`;
-            } else {
-                newStyles.top = 'calc(100% + 4px)';
-                newStyles.bottom = 'auto';
-                newStyles.maxHeight = `min(${preferredMaxHeight}px, ${spaceBelow - 20}px)`;
+                direction = 'up';
+                top = rect.top + window.scrollY - 4; // We'll use transform: translateY(-100%)
             }
-            setMenuStyles(newStyles);
+
+            setPortalCoords({
+                top,
+                left: rect.left + window.scrollX,
+                width: rect.width,
+                direction,
+                maxHeight: direction === 'down' ? Math.min(350, spaceBelow - 20) : Math.min(350, spaceAbove - 20)
+            });
         }
 
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                // Check if the click was inside the portal menu
+                const portalMenu = document.getElementById('dropdown-portal-menu');
+                if (portalMenu && portalMenu.contains(event.target)) return;
+                setIsOpen(false);
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+            window.addEventListener("scroll", () => setIsOpen(false), { once: true });
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, [isOpen]);
 
     const handleSelect = (option) => {
@@ -71,19 +85,72 @@ export default function CustomDropdown({
         setSearchQuery("");
     };
 
+    const menuContent = (
+        <div
+            id="dropdown-portal-menu"
+            style={{
+                ...menuWrapperStyle,
+                top: portalCoords.top,
+                left: portalCoords.left,
+                width: portalCoords.width,
+                maxHeight: portalCoords.maxHeight,
+                transform: portalCoords.direction === 'up' ? 'translateY(-100%)' : 'none',
+            }}
+        >
+            {showSearch && (
+                <div style={searchContainerStyle}>
+                    <Search size={14} style={{ color: '#71717a' }} />
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        autoFocus
+                        style={searchInputStyle}
+                    />
+                    {searchQuery && (
+                        <X
+                            size={14}
+                            style={{ color: '#71717a', cursor: 'pointer' }}
+                            onClick={() => setSearchQuery("")}
+                        />
+                    )}
+                </div>
+            )}
+
+            <div style={optionsListStyle}>
+                {filteredOptions.length > 0 ? (
+                    filteredOptions.map((opt) => (
+                        <div
+                            key={opt.value}
+                            onClick={() => handleSelect(opt)}
+                            style={{
+                                ...optionStyle,
+                                background: value === opt.value ? 'rgba(250,204,21,0.1)' : 'transparent',
+                                color: value === opt.value ? '#facc15' : '#fff'
+                            }}
+                        >
+                            {opt.label}
+                        </div>
+                    ))
+                ) : (
+                    <div style={noResultsStyle}>No results found</div>
+                )}
+            </div>
+        </div>
+    );
+
     return (
         <div
             ref={dropdownRef}
             className={`relative w-full ${className}`}
             style={{ ...containerStyle, ...style }}
         >
-            {/* Label/Toggle */}
             <div
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
                     ...toggleStyle,
-                    borderColor: isOpen ? 'var(--primary, #facc15)' : 'rgba(255,255,255,0.08)',
-                    boxShadow: isOpen ? 'var(--primary-glow, 0 0 0 1px rgba(250,204,21,0.2))' : 'none'
+                    borderColor: isOpen ? '#facc15' : 'rgba(255,255,255,0.08)',
                 }}
             >
                 <span style={{
@@ -96,7 +163,7 @@ export default function CustomDropdown({
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
                 <ChevronDown
-                    size={18}
+                    size={16}
                     style={{
                         color: '#71717a',
                         transform: isOpen ? 'rotate(180deg)' : 'none',
@@ -105,92 +172,36 @@ export default function CustomDropdown({
                 />
             </div>
 
-            {/* Menu */}
-            {isOpen && (
-                <div style={{ ...menuStyle, ...menuStyles }}>
-                    {showSearch && (
-                        <div style={searchContainerStyle}>
-                            <Search size={14} style={{ color: '#71717a' }} />
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                autoFocus
-                                style={searchInputStyle}
-                            />
-                            {searchQuery && (
-                                <X
-                                    size={14}
-                                    style={{ color: '#71717a', cursor: 'pointer' }}
-                                    onClick={() => setSearchQuery("")}
-                                />
-                            )}
-                        </div>
-                    )}
-
-                    <div style={optionsListStyle}>
-                        {filteredOptions.length > 0 ? (
-                            filteredOptions.map((opt) => (
-                                <div
-                                    key={opt.value}
-                                    onClick={() => handleSelect(opt)}
-                                    style={{
-                                        ...optionStyle,
-                                        background: value === opt.value ? 'var(--primary-glow, rgba(250,204,21,0.1))' : 'transparent',
-                                        color: value === opt.value ? 'var(--primary, #facc15)' : '#fff'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (value !== opt.value) e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (value !== opt.value) e.currentTarget.style.background = 'transparent';
-                                    }}
-                                >
-                                    {opt.label}
-                                </div>
-                            ))
-                        ) : (
-                            <div style={noResultsStyle}>No results found</div>
-                        )}
-                    </div>
-                </div>
-            )}
+            {isOpen && mounted && createPortal(menuContent, document.body)}
         </div>
     );
 }
 
-const containerStyle = {
-    position: 'relative'
-};
-
+const containerStyle = { position: 'relative' };
 const toggleStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    padding: '12px 14px',
-    background: 'var(--bg-main, #09090b)',
+    padding: '10px 14px',
+    background: '#09090b',
     border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 10,
+    borderRadius: 8,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     userSelect: 'none'
 };
 
-const menuStyle = {
+const menuWrapperStyle = {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    background: 'var(--bg-card, #121214)',
+    background: '#121214',
     border: '1px solid rgba(255,255,255,0.12)',
-    borderRadius: 12,
-    zIndex: 1000,
-    boxShadow: 'var(--shadow-xl)',
+    borderRadius: 10,
+    zIndex: 9999,
+    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
-    animation: 'fadeIn 0.15s ease-out'
 };
 
 const searchContainerStyle = {
@@ -212,23 +223,14 @@ const searchInputStyle = {
     width: '100%'
 };
 
-const optionsListStyle = {
-    overflowY: 'auto',
-    padding: '4px',
-    flex: 1
-};
-
+const optionsListStyle = { overflowY: 'auto', padding: '4px', flex: 1 };
 const optionStyle = {
     padding: '10px 12px',
-    fontSize: 14,
-    borderRadius: 8,
+    fontSize: 13,
+    borderRadius: 6,
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    fontWeight: '600'
 };
 
-const noResultsStyle = {
-    padding: '16px',
-    textAlign: 'center',
-    color: '#71717a',
-    fontSize: 13
-};
+const noResultsStyle = { padding: '16px', textAlign: 'center', color: '#71717a', fontSize: 13 };

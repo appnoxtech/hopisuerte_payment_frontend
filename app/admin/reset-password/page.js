@@ -215,9 +215,8 @@ export default function ResetPassword() {
                             }}
                         >
                             {loading ? (
-                                <div style={loadingScope}>
-                                    <div style={miniSpinnerStyle} />
-                                    <span>Updating...</span>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
+                                    <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
                                 </div>
                             ) : 'Finalize Passcode Reset'}
                         </button>
