@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import api from '@/utils/api';
 import { loadStripe } from '@stripe/stripe-js';
@@ -12,7 +12,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_
 
 import CustomDropdown from '@/components/CustomDropdown';
 
-export default function UniqueProductPaymentPage() {
+function UniqueProductPaymentContent() {
 
     const { uniqueId } = useParams();
     const searchParams = useSearchParams();
@@ -113,12 +113,6 @@ export default function UniqueProductPaymentPage() {
                         priority
                         style={{ objectFit: 'contain', margin: '0 auto 12px auto' }}
                     />
-                    {/* <p style={{ color: '#71717a', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2 }}>
-                        Secure Checkout • Stripe & iDEAL
-                    </p> */}
-                    {/* <h1 style={{ fontSize: 24, fontWeight: 900, textTransform: 'uppercase', color: '#fff', marginTop: 24, marginBottom: 8, lineHeight: 1.1 }}>
-                        {product?.name}
-                    </h1> */}
                 </div>
 
                 {/* Card */}
@@ -127,9 +121,6 @@ export default function UniqueProductPaymentPage() {
                     {!clientSecret ? (
 
                         <form onSubmit={handleStartPayment}>
-
-                            {/* Brand Header */}
-
 
                             {/* Amount - only show if not pre-filled from home page */}
                             {!isAmountPreFilled && (
@@ -233,6 +224,14 @@ export default function UniqueProductPaymentPage() {
             </div>
 
         </main>
+    );
+}
+
+export default function UniqueProductPaymentPage() {
+    return (
+        <Suspense fallback={<div style={msgStyle}>Loading payment portal...</div>}>
+            <UniqueProductPaymentContent />
+        </Suspense>
     );
 }
 

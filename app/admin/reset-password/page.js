@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/utils/api';
 import { passwordRules, allPasswordRulesPassed, validatePassword } from '@/utils/validation';
 import { Eye, EyeOff } from 'lucide-react';
 
-export default function ResetPassword() {
+function ResetPasswordContent() {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -215,8 +215,8 @@ export default function ResetPassword() {
                             }}
                         >
                             {loading ? (
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                                    <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "20px" }}>
+                                    <div style={{ width: 16, height: 16, borderRadius: '50%', borderTop: '2px solid #000', borderBottom: '2px solid rgba(0, 0, 0, 0.1)', animation: 'spin 1s linear infinite' }} />
                                 </div>
                             ) : 'Finalize Passcode Reset'}
                         </button>
@@ -224,6 +224,18 @@ export default function ResetPassword() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ResetPassword() {
+    return (
+        <Suspense fallback={
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#050506" }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+            </div>
+        }>
+            <ResetPasswordContent />
+        </Suspense>
     );
 }
 
