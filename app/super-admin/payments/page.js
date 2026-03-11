@@ -206,10 +206,9 @@ export default function GlobalPayments() {
                     <table style={tableStyle}>
                         <thead>
                             <tr style={tableHeaderStyle}>
-                                <th style={{ ...thStyle, paddingLeft: '24px' }}>ID</th>
-                                <th style={thStyle}>Freelancer</th>
+                                <th style={{ ...thStyle, paddingLeft: '24px' }}>Freelancer</th>
                                 {/* <th style={thStyle}>Asset</th> */}
-                                <th style={thCenterStyle}>Capital</th>
+                                <th style={thCenterStyle}>Amount</th>
                                 <th style={thCenterStyle}>Status</th>
                                 <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Timestamp</th>
                             </tr>
@@ -223,10 +222,7 @@ export default function GlobalPayments() {
                                 (activeFreelancer ? activeFreelancer.payments : payments).map((p) => (
                                     <tr key={p.id} style={trStyle}>
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
-                                            <span style={idTextStyle}>#{p.id.toString().slice(-6).toUpperCase()}</span>
-                                        </td>
-                                        <td style={tdStyle}>
-                                            <div style={userEmailTextStyle}>{p.product?.user?.name || 'Direct'}</div>
+                                            <div style={{ fontSize: '14px', color: '#a1a1aa', fontWeight: '800' }}>{p.product?.user?.name || 'Direct'}</div>
                                         </td>
                                         {/* <td style={tdStyle}>
                                             <span style={productBadgeStyle}>{p.product_name || 'System Link'}</span>
@@ -309,6 +305,6 @@ const idTextStyle = { fontSize: '9px', fontFamily: 'monospace', color: '#3f3f46'
 const productBadgeStyle = { fontSize: '11px', color: '#52525b', fontWeight: '700' };
 const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' };
 const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
-const dateTextStyle = { fontSize: '11px', color: '#3f3f46', fontWeight: '800' };
+const dateTextStyle = { fontSize: '11px', color: '#a1a1aa', fontWeight: '800' };
 
 const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
