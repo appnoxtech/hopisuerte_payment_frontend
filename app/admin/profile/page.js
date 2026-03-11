@@ -147,10 +147,10 @@ export default function ProfileSettings() {
                         </div>
 
                         <div style={actionScopeStyle}>
-                            <div style={disclaimerStyle}>
+                            {/* <div style={disclaimerStyle}>
                                 <AlertCircle size={12} style={{ marginTop: '2px' }} />
                                 <span>Slug changes will break any previous payment links you have shared.</span>
-                            </div>
+                            </div> */}
 
                             <button
                                 type="submit"
@@ -200,7 +200,7 @@ const headerWrapperStyle = {
 };
 
 const titleStyle = {
-    fontSize: '20px',
+    fontSize: '18px',
     fontWeight: '900',
     color: '#fff',
     letterSpacing: '-0.02em'
@@ -208,9 +208,11 @@ const titleStyle = {
 
 const subtitleStyle = {
     fontSize: '11px',
-    color: '#71717a',
+    color: '#52525b',
     marginTop: '2px',
-    fontWeight: '500'
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
 const idBadgeStyle = {
@@ -221,8 +223,8 @@ const idBadgeStyle = {
     background: 'rgba(16, 185, 129, 0.05)',
     border: '1px solid rgba(16, 185, 129, 0.1)',
     borderRadius: '20px',
-    fontSize: '10px',
-    fontWeight: '800',
+    fontSize: '11px',
+    fontWeight: '600',
     color: '#10b981',
     textTransform: 'uppercase'
 };
@@ -275,7 +277,7 @@ const avatarCircleStyle = {
 };
 
 const formTitleStyle = {
-    fontSize: '16px',
+    fontSize: '14px',
     fontWeight: '800',
     color: '#fff',
     margin: 0
@@ -284,7 +286,8 @@ const formTitleStyle = {
 const formSubStyle = {
     fontSize: '11px',
     color: '#52525b',
-    marginTop: '2px'
+    marginTop: '2px',
+    fontWeight: '800'
 };
 
 const formStyle = {
@@ -307,10 +310,10 @@ const inputScopeStyle = {
 
 const labelStyle = {
     fontSize: '10px',
-    fontWeight: '800',
-    color: '#52525b',
+    fontWeight: '900',
+    color: '#a1a1aa',
     textTransform: 'uppercase',
-    letterSpacing: '0.1em'
+    letterSpacing: '0.05em'
 };
 
 const inputWrapperStyle = {
@@ -327,8 +330,8 @@ const inputIconStyle = {
 
 const inputStyle = {
     width: '100%',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    background: 'rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
     borderRadius: '8px',
     padding: '10px 12px 10px 36px',
     color: '#fff',
@@ -349,7 +352,7 @@ const actionScopeStyle = {
 };
 
 const disclaimerStyle = {
-    fontSize: '10px',
+    fontSize: '12px',
     color: '#52525b',
     maxWidth: '320px',
     lineHeight: '1.5',
@@ -360,12 +363,11 @@ const disclaimerStyle = {
 const submitButtonStyle = {
     background: '#fbbf24',
     color: '#000',
-    padding: '12px 28px',
+    padding: '10px 18px',
     borderRadius: '10px',
     border: 'none',
-    fontSize: '12px',
-    fontWeight: '900',
-    textTransform: 'uppercase',
+    fontSize: '14px',
+    fontWeight: '600',
     boxShadow: '0 4px 15px rgba(251, 191, 36, 0.15)',
     transition: 'transform 0.2s ease',
 };

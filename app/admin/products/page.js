@@ -162,7 +162,7 @@ const headerWrapperStyle = {
 };
 
 const titleStyle = {
-    fontSize: '20px',
+    fontSize: '18px',
     fontWeight: '900',
     color: '#fff',
     letterSpacing: '-0.02em'
@@ -170,9 +170,11 @@ const titleStyle = {
 
 const subtitleStyle = {
     fontSize: '11px',
-    color: '#71717a',
+    color: '#52525b',
     marginTop: '2px',
-    fontWeight: '500'
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
 const infoBoxStyle = {
@@ -183,9 +185,11 @@ const infoBoxStyle = {
     background: 'rgba(251, 191, 36, 0.05)',
     border: '1px solid rgba(251, 191, 36, 0.1)',
     borderRadius: '20px',
-    fontSize: '10px',
+    fontSize: '11px',
     color: '#fbbf24',
-    fontWeight: '700'
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
 const productGridStyle = {
@@ -219,8 +223,8 @@ const statusBadgeStyle = {
     padding: '4px 10px',
     borderRadius: '20px',
     border: '1px solid',
-    fontSize: '9px',
-    fontWeight: '800',
+    fontSize: '11px',
+    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
 };
@@ -228,18 +232,19 @@ const statusBadgeStyle = {
 const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
 
 const productTitleStyle = {
-    fontSize: '16px',
+    fontSize: '14px',
     fontWeight: '800',
     color: '#fff',
     marginBottom: '6px'
 };
 
 const productDescStyle = {
-    fontSize: '12px',
-    color: '#a1a1aa',
+    fontSize: '11px',
+    color: '#52525b',
     lineHeight: '1.5',
     marginBottom: '20px',
-    minHeight: '36px'
+    minHeight: '36px',
+    fontWeight: '800'
 };
 
 const toggleLinkBtnStyle = {
@@ -247,13 +252,13 @@ const toggleLinkBtnStyle = {
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    padding: '10px 16px',
+    padding: '10px 18px',
     background: 'rgba(251, 191, 36, 0.08)',
     border: '1px solid rgba(251, 191, 36, 0.15)',
     borderRadius: '10px',
     color: '#fbbf24',
-    fontSize: '12px',
-    fontWeight: '700',
+    fontSize: '14px',
+    fontWeight: '600',
     cursor: 'pointer',
     transition: 'all 0.2s ease'
 };
@@ -283,8 +288,8 @@ const currencyLabelStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '900',
-    fontSize: '9px',
+    fontWeight: '800',
+    fontSize: '11px',
     color: '#fbbf24',
     borderRight: '1px solid rgba(251, 191, 36, 0.05)'
 };
@@ -292,8 +297,8 @@ const currencyLabelStyle = {
 const urlPreviewStyle = {
     flex: 1,
     padding: '8px 12px',
-    fontSize: '9px',
-    color: '#71717a',
+    fontSize: '11px',
+    color: '#a1a1aa',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
@@ -325,8 +330,9 @@ const emptyStateStyle = {
 };
 
 const emptyTitleStyle = {
-    fontSize: '14px',
+    fontSize: '12px',
     fontWeight: '800',
-    color: '#52525b',
-    margin: 0
+    color: '#3f3f46',
+    margin: 0,
+    textTransform: 'uppercase'
 };

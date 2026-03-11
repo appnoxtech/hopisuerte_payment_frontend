@@ -188,7 +188,7 @@ export default function SuperAdminProducts() {
                     />
                 </div>
                 <div style={countBadgeWrap}>
-                    <span>{filtered.length} Total</span>
+                    <span>{filtered.length} Total Products</span>
                 </div>
             </div>
 
@@ -339,8 +339,8 @@ export default function SuperAdminProducts() {
                     <div style={{ ...modalCardStyle, width: '800px' }}>
                         <div style={modalHeaderStyle}>
                             <div>
-                                <h2 style={modalTitleStyle}>Audit: <span style={{ color: '#fbbf24' }}>{viewingProductName}</span></h2>
-                                <p style={{ fontSize: 11, color: '#52525b', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 }}>Transaction Ledger Analytics</p>
+                                <h2 style={modalTitleStyle}>Review: <span style={{ color: '#fbbf24' }}>{viewingProductName}</span></h2>
+                                <p style={{ fontSize: 11, color: '#a1a1aa', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 }}>Transaction Records Analytics</p>
                             </div>
                             <button onClick={() => setIsPaymentModalOpen(false)} style={modalCloseBtnStyle}><X size={18} /></button>
                         </div>
@@ -349,8 +349,8 @@ export default function SuperAdminProducts() {
                                 <thead>
                                     <tr style={tableHeaderStyle}>
                                         <th style={thStyle}>Timestamp</th>
-                                        <th style={thStyle}>Origin</th>
-                                        <th style={{ ...thStyle, textAlign: 'right' }}>Capital Flow</th>
+                                        <th style={thStyle}>Freelancer</th>
+                                        <th style={{ ...thStyle, textAlign: 'right' }}>Transactions</th>
                                         <th style={thCenterStyle}>Status</th>
                                     </tr>
                                 </thead>
@@ -360,10 +360,10 @@ export default function SuperAdminProducts() {
                                     ) : (
                                         selectedProductPayments.map((p) => (
                                             <tr key={p.id} style={trStyle}>
-                                                <td style={{ ...tdStyle, fontSize: 11, color: '#52525b' }}>{new Date(p.created_at).toLocaleString()}</td>
+                                                <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa' }}>{new Date(p.created_at).toLocaleString()}</td>
                                                 <td style={tdStyle}>
                                                     <div style={userTextStyle}>{p.customer_name}</div>
-                                                    <div style={{ fontSize: 11, color: '#52525b' }}>{p.customer_email}</div>
+                                                    <div style={{ fontSize: 11, color: '#a1a1aa' }}>{p.customer_email}</div>
                                                 </td>
                                                 <td style={{ ...tdStyle, textAlign: 'right', color: '#fbbf24', fontWeight: '900' }}>
                                                     {Number(p.amount).toLocaleString()} {p.currency}
@@ -391,7 +391,7 @@ export default function SuperAdminProducts() {
 const containerStyle = { display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.4s ease' };
 const headerSectionStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
 const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
 const addBtnStyle = {
     display: 'flex',
@@ -399,12 +399,12 @@ const addBtnStyle = {
     gap: 8,
     background: '#fbbf24',
     border: 'none',
-    padding: '8px 16px',
+    padding: '10px 18px',
     color: '#000',
-    fontWeight: '900',
+    fontWeight: '600',
     borderRadius: '10px',
     cursor: 'pointer',
-    fontSize: '12px'
+    fontSize: '14px'
 };
 
 const filterRowStyle = {
@@ -414,7 +414,7 @@ const filterRowStyle = {
     paddingBottom: '8px'
 };
 
-const searchBoxStyle = { position: 'relative', width: '180px' };
+const searchBoxStyle = { position: 'relative', width: '200px' };
 const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
 
 const filterInputStyle = {
@@ -424,7 +424,7 @@ const filterInputStyle = {
     borderRadius: '8px',
     padding: '8px 12px 8px 30px',
     color: '#fff',
-    fontSize: '12px',
+    fontSize: '14px',
     outline: 'none',
     transition: 'all 0.2s ease'
 };
@@ -432,7 +432,7 @@ const filterInputStyle = {
 const countBadgeWrap = {
     fontSize: '10px',
     fontWeight: '800',
-    color: '#3f3f46',
+    color: '#7f7f88ff',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     marginLeft: 'auto'
@@ -442,16 +442,16 @@ const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius:
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' };
 
-const thStyle = { padding: '16px', fontSize: '9px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
+const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid rgba(255, 255, 255, 0.01)', transition: 'background 0.2s ease' };
 const tdStyle = { padding: '16px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
-const nameLinkStyle = { background: 'none', border: 'none', padding: 0, color: '#fff', fontSize: '13px', fontWeight: '800', cursor: 'pointer', textAlign: 'left', display: 'block' };
-const descTextStyle = { fontSize: '10px', color: '#3f3f46', fontWeight: '600', marginTop: 2 };
+const nameLinkStyle = { background: 'none', border: 'none', padding: 0, color: '#fff', fontSize: '14px', fontWeight: '800', cursor: 'pointer', textAlign: 'left', display: 'block' };
+const descTextStyle = { fontSize: '11px', color: '#52525b', fontWeight: '600', marginTop: 2 };
 const iconBoxStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(251, 191, 36, 0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(251, 191, 36, 0.05)' };
-const userTextStyle = { fontSize: '12px', fontWeight: '800', color: '#a1a3ad' };
+const userTextStyle = { fontSize: '14px', fontWeight: '800', color: '#a1a1aa' };
 
 const avatarCircleStyle = {
     width: '24px',
@@ -493,8 +493,8 @@ const statusLevelStyle = {
     padding: '4px 10px',
     borderRadius: '20px',
     border: '1px solid',
-    fontSize: '9px',
-    fontWeight: '900',
+    fontSize: '11px',
+    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
 };
@@ -513,17 +513,17 @@ const actionBtnStyle = {
     cursor: 'pointer'
 };
 
-const emptyStateStyle = { padding: '40px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
 const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 0, 0, 0.8)", backdropFilter: 'blur(12px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalCardStyle = { background: "#050506", width: "480px", borderRadius: "24px", padding: '32px', border: '1px solid rgba(255, 255, 255, 0.04)', boxShadow: '0 32px 128px rgba(0, 0, 0, 0.8)' };
+const modalCardStyle = { background: "#050506", width: "480px", borderRadius: "24px", padding: '32px', border: '1px solid rgba(255, 255, 255, 0.19)', boxShadow: '0 32px 128px rgba(0, 0, 0, 0.8)' };
 const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' };
 const modalTitleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#3f3f46', cursor: 'pointer' };
+const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#a1a1aa', cursor: 'pointer' };
 const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
 const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '6px' };
-const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
-const modalInputStyle = { width: "100%", padding: "12px 14px", background: 'rgba(255, 255, 255, 0.01)', border: '1px solid rgba(255, 255, 255, 0.04)', color: 'white', borderRadius: 10, fontSize: '13px', outline: 'none' };
+const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
+const modalInputStyle = { width: "100%", padding: "12px 14px", background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)', color: 'white', borderRadius: 10, fontSize: '13px', outline: 'none' };
 const checkboxWrapper = { display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 };
 const checkboxStyle = { accentColor: '#fbbf24', width: 14, height: 14 };
 const checkboxLabel = { color: '#71717a', fontSize: '12px', fontWeight: '700', cursor: 'pointer' };
@@ -540,11 +540,12 @@ const saveBtnStyle = {
     fontSize: '12px'
 };
 
+
 const cancelBtnStyle = {
     padding: "12px 24px",
-    background: 'rgba(255, 255, 255, 0.02)',
+    background: 'rgba(255, 255, 255, 0.05)',
     color: '#fff',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
     borderRadius: 10,
     cursor: 'pointer',
     fontSize: '12px',

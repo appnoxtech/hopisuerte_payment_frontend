@@ -278,36 +278,36 @@ const refreshBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', ba
 
 const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '8px' };
 const backBtnStyle = { display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', padding: '8px 12px', borderRadius: '8px', color: '#fbbf24', fontSize: '11px', fontWeight: '800', cursor: 'pointer' };
-const searchBoxStyle = { position: 'relative', width: '220px' };
+const searchBoxStyle = { position: 'relative', width: '200px' };
 const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
-const filterInputStyle = { width: '100%', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '12px', outline: 'none' };
-const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
+const filterInputStyle = { width: '100%', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
+const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
 
 const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' };
 
-const thStyle = { padding: '16px', fontSize: '9px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
+const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid rgba(255, 255, 255, 0.01)', transition: 'background 0.2s ease' };
 const tdStyle = { padding: '16px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
 const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
-const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: '#fbbf24', fontSize: '12px' };
-const userNameTextStyle = { fontSize: '13px', fontWeight: '800', color: '#fff' };
-const userEmailTextStyle = { fontSize: '11px', color: '#3f3f46', fontWeight: '600' };
+const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '14px' };
+const userNameTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
+const userEmailTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600' };
 
 const amountGroupStyle = { display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' };
 const currencySymbolStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
 const amountTextStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
 
-const countBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '6px', fontSize: '9px', color: '#71717a', fontWeight: '800' };
+const countBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '6px', fontSize: '11px', color: '#a1a1aa', fontWeight: '600' };
 const historyBtnStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: '10px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer' };
 
 const idTextStyle = { fontSize: '9px', fontFamily: 'monospace', color: '#3f3f46', background: 'rgba(255, 255, 255, 0.01)', padding: '2px 6px', borderRadius: '4px', fontWeight: '900' };
 const productBadgeStyle = { fontSize: '11px', color: '#52525b', fontWeight: '700' };
-const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' };
 const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
 const dateTextStyle = { fontSize: '11px', color: '#3f3f46', fontWeight: '800' };
 

@@ -91,7 +91,7 @@ export default function SuperAdminDashboard() {
                             <div style={nodeIconBox}><Users size={18} color="#fbbf24" /></div>
                             <div style={{ flex: 1 }}>
                                 <div style={nodeNameStyle}>Freelancer Directory</div>
-                                <div style={nodeDescStyle}>Manage authorized merchant identities</div>
+                                <div style={nodeDescStyle}>Manage authorized freelancers</div>
                             </div>
                             <ArrowUpRight size={14} color="#52525b" />
                         </Link>
@@ -100,7 +100,7 @@ export default function SuperAdminDashboard() {
                             <div style={nodeIconBox}><CreditCard size={18} color="#10b981" /></div>
                             <div style={{ flex: 1 }}>
                                 <div style={nodeNameStyle}>Transactions</div>
-                                <div style={nodeDescStyle}>Global audit of transactional movement</div>
+                                <div style={nodeDescStyle}>Overview of all transactions</div>
                             </div>
                             <ArrowUpRight size={14} color="#52525b" />
                         </Link>
@@ -109,7 +109,7 @@ export default function SuperAdminDashboard() {
                             <div style={nodeIconBox}><BarChart3 size={18} color="#6366f1" /></div>
                             <div style={{ flex: 1 }}>
                                 <div style={nodeNameStyle}>Products</div>
-                                <div style={nodeDescStyle}>Global product and asset management</div>
+                                <div style={nodeDescStyle}>Manage all products</div>
                             </div>
                             <ArrowUpRight size={14} color="#52525b" />
                         </Link>
@@ -173,7 +173,7 @@ const headerSectionStyle = {
 };
 
 const titleStyle = {
-    fontSize: '20px',
+    fontSize: '18px',
     fontWeight: '900',
     color: '#fff',
     letterSpacing: '-0.02em'
@@ -181,8 +181,10 @@ const titleStyle = {
 
 const subtitleStyle = {
     fontSize: '11px',
-    color: '#71717a',
-    fontWeight: '500',
+    color: '#52525b',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
     marginTop: '2px'
 };
 
@@ -273,7 +275,10 @@ const sectionTitleStyle = {
 
 const sectionSubStyle = {
     fontSize: '11px',
-    color: '#52525b'
+    color: '#52525b',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
 const nodeListStyle = {

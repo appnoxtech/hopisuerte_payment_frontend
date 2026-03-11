@@ -81,8 +81,11 @@ export default function AdminDashboard() {
 
         return matchesCustomer && matchesStatus && matchesDate;
     }).sort((a, b) => {
-        const dateA = new Date(a.created_at);
-        const dateB = new Date(b.created_at);
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        if (dateA === dateB) {
+            return sortOrder === 'desc' ? b.id - a.id : a.id - b.id;
+        }
         return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 
@@ -171,6 +174,7 @@ export default function AdminDashboard() {
                                     style={{ ...thStyle, textAlign: 'right', paddingRight: '16px', cursor: 'pointer' }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
+                                        Date
                                         {sortOrder === 'desc' ? <ArrowDown size={10} /> : <ArrowUp size={10} />}
                                     </div>
                                 </th>
@@ -215,7 +219,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </td>
                                         <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '16px' }}>
-                                            <div style={timestampStyle}>{new Date(p.created_at).toLocaleDateString()}</div>
+                                            <div style={timestampStyle}>{new Date(p.created_at).toLocaleString()}</div>
                                         </td>
                                     </tr>
                                 ))
@@ -263,7 +267,7 @@ const dashboardHeaderStyle = {
 };
 
 const titleStyle = {
-    fontSize: '20px',
+    fontSize: '18px',
     fontWeight: '900',
     color: '#fff',
     letterSpacing: '-0.02em'
@@ -365,7 +369,7 @@ const filterGroupStyle = {
 
 const searchBoxStyle = {
     position: 'relative',
-    width: '140px',
+    width: '200px',
 };
 
 const searchIconStyle = {
@@ -412,10 +416,10 @@ const tableHeaderStyle = {
 };
 
 const thStyle = {
-    padding: '10px 12px',
-    fontSize: '9px',
-    fontWeight: '800',
-    color: '#52525b',
+    padding: '16px',
+    fontSize: '12px',
+    fontWeight: '900',
+    color: '#7f7f88ff',
     textTransform: 'uppercase'
 };
 
@@ -429,7 +433,7 @@ const trStyle = {
 };
 
 const tdStyle = {
-    padding: '10px 12px'
+    padding: '16px'
 };
 
 const tdCenterStyle = {
@@ -457,12 +461,12 @@ const avatarCircleStyle = {
     fontSize: '10px'
 };
 
-const primaryTextStyle = { fontSize: '12px', fontWeight: '700', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
-const secondaryTextStyle = { fontSize: '9px', color: '#52525b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+const primaryTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+const secondaryTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
 const productBadgeStyle = {
-    fontSize: '9px',
-    fontWeight: '700',
+    fontSize: '11px',
+    fontWeight: '600',
     color: '#a1a1aa',
     textTransform: 'uppercase',
     padding: '2px 5px',
@@ -492,14 +496,16 @@ const statusLevelStyle = {
 };
 
 const timestampStyle = {
-    fontSize: '10px',
-    color: '#52525b',
-    fontWeight: '600'
+    fontSize: '11px',
+    color: '#a1a1aa',
+    fontWeight: '800'
 };
 
 const emptyStateStyle = {
-    padding: '40px 20px',
+    padding: '60px',
     textAlign: 'center',
-    color: '#52525b',
-    fontSize: '11px'
+    color: '#3f3f46',
+    fontSize: '12px',
+    fontWeight: '800',
+    textTransform: 'uppercase'
 };

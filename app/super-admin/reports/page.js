@@ -103,7 +103,7 @@ export default function SuperAdminReportsPage() {
         <div style={pageStyle}>
             <header style={headerStyle}>
                 <div>
-                    <h1 style={titleStyle}>Reports Analytics</h1>
+                    <h1 style={titleStyle}>Reports and Insights</h1>
                     {/* <p style={subtitleStyle}>Global intelligence and parameter-based ledger exports</p> */}
                 </div>
             </header>
@@ -116,8 +116,8 @@ export default function SuperAdminReportsPage() {
                             <Globe size={18} color="#fbbf24" />
                         </div>
                         <div style={{ flex: 1 }}>
-                            <h3 style={cardTitleStyle}>Global System Audit</h3>
-                            <p style={cardDescStyle}>Targeted export of transaction streams and merchant identities.</p>
+                            <h3 style={cardTitleStyle}>Full System Review</h3>
+                            <p style={cardDescStyle}>Download filtered transaction records.</p>
                         </div>
                     </div>
 
@@ -260,7 +260,7 @@ const iconWrapStyle = {
 };
 
 const cardTitleStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', marginBottom: '2px' };
-const cardDescStyle = { fontSize: '11px', color: '#52525b', lineHeight: '1.5', fontWeight: '600' };
+const cardDescStyle = { fontSize: '11px', color: '#52525b', lineHeight: '1.5', fontWeight: '800' };
 
 const formGridStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
 const fieldStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
@@ -279,7 +279,7 @@ const btnStyle = {
     borderRadius: '12px',
     color: '#000',
     fontWeight: '900',
-    fontSize: '12px',
+    fontSize: '14px',
     cursor: 'pointer',
     transition: 'all 0.2s'
 };

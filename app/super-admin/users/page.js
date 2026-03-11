@@ -113,8 +113,8 @@ export default function UserManagement() {
             {/* Professional Header */}
             <header style={headerWrapperStyle}>
                 <div>
-                    <h1 style={titleStyle}>Freelancer Nexus</h1>
-                    <p style={subtitleStyle}>Manage and provision authorized merchant identities</p>
+                    <h1 style={titleStyle}>Freelancers Portal</h1>
+                    <p style={subtitleStyle}>Create and manage verified freelancers</p>
                 </div>
 
                 <div style={headerActionsStyle}>
@@ -130,7 +130,7 @@ export default function UserManagement() {
                         </div>
                     </div>
                     <button onClick={() => setShowModal(true)} style={addBtnStyle}>
-                        <UserPlus size={14} />
+                        <UserPlus size={16} />
                         <span>Create Freelancer</span>
                     </button>
                 </div>
@@ -147,9 +147,9 @@ export default function UserManagement() {
                         style={filterInputStyle}
                     />
                 </div>
-                <div style={countBadgeWrap}>
+                {/* <div style={countBadgeWrap}>
                     <span>{filteredUsers.length} Active Participants</span>
-                </div>
+                </div> */}
             </div>
 
             {/* Main Data Perspective */}
@@ -205,11 +205,11 @@ export default function UserManagement() {
                                     </td>
                                     <td style={{ ...tdCenterStyle }}>
                                         <div style={earningsStyle}>
-                                            <span style={currencySymbolStyle}>$</span>
+                                            <span >$</span>
                                             {(user.total_earnings || 0).toLocaleString()}
                                         </div>
                                     </td>
-                                    <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
+                                    <td style={{ ...tdStyle, textAlign: 'center', paddingRight: '24px' }}>
                                         <button
                                             onClick={() => handleDeleteUser(user.id, user.name)}
                                             style={deleteBtnStyle}
@@ -301,8 +301,8 @@ const statsOverviewStyle = {
 };
 
 const miniStatStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center' };
-const miniStatValueStyle = { fontSize: '13px', fontWeight: '900', color: '#fff' };
-const miniStatLabelStyle = { fontSize: '8px', color: '#3f3f46', fontWeight: '800', textTransform: 'uppercase' };
+const miniStatValueStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
+const miniStatLabelStyle = { fontSize: '11px', color: '#7f7f88ff', fontWeight: '600', textTransform: 'uppercase' };
 const miniStatDividerStyle = { width: '1px', height: '16px', background: 'rgba(255,255,255,0.05)' };
 
 const addBtnStyle = {
@@ -313,36 +313,36 @@ const addBtnStyle = {
     border: 'none',
     padding: '10px 18px',
     color: '#000',
-    fontWeight: '900',
+    fontWeight: '600',
     borderRadius: '10px',
     cursor: 'pointer',
-    fontSize: '11px'
+    fontSize: '14px'
 };
 
 const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '8px' };
 const searchBoxStyle = { position: 'relative', width: '200px' };
 const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
-const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '12px', outline: 'none' };
+const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
 const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
 
 const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const tableHeaderRowStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' };
-const thStyle = { padding: '16px', fontSize: '9px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
+const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid rgba(255, 255, 255, 0.01)', transition: 'background 0.2s ease' };
 const tdStyle = { padding: '16px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
 const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
-const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '12px' };
-const userNameTextStyle = { fontSize: '13px', fontWeight: '800', color: '#fff' };
-const userEmailTextStyle = { fontSize: '10px', color: '#3f3f46', fontWeight: '600' };
+const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '14px' };
+const userNameTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
+const userEmailTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600' };
 
-const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' };
+const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' };
 const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
-const assetBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '9px', color: '#a1a1aa', fontWeight: '800' };
-const earningsStyle = { fontSize: '14px', fontWeight: '900', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 };
+const assetBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '11px', color: '#a1a1aa', fontWeight: '600' };
+const earningsStyle = { fontSize: '14px', fontWeight: '600', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 };
 const currencySymbolStyle = { color: '#3f3f46', fontSize: '11px' };
 const deleteBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', cursor: 'pointer' };
 
@@ -353,20 +353,20 @@ const loadingTextStyle = { fontSize: '10px', color: '#3f3f46', fontWeight: '800'
 const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
 const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 0, 0, 0.8)", backdropFilter: 'blur(12px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalCardStyle = { background: "#050506", width: "420px", borderRadius: "24px", padding: '32px', border: '1px solid rgba(255, 255, 255, 0.04)', boxShadow: '0 32px 128px rgba(0, 0, 0, 0.8)' };
+const modalCardStyle = { background: "#050506", width: "420px", borderRadius: "24px", padding: '32px', border: '1px solid rgba(255, 255, 255, 0.19)', boxShadow: '0 32px 128px rgba(0, 0, 0, 0.8)' };
 const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' };
 const modalTitleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const modalSubTitle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 };
-const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#3f3f46', cursor: 'pointer' };
+const modalSubTitle = { fontSize: '11px', color: '#a1a1aa', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 };
+const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#a1a1aa', cursor: 'pointer' };
 const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
 const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '6px' };
-const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
+const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
 const inputWrapperStyle = { position: 'relative' };
-const modalInputStyle = { width: "100%", padding: "12px 14px", background: 'rgba(255, 255, 255, 0.01)', border: '1px solid rgba(255, 255, 255, 0.04)', color: 'white', borderRadius: 10, fontSize: '13px', outline: 'none' };
+const modalInputStyle = { width: "100%", padding: "12px 14px", background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)', color: 'white', borderRadius: 10, fontSize: '13px', outline: 'none' };
 const modalFooterStyle = { display: "flex", justifyContent: "flex-end", gap: 12, marginTop: "8px" };
 
 const submitBtnStyle = { padding: "12px 24px", background: "#fbbf24", color: '#000', border: "none", fontWeight: "900", borderRadius: 10, cursor: "pointer", fontSize: '12px' };
-const cancelBtnStyle = { padding: "12px 24px", background: 'rgba(255, 255, 255, 0.02)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: 10, cursor: 'pointer', fontSize: '12px', fontWeight: '800' };
+const cancelBtnStyle = { padding: "12px 24px", background: 'rgba(255, 255, 255, 0.05)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: 10, cursor: 'pointer', fontSize: '12px', fontWeight: '800' };
 
 const errorBannerStyle = { padding: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '10px', color: '#f87171', fontSize: '12px', marginBottom: '16px', fontWeight: '700' };
 const successBannerStyle = { padding: '12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', color: '#4ade80', fontSize: '12px', marginBottom: '16px', fontWeight: '700' };

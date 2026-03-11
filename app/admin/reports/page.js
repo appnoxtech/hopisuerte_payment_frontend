@@ -187,7 +187,7 @@ export default function ReportsPage() {
 
 const pageStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease' };
 const headerStyle = { marginBottom: '8px' };
-const titleStyle = { fontSize: '22px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
+const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
 const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
 const mainGridStyle = { display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px', alignItems: 'start' };
@@ -216,12 +216,12 @@ const iconWrapStyle = {
     flexShrink: 0
 };
 
-const cardTitleStyle = { fontSize: '15px', fontWeight: '800', color: '#fff', margin: 0 };
-const cardDescStyle = { fontSize: '11px', color: '#52525b', margin: '4px 0 0', fontWeight: '600' };
+const cardTitleStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', margin: 0 };
+const cardDescStyle = { fontSize: '11px', color: '#52525b', margin: '4px 0 0', fontWeight: '800' };
 
 const controlsGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' };
 const inputScopeStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
-const labelStyle = { fontSize: '9px', fontWeight: '800', color: '#52525b', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em' };
 
 const btnGroupStyle = { display: 'flex', gap: '12px' };
 const btnStyle = {
@@ -230,7 +230,7 @@ const btnStyle = {
     borderRadius: '10px',
     border: 'none',
     fontWeight: '900',
-    fontSize: '12px',
+    fontSize: '14px',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -250,12 +250,12 @@ const activityItemStyle = {
     border: '1px solid rgba(255,255,255,0.02)'
 };
 
-const primaryTextStyle = { fontSize: '12px', fontWeight: '700', color: '#fff' };
-const secondaryTextStyle = { fontSize: '9px', color: '#52525b', fontWeight: '700' };
+const primaryTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
+const secondaryTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600' };
 const amountValueStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
 
 const loadingWrapStyle = { padding: '40px', display: 'flex', justifyContent: 'center' };
-const emptyTextStyle = { padding: '40px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '700' };
+const emptyTextStyle = { padding: '40px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
 const infoBoxStyle = {
     display: 'flex',
