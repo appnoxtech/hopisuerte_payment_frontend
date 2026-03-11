@@ -61,23 +61,6 @@ export default function ForgotPassword() {
                         <p style={subtitleStyle}>Submit account identifier to initialize credential override</p>
                     </div>
 
-                    {message && (
-                        <div style={successBoxStyle}>
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            {message}
-                        </div>
-                    )}
-
-                    {error && (
-                        <div style={errorBoxStyle}>
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {error}
-                        </div>
-                    )}
 
                     <form onSubmit={handleSubmit} style={formStyle}>
                         <div style={inputScope}>
