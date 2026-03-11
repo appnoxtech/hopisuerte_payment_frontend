@@ -40,7 +40,7 @@ export default function ProductManagement() {
     const handleCopy = (url, linkId) => {
         navigator.clipboard.writeText(url);
         setCopiedLink(linkId);
-        showToast('Secure link copied to buffer');
+        showToast('Link copied successfully.');
         setTimeout(() => setCopiedLink(null), 2000);
     };
 

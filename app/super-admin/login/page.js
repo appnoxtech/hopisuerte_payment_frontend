@@ -47,7 +47,7 @@ export default function SuperAdminLogin() {
 
             localStorage.setItem('super_admin_token', response.data.access_token);
             localStorage.removeItem('auth_token');
-            showToast('Executive Protocol Initialized', 'success');
+            showToast('Login successfully', 'success');
             await refreshUser();
             router.push('/super-admin');
         } catch (err) {

@@ -59,8 +59,9 @@ export default function SuperAdminDashboard() {
                 <Icon size={14} color={color} style={{ opacity: 0.6 }} />
             </div>
             <div style={cardValueStyle}>
-                {unit && <span style={unitStyle}>{unit}</span>}
+                {unit && unit !== '%' && <span style={unitStyle}>{unit}</span>}
                 {value}
+                {unit === '%' && <span style={unitStyle}>{unit}</span>}
             </div>
 
         </div>

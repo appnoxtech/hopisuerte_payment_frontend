@@ -31,8 +31,10 @@ export default function CustomDropdown({
 
     const filteredOptions = useMemo(() => {
         if (!searchQuery) return options;
+        const query = searchQuery.toLowerCase();
         return options.filter(opt =>
-            opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+            opt.label.toLowerCase().includes(query) ||
+            (opt.searchTerms && opt.searchTerms.toLowerCase().includes(query))
         );
     }, [options, searchQuery]);
 
@@ -72,7 +74,6 @@ export default function CustomDropdown({
 
         if (isOpen) {
             document.addEventListener("mousedown", handleClickOutside);
-            window.addEventListener("scroll", () => setIsOpen(false), { capture: true, once: true });
         }
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -93,7 +94,9 @@ export default function CustomDropdown({
                 position: 'fixed',
                 top: portalCoords.top,
                 left: portalCoords.left,
-                width: portalCoords.width,
+                minWidth: portalCoords.width,
+                width: 'max-content',
+                maxWidth: '90vw',
                 maxHeight: portalCoords.maxHeight,
                 transform: portalCoords.direction === 'up' ? 'translateY(-100%)' : 'none',
                 zIndex: 10000, // Extremely high
@@ -130,10 +133,21 @@ export default function CustomDropdown({
                             style={{
                                 ...optionStyle,
                                 background: value === opt.value ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
-                                color: value === opt.value ? '#fbbf24' : '#fff'
+                                color: value === opt.value ? '#fbbf24' : '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px'
                             }}
                         >
-                            {opt.label}
+                            {opt.flag && (
+                                <img 
+                                    src={`https://flagcdn.com/w40/${opt.flag.toLowerCase()}.png`} 
+                                    alt="" 
+                                    style={{ width: '20px', height: 'auto', borderRadius: '2px', flexShrink: 0 }}
+                                />
+                            )}
+                            {opt.icon && <span style={{ flexShrink: 0 }}>{opt.icon}</span>}
+                            <span>{opt.label}</span>
                         </div>
                     ))
                 ) : (
@@ -153,18 +167,29 @@ export default function CustomDropdown({
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
                     ...toggleStyle,
-                    borderColor: isOpen ? '#facc15' : 'rgba(255,255,255,0.08)',
+                    borderColor: isOpen ? '#facc15' : 'rgba(255, 255, 255, 0.2)',
                 }}
             >
-                <span style={{
+                <div style={{
                     color: selectedOption ? '#fff' : '#71717a',
                     fontSize: 14,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis'
+                    textOverflow: 'ellipsis',
+                    flex: 1
                 }}>
-                    {selectedOption ? selectedOption.label : placeholder}
-                </span>
+                    {selectedOption?.flag && (
+                        <img 
+                            src={`https://flagcdn.com/w40/${selectedOption.flag.toLowerCase()}.png`} 
+                            alt="" 
+                            style={{ width: '18px', height: 'auto', borderRadius: '2px', flexShrink: 0 }}
+                        />
+                    )}
+                    <span>{selectedOption ? (selectedOption.shortLabel || selectedOption.label) : placeholder}</span>
+                </div>
                 <ChevronDown
                     size={16}
                     style={{
@@ -188,7 +213,7 @@ const toggleStyle = {
     width: '100%',
     padding: '10px 14px',
     background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
@@ -198,7 +223,7 @@ const toggleStyle = {
 const menuWrapperStyle = {
     position: 'absolute',
     background: '#121214',
-    border: '1px solid rgba(255,255,255,0.12)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: 10,
     zIndex: 9999,
     boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)',
@@ -211,7 +236,7 @@ const searchContainerStyle = {
     display: 'flex',
     alignItems: 'center',
     padding: '10px 14px',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
     gap: 8,
     flexShrink: 0
 };
@@ -233,7 +258,8 @@ const optionStyle = {
     borderRadius: 6,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    fontWeight: '600'
+    fontWeight: '600',
+    whiteSpace: 'nowrap'
 };
 
-const noResultsStyle = { padding: '16px', textAlign: 'center', color: '#71717a', fontSize: 13 };
+const noResultsStyle = { padding: '16px', textAlign: 'center', color: '#a1a1aa', fontSize: 13 };

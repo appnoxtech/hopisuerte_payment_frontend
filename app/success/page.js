@@ -170,13 +170,15 @@ const primaryBtn = {
 };
 
 const secondaryBtn = {
-    padding: 12,
-    border: '1px solid rgba(255,255,255,0.08)',
+    padding: 14,
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(255,255,255,0.15)',
     borderRadius: 10,
-    fontSize: 12,
-    color: '#71717a',
+    fontSize: 14,
+    color: '#fff',
     textDecoration: 'none',
-    fontWeight: 700
+    fontWeight: 800,
+    transition: 'all 0.2s ease'
 };
 
 const statusWrap = {

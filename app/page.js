@@ -21,7 +21,7 @@ export default function Home() {
   const currencyOptions = [
     { label: 'USD - US Dollar', value: 'USD' },
     { label: 'EUR - Euro', value: 'EUR' },
-    { label: 'XCG - Curacao Guilder', value: 'XCG' }
+    { label: 'XCG - Caribbean Guilder', value: 'XCG' }
   ];
   // Searching state
   const [searchTerm, setSearchTerm] = useState('');
@@ -198,7 +198,7 @@ const containerStyle = {
 
 const cardStyle = {
   background: 'rgba(255,255,255,0.03)',
-  border: '1px solid rgba(255,255,255,0.08)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
   borderRadius: 18,
   padding: 24
 };
@@ -219,7 +219,7 @@ const inputStyle = {
   width: '100%',
   padding: 12,
   background: '#09090b',
-  border: '1px solid rgba(255,255,255,0.08)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
   borderRadius: 10,
   color: '#fff',
   fontSize: 14,
@@ -286,7 +286,7 @@ const dropdownStyle = {
   left: 0,
   right: 0,
   background: '#09090b',
-  border: '1px solid rgba(255,255,255,0.08)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
   borderRadius: 10,
   marginTop: 6,
   maxHeight: 200,

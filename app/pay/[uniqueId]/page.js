@@ -7,6 +7,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '@/components/CheckoutForm';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_placeholder');
 
@@ -38,6 +40,25 @@ function UniqueProductPaymentContent() {
         phone: '',
         notes: ''
     });
+
+    const [dialCode, setDialCode] = useState('+1');
+
+    const countryDialOptions = [
+        { label: 'United States (+1)', shortLabel: '+1', value: '+1', flag: 'us', searchTerms: 'us usa united states america' },
+        { label: 'United Kingdom (+44)', shortLabel: '+44', value: '+44', flag: 'gb', searchTerms: 'uk gb britain england united kingdom' },
+        { label: 'Europe (+32)', shortLabel: '+32', value: '+32', flag: 'be', searchTerms: 'eu europe belgium' },
+        { label: 'Australia (+61)', shortLabel: '+61', value: '+61', flag: 'au', searchTerms: 'au aus australia' },
+        { label: 'India (+91)', shortLabel: '+91', value: '+91', flag: 'in', searchTerms: 'in ind india bharat' },
+        { label: 'Brazil (+55)', shortLabel: '+55', value: '+55', flag: 'br', searchTerms: 'br bra brazil' },
+        { label: 'Mexico (+52)', shortLabel: '+52', value: '+52', flag: 'mx', searchTerms: 'mx mex mexico' },
+        { label: 'Canada (+1)', shortLabel: '+1', value: '+1', flag: 'ca', searchTerms: 'ca can canada' },
+        { label: 'Germany (+49)', shortLabel: '+49', value: '+49', flag: 'de', searchTerms: 'de ger germany deutschland' },
+        { label: 'France (+33)', shortLabel: '+33', value: '+33', flag: 'fr', searchTerms: 'fr fra france' },
+        { label: 'South Africa (+27)', shortLabel: '+27', value: '+27', flag: 'za', searchTerms: 'za zaf south africa' },
+        { label: 'Japan (+81)', shortLabel: '+81', value: '+81', flag: 'jp', searchTerms: 'jp jpn japan' },
+        { label: 'South Korea (+82)', shortLabel: '+82', value: '+82', flag: 'kr', searchTerms: 'kr kor south korea' },
+        { label: 'China (+86)', shortLabel: '+86', value: '+86', flag: 'cn', searchTerms: 'cn chn china' }
+    ];
 
     const [clientSecret, setClientSecret] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -81,7 +102,7 @@ function UniqueProductPaymentContent() {
                 currency: currency.toUpperCase(),
                 customer_name: customer.name,
                 customer_email: customer.email,
-                customer_phone: customer.phone,
+                customer_phone: customer.phone ? `${dialCode}${customer.phone}` : '',
                 notes: customer.notes
             });
 
@@ -104,7 +125,18 @@ function UniqueProductPaymentContent() {
 
             <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 10 }}>
                 {/* Header with Logo */}
-                <div style={{ textAlign: 'center', marginBottom: 20 }}>
+                <div style={{ textAlign: 'center', marginBottom: 20, position: 'relative' }}>
+                    {clientSecret ? (
+                        <button onClick={() => setClientSecret(null)} style={backLinkStyle} type="button">
+                            <ArrowLeft size={14} />
+                            Back
+                        </button>
+                    ) : (
+                        <Link href="/" style={backLinkStyle}>
+                            <ArrowLeft size={14} />
+                            Back
+                        </Link>
+                    )}
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
@@ -179,12 +211,23 @@ function UniqueProductPaymentContent() {
                                         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                     />
 
-                                    <input
-                                        style={inputStyle}
-                                        placeholder="Phone (Optional)"
-                                        value={customer.phone}
-                                        onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                                    />
+                                    <div style={{ display: 'flex', gap: 10 }}>
+                                        <div style={{ width: 110 }}>
+                                            <CustomDropdown
+                                                options={countryDialOptions}
+                                                value={dialCode}
+                                                onChange={(val) => setDialCode(val)}
+                                                showSearch={true}
+                                                placeholder="+1"
+                                            />
+                                        </div>
+                                        <input
+                                            style={{ ...inputStyle, flex: 1 }}
+                                            placeholder="Phone (Optional)"
+                                            value={customer.phone}
+                                            onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                                        />
+                                    </div>
 
                                     <textarea
                                         rows={2}
@@ -254,7 +297,7 @@ const containerStyle = {
 
 const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: 18,
     padding: 24
 };
@@ -290,7 +333,7 @@ const inputStyle = {
     width: '100%',
     padding: 12,
     background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: 10,
     color: '#fff',
     fontSize: 14,
@@ -341,4 +384,24 @@ const msgStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     background: '#000'
+};
+
+const backLinkStyle = {
+    position: 'absolute',
+    left: 0,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    color: '#a1a1aa',
+    textDecoration: 'none',
+    fontSize: '13px',
+    fontWeight: '700',
+    padding: '8px 12px',
+    background: 'rgba(255,255,255,0.03)',
+    borderRadius: '8px',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer'
 };

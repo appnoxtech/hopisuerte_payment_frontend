@@ -360,7 +360,7 @@ export default function SuperAdminProducts() {
                                     ) : (
                                         selectedProductPayments.map((p) => (
                                             <tr key={p.id} style={trStyle}>
-                                                <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa' }}>{new Date(p.created_at).toLocaleString()}</td>
+                                                <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa' }}>{new Date(p.created_at).toLocaleString('en-GB')}</td>
                                                 <td style={tdStyle}>
                                                     <div style={userTextStyle}>{p.customer_name}</div>
                                                     <div style={{ fontSize: 11, color: '#a1a1aa' }}>{p.customer_email}</div>

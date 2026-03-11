@@ -219,7 +219,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </td>
                                         <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '16px' }}>
-                                            <div style={timestampStyle}>{new Date(p.created_at).toLocaleString()}</div>
+                                            <div style={timestampStyle}>{new Date(p.created_at).toLocaleString('en-GB')}</div>
                                         </td>
                                     </tr>
                                 ))

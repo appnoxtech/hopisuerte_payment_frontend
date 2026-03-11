@@ -61,7 +61,7 @@ export default function SuperAdminReportsPage() {
 
     const handleDownload = async (format = 'csv') => {
         setLoading(true);
-        showToast('Compiling platform ledger...', 'info');
+        showToast('Report downloading...', 'info');
         try {
             const params = new URLSearchParams();
             params.append('format', format);
@@ -89,7 +89,7 @@ export default function SuperAdminReportsPage() {
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-            showToast('Audit report extracted successfully', 'success');
+            showToast('Report downloaded successfully', 'success');
         } catch (err) {
             showToast('Extraction sequence failed', 'error');
         } finally {

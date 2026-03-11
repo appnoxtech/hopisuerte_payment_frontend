@@ -30,7 +30,7 @@ export default function SuperAdminLayout({ children }) {
     const handleLogout = async () => {
         try {
             await api.post('/logout');
-            showToast('Secure session terminated');
+            showToast('Logout successfully', 'success');
         } catch (err) {
             // silent fail
         } finally {

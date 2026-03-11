@@ -34,7 +34,7 @@ export default function AdminLayout({ children }) {
     const handleLogout = async () => {
         try {
             await api.post('/logout');
-            showToast('Session terminated successfully');
+            showToast('Logout successfully', 'success');
         } catch (err) {
             // silent fail
         } finally {

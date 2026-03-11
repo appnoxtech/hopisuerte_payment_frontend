@@ -35,7 +35,7 @@ export default function GlobalPayments() {
             const response = await api.get('/super-admin/payments', getSuperAdminHeaders());
             setPayments(response.data);
             if (isManual) {
-                showToast('Financial stream synchronized', 'success');
+                showToast('Synced Successfully', 'success');
             }
         } catch (err) {
             showToast('Nexus ledger synchronization failed', 'error');
@@ -236,16 +236,16 @@ export default function GlobalPayments() {
                                         <td style={tdCenterStyle}>
                                             <div style={{
                                                 ...statusBadgeStyle,
-                                                background: p.status === 'success' ? 'rgba(16, 185, 129, 0.05)' : 'rgba(251, 191, 36, 0.05)',
-                                                color: p.status === 'success' ? '#10b981' : '#fbbf24',
-                                                borderColor: p.status === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(251, 191, 36, 0.1)'
+                                                background: p.status === 'success' ? 'rgba(16, 185, 129, 0.05)' : p.status === 'failed' ? 'rgba(244, 63, 94, 0.05)' : 'rgba(251, 191, 36, 0.05)',
+                                                color: p.status === 'success' ? '#10b981' : p.status === 'failed' ? '#f43f5e' : '#fbbf24',
+                                                borderColor: p.status === 'success' ? 'rgba(16, 185, 129, 0.1)' : p.status === 'failed' ? 'rgba(244, 63, 94, 0.1)' : 'rgba(251, 191, 36, 0.1)'
                                             }}>
-                                                <div style={{ ...dotStyle, background: p.status === 'success' ? '#10b981' : '#fbbf24' }} />
+                                                <div style={{ ...dotStyle, background: p.status === 'success' ? '#10b981' : p.status === 'failed' ? '#f43f5e' : '#fbbf24' }} />
                                                 {p.status}
                                             </div>
                                         </td>
                                         <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
-                                            <div style={dateTextStyle}>{new Date(p.created_at).toLocaleDateString()}</div>
+                                            <div style={dateTextStyle}>{new Date(p.created_at).toLocaleDateString('en-GB')}</div>
                                         </td>
                                     </tr>
                                 ))
@@ -276,7 +276,7 @@ const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', pad
 const backBtnStyle = { display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', padding: '8px 12px', borderRadius: '8px', color: '#fbbf24', fontSize: '11px', fontWeight: '800', cursor: 'pointer' };
 const searchBoxStyle = { position: 'relative', width: '200px' };
 const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
-const filterInputStyle = { width: '100%', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
+const filterInputStyle = { width: '100%', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.17)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
 const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
 
 const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };

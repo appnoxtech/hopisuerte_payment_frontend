@@ -131,7 +131,7 @@ export default function ProfileSettings() {
                             </div>
 
                             <div style={inputScopeStyle}>
-                                <label style={labelStyle}>Merchant Slug (Public URL)</label>
+                                <label style={labelStyle}>Freelancer Slug (Public URL)</label>
                                 <div style={inputWrapperStyle}>
                                     <Fingerprint size={14} style={inputIconStyle} />
                                     <input

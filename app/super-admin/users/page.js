@@ -75,7 +75,7 @@ export default function UserManagement() {
         try {
             const response = await api.patch(`/super-admin/users/${id}/status`, {}, getSuperAdminHeaders());
             setUsers(users.map(u => u.id === id ? { ...u, status: response.data.status } : u));
-            showToast(`Agent verification ${response.data.status}`, 'info');
+            showToast(`Freelancer ${response.data.status} successfully.`, 'info');
         } catch (err) {
             showToast(err.response?.data?.message || 'Verification shift failed', 'error');
         }
@@ -209,7 +209,7 @@ export default function UserManagement() {
                                             {(user.total_earnings || 0).toLocaleString()}
                                         </div>
                                     </td>
-                                    <td style={{ ...tdStyle, textAlign: 'center', paddingRight: '24px' }}>
+                                    <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
                                         <button
                                             onClick={() => handleDeleteUser(user.id, user.name)}
                                             style={deleteBtnStyle}
@@ -322,7 +322,7 @@ const addBtnStyle = {
 const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '8px' };
 const searchBoxStyle = { position: 'relative', width: '200px' };
 const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
-const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
+const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255, 255, 255, 0.23)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
 const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
 
 const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };
@@ -344,7 +344,7 @@ const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
 const assetBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '11px', color: '#a1a1aa', fontWeight: '600' };
 const earningsStyle = { fontSize: '14px', fontWeight: '600', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 };
 const currencySymbolStyle = { color: '#3f3f46', fontSize: '11px' };
-const deleteBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', cursor: 'pointer' };
+const deleteBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', cursor: 'pointer' };
 
 const loadingContainerStyle = { padding: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' };
 const spinnerStyle = { width: '30px', height: '30px', borderRadius: '50%', border: '3px solid rgba(251, 191, 36, 0.05)', borderTop: '3px solid #fbbf24', animation: 'spin 1s linear infinite' };

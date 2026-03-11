@@ -106,7 +106,7 @@ export default function ReportsPage() {
 
                     <div style={controlsGridStyle}>
                         <div style={inputScopeStyle}>
-                            <label style={labelStyle}>Period (Month)</label>
+                            <label style={labelStyle}>Month</label>
                             <CustomDropdown
                                 options={months}
                                 value={month}
@@ -115,7 +115,7 @@ export default function ReportsPage() {
                             />
                         </div>
                         <div style={inputScopeStyle}>
-                            <label style={labelStyle}>Financial Year</label>
+                            <label style={labelStyle}>Year</label>
                             <CustomDropdown
                                 options={years}
                                 value={year}
@@ -149,7 +149,7 @@ export default function ReportsPage() {
                     <div style={cardHeaderStyle}>
                         <div style={iconWrapStyle}><History size={18} color="#6366f1" /></div>
                         <div>
-                            <h3 style={cardTitleStyle}>Recent Ledger Status</h3>
+                            <h3 style={cardTitleStyle}>Recent Transactions</h3>
                             <p style={cardDescStyle}>Snapshot of the latest synchronized transactions.</p>
                         </div>
                     </div>
@@ -166,7 +166,7 @@ export default function ReportsPage() {
                                         {p.status === 'success' ? <CheckCircle2 size={14} color="#10b981" /> : (p.status === 'failed' ? <XCircle size={14} color="#f43f5e" /> : <Clock size={14} color="#fbbf24" />)}
                                         <div style={{ overflow: 'hidden' }}>
                                             <div style={primaryTextStyle}>{p.customer_name}</div>
-                                            <div style={secondaryTextStyle}>{new Date(p.created_at).toLocaleDateString()}</div>
+                                            <div style={secondaryTextStyle}>{new Date(p.created_at).toLocaleDateString('en-GB')}</div>
                                         </div>
                                     </div>
                                     <div style={amountValueStyle}>{p.amount} <span style={{ fontSize: 9 }}>{p.currency}</span></div>

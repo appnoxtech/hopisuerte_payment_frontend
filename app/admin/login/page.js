@@ -51,6 +51,7 @@ export default function AdminLogin() {
             localStorage.setItem('auth_token', response.data.access_token);
             localStorage.removeItem('super_admin_token');
 
+            showToast('Login successfully', 'success');
             await refreshUser();
             router.push('/admin');
 
