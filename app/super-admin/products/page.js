@@ -113,7 +113,7 @@ export default function SuperAdminProducts() {
                 showToast('Asset configuration sanitized', 'success');
             } else {
                 await api.post('/super-admin/products', formData);
-                showToast('New asset committed to Nexus', 'success');
+                showToast('New product added successfully.', 'success');
             }
             fetchProducts();
             setIsModalOpen(false);
