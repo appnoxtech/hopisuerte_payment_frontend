@@ -14,6 +14,7 @@ import {
     Globe,
     ArrowUpRight
 } from 'lucide-react';
+import CustomDropdown from '@/components/CustomDropdown';
 
 const getSuperAdminHeaders = () => ({
     headers: {
@@ -25,6 +26,7 @@ export default function SuperAdminDashboard() {
     const [stats, setStats] = useState(null);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [displayCurrency, setDisplayCurrency] = useState('USD');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,7 +57,7 @@ export default function SuperAdminDashboard() {
     const StatCard = ({ title, value, unit = '', color = '#fbbf24', icon: Icon }) => (
         <div style={cardStyle}>
             <div style={cardHeaderStyle}>
-                <div style={cardLabelStyle}>{title}</div>
+                <div style={{ ...cardLabelStyle, flex: 1 }}>{title}</div>
                 <Icon size={14} color={color} style={{ opacity: 0.6 }} />
             </div>
             <div style={cardValueStyle}>
@@ -74,7 +76,34 @@ export default function SuperAdminDashboard() {
             {/* Matrix Stats */}
             <section style={statGridStyle}>
                 <StatCard title="Total Freelancers" value={stats?.total_users || 0} icon={Users} color="#6366f1" />
-                <StatCard title="Total Amount" value={(stats?.total_volume || 0).toLocaleString()} unit="$" icon={Globe} color="#10b981" />
+                <StatCard
+                    title={
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                            <span>Total Volume</span>
+                            <div style={{ width: 85 }}>
+                                <CustomDropdown
+                                    options={[
+                                        { label: 'USD', value: 'USD' },
+                                        { label: 'EUR', value: 'EUR' },
+                                        { label: 'XCG', value: 'XCG' }
+                                    ]}
+                                    value={displayCurrency}
+                                    onChange={setDisplayCurrency}
+                                    showSearch={false}
+                                    placeholder="Cur"
+                                />
+                            </div>
+                        </div>
+                    }
+                    value={
+                        displayCurrency === 'USD' ? (stats?.total_volume_usd || 0).toLocaleString() :
+                        (displayCurrency === 'EUR' ? (stats?.total_volume_eur || 0).toLocaleString() :
+                        (stats?.total_volume_xcg || 0).toLocaleString())
+                    }
+                    unit={displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
+                    icon={Globe}
+                    color="#10b981"
+                />
                 <StatCard title="Active Transactions" value={stats?.total_transactions || 0} icon={Zap} color="#f59e0b" />
                 <StatCard title="Success Rate" value={stats?.success_rate || 0} unit="%" icon={TrendingUp} color="#fbbf24" />
             </section>
@@ -197,7 +226,7 @@ const statGridStyle = {
 
 const cardStyle = {
     background: 'rgba(15,15,20,0.4)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: '16px',
     padding: '20px',
     display: 'flex',
@@ -234,9 +263,9 @@ const unitStyle = {
     fontSize: '22px',
     fontWeight: '600',
     color: '#fff',
-    display: 'flex',
+    display: 'inline-flex',
     alignItems: 'baseline',
-    gap: '4px'
+    marginLeft: '2px'
 };
 
 const cardFooterStyle = {
@@ -260,7 +289,7 @@ const nodesCardStyle = {
     background: 'rgba(15,15,20,0.4)',
     borderRadius: '20px',
     padding: '24px',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.2)',
     display: 'flex',
     flexDirection: 'column',
     gap: '24px'
@@ -295,7 +324,7 @@ const nodeItemStyle = {
     padding: '16px',
     background: 'rgba(255,255,255,0.01)',
     borderRadius: '12px',
-    border: '1px solid rgba(255,255,255,0.02)',
+    border: '1px solid rgba(255,255,255,0.2)',
     textDecoration: 'none',
     transition: 'all 0.2s ease'
 };
@@ -308,7 +337,7 @@ const nodeIconBox = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255,255,255,0.04)'
+    border: '1px solid rgba(255,255,255,0.2)'
 };
 
 const nodeNameStyle = {
@@ -327,7 +356,7 @@ const healthCardStyle = {
     background: 'rgba(251, 191, 36, 0.02)',
     borderRadius: '20px',
     padding: '32px',
-    border: '1px solid rgba(251, 191, 36, 0.05)',
+    border: '1px solid rgba(251, 191, 36, 0.2)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

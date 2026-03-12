@@ -240,7 +240,7 @@ const cardStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
     borderRadius: '20px',
     padding: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     display: 'flex',
     flexDirection: 'column',
     gap: '24px'
@@ -255,7 +255,7 @@ const iconWrapStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     flexShrink: 0
 };
 
@@ -293,7 +293,7 @@ const placeholderContent = {
     gap: '12px',
     background: 'rgba(255, 255, 255, 0.01)',
     borderRadius: '16px',
-    border: '1px solid rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     padding: '40px 20px'
 };
 
@@ -306,7 +306,7 @@ const placeholderBadgeStyle = {
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    border: '1px solid rgba(255,255,255,0.02)'
+    border: '1px solid rgba(255, 255, 255, 0.2)'
 };
 
 const infoBoxStyle = {
@@ -320,7 +320,7 @@ const infoBoxStyle = {
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
-    border: '1px solid rgba(255,255,255,0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     color: '#52525b'
 };
 

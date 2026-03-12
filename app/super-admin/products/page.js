@@ -110,7 +110,7 @@ export default function SuperAdminProducts() {
         try {
             if (editingProduct) {
                 await api.put(`/super-admin/products/${editingProduct.id}`, formData);
-                showToast('Asset configuration sanitized', 'success');
+                showToast('Product edited successfully.', 'success');
             } else {
                 await api.post('/super-admin/products', formData);
                 showToast('New product added successfully.', 'success');
@@ -126,17 +126,17 @@ export default function SuperAdminProducts() {
         if (!confirm('Permanently remove this product?')) return;
         try {
             await api.delete(`/super-admin/products/${id}`);
-            showToast('Asset purged from registry', 'warning');
+            showToast('Product deleted successfully.', 'success');
             fetchProducts();
         } catch (err) {
-            showToast('Purge failed - dependency lock', 'error');
+            showToast('Product deletion failed.', 'error');
         }
     };
 
     const handleCopy = (url, id) => {
         navigator.clipboard.writeText(url);
         setCopiedId(id);
-        showToast('Link captured');
+        showToast('Link copied successfully');
         setTimeout(() => setCopiedId(null), 2000);
     };
 
@@ -188,7 +188,7 @@ export default function SuperAdminProducts() {
                     />
                 </div>
                 <div style={countBadgeWrap}>
-                    <span>{filtered.length} Total Products</span>
+                    <span>Total Products: {filtered.length} </span>
                 </div>
             </div>
 
@@ -420,7 +420,7 @@ const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform:
 const filterInputStyle = {
     width: '100%',
     background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '8px',
     padding: '8px 12px 8px 30px',
     color: '#fff',
@@ -438,9 +438,9 @@ const countBadgeWrap = {
     marginLeft: 'auto'
 };
 
-const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };
+const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.2)', overflow: 'hidden' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' };
+const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
 
 const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
@@ -472,7 +472,7 @@ const viewBtnStyle = {
     alignItems: 'center',
     gap: 6,
     background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     padding: '6px 12px',
     borderRadius: '6px',
     fontSize: '10px',
@@ -480,11 +480,11 @@ const viewBtnStyle = {
     cursor: 'pointer'
 };
 
-const linksDropStyle = { marginTop: 10, background: 'rgba(0, 0, 0, 0.4)', borderRadius: '10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: 6, border: '1px solid rgba(255, 255, 255, 0.04)', animation: 'fadeIn 0.2s' };
-const linkRowStyle = { display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255, 255, 255, 0.01)', padding: '6px 10px', borderRadius: '6px' };
-const currBadgeStyle = { fontSize: '9px', fontWeight: '900', color: '#fbbf24', minWidth: 24 };
-const linkPreviewStyle = { flex: 1, background: 'none', border: 'none', color: '#52525b', fontSize: '9px', outline: 'none', fontFamily: 'monospace' };
-const copyIconBtnStyle = { background: 'none', border: 'none', padding: 4, color: '#3f3f46', cursor: 'pointer', display: 'flex', alignItems: 'center' };
+const linksDropStyle = { marginTop: 10, background: 'rgba(0, 0, 0, 0.4)', borderRadius: '10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: 6, border: '1px solid rgba(255, 255, 255, 0.2)', animation: 'fadeIn 0.2s' };
+const linkRowStyle = { display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255, 255, 255, 0.05)', padding: '6px 10px', borderRadius: '6px' };
+const currBadgeStyle = { fontSize: '12px', fontWeight: '900', color: '#fbbf24', minWidth: 24 };
+const linkPreviewStyle = { flex: 1, background: 'none', border: 'none', color: '#cbd5e1', fontSize: '12px', outline: 'none', fontFamily: 'monospace' };
+const copyIconBtnStyle = { background: 'none', border: 'none', padding: 4, color: '#cbd5e1', cursor: 'pointer', display: 'flex', alignItems: 'center' };
 
 const statusLevelStyle = {
     display: 'inline-flex',
@@ -506,7 +506,7 @@ const actionBtnStyle = {
     height: '28px',
     borderRadius: '6px',
     background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

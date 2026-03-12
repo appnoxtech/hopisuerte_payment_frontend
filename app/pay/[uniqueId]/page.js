@@ -123,27 +123,32 @@ function UniqueProductPaymentContent() {
 
             <div style={glowStyle} />
 
+            {/* Back Button - Top Left of Screen */}
+            <div style={{ position: 'absolute', left: 40, top: 40, zIndex: 50 }}>
+                {clientSecret ? (
+                    <button onClick={() => setClientSecret(null)} style={backLinkStyle} type="button">
+                        <ArrowLeft size={14} />
+                        Back
+                    </button>
+                ) : (
+                    <Link href="/" style={backLinkStyle}>
+                        <ArrowLeft size={14} />
+                        Back
+                    </Link>
+                )}
+            </div>
+
             <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 10 }}>
+
                 {/* Header with Logo */}
-                <div style={{ textAlign: 'center', marginBottom: 20, position: 'relative' }}>
-                    {clientSecret ? (
-                        <button onClick={() => setClientSecret(null)} style={backLinkStyle} type="button">
-                            <ArrowLeft size={14} />
-                            Back
-                        </button>
-                    ) : (
-                        <Link href="/" style={backLinkStyle}>
-                            <ArrowLeft size={14} />
-                            Back
-                        </Link>
-                    )}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20 }}>
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
                         width={180}
                         height={54}
                         priority
-                        style={{ objectFit: 'contain', margin: '0 auto 12px auto' }}
+                        style={{ objectFit: 'contain' }}
                     />
                 </div>
 
@@ -387,10 +392,6 @@ const msgStyle = {
 };
 
 const backLinkStyle = {
-    position: 'absolute',
-    left: 0,
-    top: '50%',
-    transform: 'translateY(-50%)',
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',

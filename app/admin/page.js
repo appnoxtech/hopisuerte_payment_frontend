@@ -32,6 +32,7 @@ export default function AdminDashboard() {
     const [filterStatus, setFilterStatus] = useState('');
     const [filterDate, setFilterDate] = useState('');
     const [sortOrder, setSortOrder] = useState('desc');
+    const [displayCurrency, setDisplayCurrency] = useState('USD');
 
     useEffect(() => {
         fetchPayments();
@@ -65,8 +66,14 @@ export default function AdminDashboard() {
     }
 
     const successfulPayments = payments.filter(p => p.status === 'success');
-    const totalVolume = successfulPayments.reduce((acc, p) => acc + Number(p.amount), 0);
-    const avgTicket = successfulPayments.length > 0 ? totalVolume / successfulPayments.length : 0;
+    
+    const totals = successfulPayments.reduce((acc, p) => {
+        const cur = (p.currency || 'USD').toUpperCase();
+        if (acc.hasOwnProperty(cur)) {
+            acc[cur] += Number(p.amount);
+        }
+        return acc;
+    }, { USD: 0, EUR: 0, XCG: 0 });
 
     const filteredPayments = payments.filter(p => {
         const matchesCustomer = (p.customer_name?.toLowerCase().includes(filterCustomer.toLowerCase())) ||
@@ -102,24 +109,34 @@ export default function AdminDashboard() {
             {/* Performance Metrics */}
             <div style={statsGridStyle}>
                 <StatCard
-                    title="Successful"
+                    title="Payment Successful"
                     value={successfulPayments.length}
                     color="#10b981"
                     icon={<CheckCircle2 size={16} />}
                 />
                 <StatCard
-                    title="Volume"
-                    value={totalVolume.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                    unit="USD"
+                    title={
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                            <span>Total Amount</span>
+                            <div style={{ width: 85 }}>
+                                <CustomDropdown
+                                    options={[
+                                        { label: 'USD', value: 'USD' },
+                                        { label: 'EUR', value: 'EUR' },
+                                        { label: 'XCG', value: 'XCG' }
+                                    ]}
+                                    value={displayCurrency}
+                                    onChange={setDisplayCurrency}
+                                    showSearch={false}
+                                    placeholder="Cur"
+                                />
+                            </div>
+                        </div>
+                    }
+                    value={totals[displayCurrency].toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                    unit={displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
                     color="#fbbf24"
-                    icon={<DollarSign size={16} />}
-                />
-                <StatCard
-                    title="Avg Receipt"
-                    value={avgTicket.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                    unit="USD"
-                    color="#6366f1"
-                    icon={<Receipt size={16} />}
+                    icon={displayCurrency === 'USD' ? <DollarSign size={16} /> : <div style={{ fontWeight: '900', fontSize: '13px' }}>{displayCurrency === 'EUR' ? '€' : 'Cg'}</div>}
                 />
             </div>
 
@@ -141,7 +158,7 @@ export default function AdminDashboard() {
                                 style={filterInputStyle}
                             />
                         </div>
-                        <div style={{ width: 110 }}>
+                        <div style={{ width: 160 }}>
                             <CustomDropdown
                                 options={statusOptions}
                                 value={filterStatus}
@@ -239,7 +256,7 @@ function StatCard({ title, value, unit, color, icon }) {
                 {icon}
             </div>
             <div style={{ flex: 1 }}>
-                <p style={statLabelStyle}>{title}</p>
+                <div style={statLabelStyle}>{title}</div>
                 <div style={statValueStyle}>
                     {value}
                     {unit && <span style={statUnitStyle}>{unit}</span>}
@@ -303,7 +320,7 @@ const statsGridStyle = {
 const statCardStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
     backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '12px',
     padding: '12px 16px',
     display: 'flex',
@@ -364,7 +381,7 @@ const ledgerTitleStyle = {
 const filterGroupStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '16px'
 };
 
 const searchBoxStyle = {
@@ -383,7 +400,7 @@ const searchIconStyle = {
 const filterInputStyle = {
     width: '100%',
     background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '8px',
     padding: '10px 8px 10px 26px',
     color: '#fff',
@@ -399,7 +416,7 @@ const dateInputStyle = {
 
 const tableContainerStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '12px',
     overflow: 'hidden'
 };
@@ -412,7 +429,7 @@ const tableStyle = {
 
 const tableHeaderStyle = {
     background: 'rgba(255, 255, 255, 0.02)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.04)'
+    borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
 };
 
 const thStyle = {
@@ -452,7 +469,7 @@ const avatarCircleStyle = {
     height: '28px',
     borderRadius: '6px',
     background: 'rgba(255, 255, 255, 0.03)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

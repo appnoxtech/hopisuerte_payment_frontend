@@ -173,7 +173,7 @@ const containerStyle = {
 
 const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: 18,
     padding: 28
 };
@@ -204,7 +204,7 @@ const inputStyle = {
     padding: 12,
     borderRadius: 10,
     background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.2)',
     color: '#fff',
     fontSize: 14,
     outline: 'none'

@@ -34,10 +34,10 @@ export default function ForgotPassword() {
 
         try {
             await api.post('/password/forgot', { email });
-            showToast('Recovery link dispatched to primary node');
+            showToast('Reset password link sent to your email');
             setEmail('');
         } catch (err) {
-            showToast(err.response?.data?.message || 'Signal failure: recovery sequence aborted', 'error');
+            showToast(err.response?.data?.message || 'Reset password link not sent', 'error');
         } finally {
             setLoading(false);
         }
@@ -64,7 +64,7 @@ export default function ForgotPassword() {
 
                     <form onSubmit={handleSubmit} style={formStyle}>
                         <div style={inputScope}>
-                            <label style={labelStyle}>Merchant Email Address</label>
+                            <label style={labelStyle}>Freelaner Email Address</label>
                             <div style={fieldWrapper}>
                                 <input
                                     type="email"
@@ -105,7 +105,7 @@ export default function ForgotPassword() {
                                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                 </svg>
-                                Return to Access Terminal
+                                Return to Login
                             </Link>
                         </div>
                     </form>
@@ -170,7 +170,7 @@ const containerStyle = {
 const cardStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
     backdropFilter: 'blur(32px)',
-    border: '1px solid rgba(255, 255, 255, 0.06)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '28px',
     padding: '44px',
     boxShadow: '0 24px 80px rgba(0, 0, 0, 0.4)'
@@ -186,7 +186,7 @@ const iconWrapper = {
     height: '48px',
     borderRadius: '14px',
     background: 'rgba(251, 191, 36, 0.05)',
-    border: '1px solid rgba(251, 191, 36, 0.1)',
+    border: '1px solid rgba(251, 191, 36, 0.2)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -266,7 +266,7 @@ const fieldWrapper = {
 const inputStyle = {
     width: '100%',
     background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '14px',
     padding: '14px 18px',
     color: '#fff',

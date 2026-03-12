@@ -105,8 +105,8 @@ export default function Home() {
           <Image
             src="/paysigur.png"
             alt="Paysigur"
-            width={170}
-            height={50}
+            width={180}
+            height={54}
             priority
             style={{ objectFit: 'contain' }}
           />

@@ -179,7 +179,8 @@ export default function CustomDropdown({
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    flex: 1
+                    flex: 1,
+                    paddingRight: '4px'
                 }}>
                     {selectedOption?.flag && (
                         <img 

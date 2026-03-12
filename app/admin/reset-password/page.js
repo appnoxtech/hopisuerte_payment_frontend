@@ -290,7 +290,7 @@ const containerStyle = {
 const cardStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
     backdropFilter: 'blur(32px)',
-    border: '1px solid rgba(255, 255, 255, 0.06)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '28px',
     padding: '44px',
     boxShadow: '0 24px 80px rgba(0, 0, 0, 0.4)'
@@ -306,7 +306,7 @@ const iconWrapper = {
     height: '48px',
     borderRadius: '14px',
     background: 'rgba(251, 191, 36, 0.05)',
-    border: '1px solid rgba(251, 191, 36, 0.1)',
+    border: '1px solid rgba(251, 191, 36, 0.2)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -332,7 +332,7 @@ const subtitleStyle = {
 const successFooter = {
     marginTop: '32px',
     paddingTop: '24px',
-    borderTop: '1px solid rgba(255,255,255,0.04)',
+    borderTop: '1px solid rgba(255,255,255,0.2)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -360,7 +360,7 @@ const accountBatchStyle = {
     padding: '16px',
     borderRadius: '14px',
     background: 'rgba(0,0,0,0.2)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.2)',
     marginBottom: '28px'
 };
 
@@ -408,7 +408,7 @@ const fieldWrapper = {
 const inputStyle = {
     width: '100%',
     background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: '14px',
     padding: '14px 44px 14px 18px',
     color: '#fff',
@@ -434,7 +434,7 @@ const rulesCardStyle = {
     padding: '16px',
     borderRadius: '14px',
     background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.04)'
+    border: '1px solid rgba(255,255,255,0.2)'
 };
 
 const rulesTitleStyle = {

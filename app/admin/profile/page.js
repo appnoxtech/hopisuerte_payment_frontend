@@ -55,7 +55,7 @@ export default function ProfileSettings() {
 
         try {
             const response = await api.put('/user', { name, email, slug });
-            showToast('Profile security updated', 'success');
+            showToast('Profile updated successfully.', 'success');
 
             setSlug(response.data.slug);
             setOriginalName(response.data.name);
@@ -221,7 +221,7 @@ const idBadgeStyle = {
     gap: '6px',
     padding: '4px 12px',
     background: 'rgba(16, 185, 129, 0.05)',
-    border: '1px solid rgba(16, 185, 129, 0.1)',
+    border: '1px solid rgba(16, 185, 129, 0.2)',
     borderRadius: '20px',
     fontSize: '11px',
     fontWeight: '600',
@@ -246,7 +246,7 @@ const formSectionStyle = { marginTop: '4px' };
 const formCardStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
     backdropFilter: 'blur(32px)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: '16px',
     padding: '24px',
     position: 'relative',
@@ -258,7 +258,7 @@ const formHeaderStyle = {
     alignItems: 'center',
     gap: '16px',
     marginBottom: '32px',
-    borderBottom: '1px solid rgba(255,255,255,0.04)',
+    borderBottom: '1px solid rgba(255,255,255,0.2)',
     paddingBottom: '24px'
 };
 
@@ -331,7 +331,7 @@ const inputIconStyle = {
 const inputStyle = {
     width: '100%',
     background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '8px',
     padding: '10px 12px 10px 36px',
     color: '#fff',
@@ -343,7 +343,7 @@ const inputStyle = {
 
 const actionScopeStyle = {
     paddingTop: '24px',
-    borderTop: '1px solid rgba(255,255,255,0.04)',
+    borderTop: '1px solid rgba(255,255,255,0.2)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',

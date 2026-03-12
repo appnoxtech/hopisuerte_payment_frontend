@@ -80,15 +80,16 @@ export default function AdminLogin() {
             <div style={containerStyle}>
 
                 {/* Logo */}
-                {/* <div style={logoWrap}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
                         width={180}
-                        height={70}
+                        height={54}
                         priority
+                        style={{ objectFit: 'contain' }}
                     />
-                </div> */}
+                </div>
 
                 {/* Card */}
                 <div style={cardStyle}>
@@ -235,7 +236,7 @@ const logoWrap = {
 
 const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: 18,
     padding: 28
 };
@@ -266,7 +267,7 @@ const inputStyle = {
     padding: 12,
     borderRadius: 10,
     background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.2)',
     color: '#fff',
     fontSize: 14,
     outline: 'none'

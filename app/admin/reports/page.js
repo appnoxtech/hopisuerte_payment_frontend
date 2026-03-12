@@ -169,7 +169,7 @@ export default function ReportsPage() {
                                             <div style={secondaryTextStyle}>{new Date(p.created_at).toLocaleDateString('en-GB')}</div>
                                         </div>
                                     </div>
-                                    <div style={amountValueStyle}>{p.amount} <span style={{ fontSize: 9 }}>{p.currency}</span></div>
+                                    <div style={amountValueStyle}><span style={{ fontSize: 9, fontWeight: '800', color: '#52525b' }}>{p.currency}</span>{p.amount} </div>
                                 </div>
                             ))
                         )}
@@ -197,7 +197,7 @@ const cardStyle = {
     backdropFilter: 'blur(32px)',
     borderRadius: '16px',
     padding: '24px',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     display: 'flex',
     flexDirection: 'column',
     gap: '24px'
@@ -212,7 +212,7 @@ const iconWrapStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255, 255, 255, 0.04)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
     flexShrink: 0
 };
 
@@ -247,7 +247,7 @@ const activityItemStyle = {
     padding: '12px',
     background: 'rgba(255,255,255,0.02)',
     borderRadius: '12px',
-    border: '1px solid rgba(255,255,255,0.02)'
+    border: '1px solid rgba(255, 255, 255, 0.2)'
 };
 
 const primaryTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
@@ -267,5 +267,5 @@ const infoBoxStyle = {
     color: '#52525b',
     fontSize: '11px',
     fontWeight: '600',
-    border: '1px solid rgba(255,255,255,0.02)'
+    border: '1px solid rgba(255, 255, 255, 0.2)'
 };

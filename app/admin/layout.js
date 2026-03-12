@@ -150,7 +150,7 @@ export default function AdminLayout({ children }) {
                     </div>
                     <button onClick={handleLogout} style={logoutBtnStyle}>
                         <LogOut size={16} />
-                        <span>Logout Session</span>
+                        <span>Logout</span>
                     </button>
                 </div>
             </aside>
@@ -205,7 +205,7 @@ const overlayGlowStyle = {
 const sidebarStyle = {
     width: '260px',
     background: '#0a0a0c',
-    borderRight: '1px solid rgba(255,255,255,0.04)',
+    borderRight: '1px solid rgba(255,255,255,0.2)',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
@@ -266,7 +266,7 @@ const activeIndicatorStyle = {
 
 const userFooterStyle = {
     padding: '20px',
-    borderTop: '1px solid rgba(255,255,255,0.04)',
+    borderTop: '1px solid rgba(255,255,255,0.2)',
     background: 'rgba(255,255,255,0.01)'
 };
 
@@ -282,7 +282,7 @@ const userAvatarStyle = {
     height: '36px',
     borderRadius: '10px',
     background: 'linear-gradient(135deg, #18181b, #09090b)',
-    border: '1px solid rgba(251, 191, 36, 0.15)',
+    border: '1px solid rgba(251, 191, 36, 0.2)',
     color: '#fbbf24',
     display: 'flex',
     alignItems: 'center',
@@ -320,10 +320,10 @@ const logoutBtnStyle = {
     justifyContent: 'center',
     gap: '8px',
     padding: '10px',
-    background: 'transparent',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: '#fbbf24',
+    border: 'none',
     borderRadius: '8px',
-    color: '#a1a1aa',
+    color: '#000',
     fontSize: '12px',
     fontWeight: '700',
     cursor: 'pointer',
@@ -346,7 +346,7 @@ const topHeaderStyle = {
     justifyContent: 'space-between',
     background: 'rgba(5, 5, 6, 0.8)',
     backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid rgba(255,255,255,0.04)',
+    borderBottom: '1px solid rgba(255,255,255,0.2)',
     position: 'sticky',
     top: 0,
     zIndex: 40
@@ -381,7 +381,7 @@ const headerRightStyle = {
     padding: '6px 12px',
     borderRadius: '20px',
     background: 'rgba(16, 185, 129, 0.05)',
-    border: '1px solid rgba(16, 185, 129, 0.1)'
+    border: '1px solid rgba(16, 185, 129, 0.2)'
 };
 
 const statusTextStyle = {

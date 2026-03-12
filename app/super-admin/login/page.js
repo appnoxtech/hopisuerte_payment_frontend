@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import api from '@/utils/api';
 import { validateEmail } from '@/utils/validation';
 import { Eye, EyeOff } from 'lucide-react';
@@ -69,6 +70,17 @@ export default function SuperAdminLogin() {
             <div style={glowStyle} />
 
             <div style={containerStyle}>
+                {/* Logo */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                    <Image
+                        src="/paysigur.png"
+                        alt="Paysigur"
+                        width={180}
+                        height={54}
+                        priority
+                        style={{ objectFit: 'contain' }}
+                    />
+                </div>
                 {/* Card */}
                 <div style={cardStyle}>
                     <h1 style={{ ...titleStyle, fontSize: 26 }}>Super Admin</h1>
@@ -168,7 +180,7 @@ export default function SuperAdminLogin() {
                     <div style={{
                         marginTop: 28,
                         paddingTop: 20,
-                        borderTop: '1px solid rgba(255,255,255,0.06)',
+                        borderTop: '1px solid rgba(255,255,255,0.2)',
                         textAlign: 'center',
                         fontSize: 11,
                         color: '#52525b',
@@ -215,7 +227,7 @@ const containerStyle = {
 
 const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.09)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: 18,
     padding: 32
 };
@@ -247,7 +259,7 @@ const inputStyle = {
     padding: 12,
     borderRadius: 10,
     background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.2)',
     color: '#fff',
     fontSize: 14,
     outline: 'none'

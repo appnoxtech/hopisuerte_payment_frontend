@@ -12,6 +12,7 @@ import {
     ArrowUpRight,
     ArrowLeft
 } from 'lucide-react';
+import CustomDropdown from '@/components/CustomDropdown';
 
 const getSuperAdminHeaders = () => ({
     headers: {
@@ -28,6 +29,7 @@ export default function GlobalPayments() {
     const [selectedFreelancerId, setSelectedFreelancerId] = useState(null);
     const [view, setView] = useState('summary'); // 'summary' or 'detailed'
     const [searchQuery, setSearchQuery] = useState('');
+    const [displayCurrency, setDisplayCurrency] = useState('USD');
 
     const fetchPayments = async (isManual = false) => {
         setLoading(true);
@@ -155,7 +157,25 @@ export default function GlobalPayments() {
                             <tr style={tableHeaderStyle}>
                                 <th style={{ ...thStyle, paddingLeft: '24px' }}>Freelancers</th>
                                 <th style={thCenterStyle}>Total Records</th>
-                                <th style={thCenterStyle}>Total Amount</th>
+                                <th style={thCenterStyle}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', alignItems: 'center' }}>
+                                        <div /> {/* Spacer */}
+                                        <span style={{ whiteSpace: 'nowrap' }}>Total Amount</span>
+                                        <div style={{ width: 85, marginLeft: 8 }}>
+                                            <CustomDropdown
+                                                options={[
+                                                    { label: 'USD', value: 'USD' },
+                                                    { label: 'EUR', value: 'EUR' },
+                                                    { label: 'XCG', value: 'XCG' }
+                                                ]}
+                                                value={displayCurrency}
+                                                onChange={setDisplayCurrency}
+                                                showSearch={false}
+                                                placeholder="CUR"
+                                            />
+                                        </div>
+                                    </div>
+                                </th>
                                 <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Actions</th>
                             </tr>
                         </thead>
@@ -183,9 +203,11 @@ export default function GlobalPayments() {
                                             </div>
                                         </td>
                                         <td style={tdCenterStyle}>
-                                            <div style={amountGroupStyle}>
-                                                <span style={currencySymbolStyle}>$</span>
-                                                <span style={amountTextStyle}>{(freelancer.totalByCurrency['USD'] || 0).toLocaleString()}</span>
+                                            <div style={earningsItemStyle}>
+                                                <span style={currencySymbolStyle}>
+                                                    {displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
+                                                </span>
+                                                {(freelancer.totalByCurrency[displayCurrency] || 0).toLocaleString()}
                                             </div>
                                         </td>
                                         <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
@@ -268,20 +290,20 @@ const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterS
 const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
 const headerActionsStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
 
-const viewToggleStyle = { display: 'flex', background: 'rgba(255, 255, 255, 0.01)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.04)' };
+const viewToggleStyle = { display: 'flex', background: 'rgba(255, 255, 255, 0.01)', padding: '3px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.2)' };
 const toggleBtnStyle = { padding: '6px 14px', borderRadius: '8px', border: 'none', fontSize: '11px', fontWeight: '900', cursor: 'pointer', transition: 'all 0.2s', textTransform: 'uppercase', letterSpacing: '0.05em' };
-const refreshBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', color: '#3f3f46', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' };
+const refreshBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', color: '#3f3f46', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' };
 
 const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '8px' };
-const backBtnStyle = { display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', padding: '8px 12px', borderRadius: '8px', color: '#fbbf24', fontSize: '11px', fontWeight: '800', cursor: 'pointer' };
+const backBtnStyle = { display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', padding: '8px 12px', borderRadius: '8px', color: '#fbbf24', fontSize: '11px', fontWeight: '800', cursor: 'pointer' };
 const searchBoxStyle = { position: 'relative', width: '200px' };
 const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
-const filterInputStyle = { width: '100%', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.17)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
+const filterInputStyle = { width: '100%', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
 const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
 
-const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };
+const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.2)', overflow: 'hidden' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' };
+const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
 
 const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
@@ -290,16 +312,17 @@ const tdStyle = { padding: '16px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
 const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
-const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '14px' };
+const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '14px' };
 const userNameTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
 const userEmailTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600' };
 
 const amountGroupStyle = { display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' };
-const currencySymbolStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
+const earningsItemStyle = { fontSize: '11px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' };
+const currencySymbolStyle = { color: '#fbbf24', fontSize: '10px', fontWeight: '900' };
 const amountTextStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
 
 const countBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '6px', fontSize: '11px', color: '#a1a1aa', fontWeight: '600' };
-const historyBtnStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: '10px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer' };
+const historyBtnStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '10px', color: '#fff', fontSize: '11px', fontWeight: '800', cursor: 'pointer' };
 
 const idTextStyle = { fontSize: '9px', fontFamily: 'monospace', color: '#3f3f46', background: 'rgba(255, 255, 255, 0.01)', padding: '2px 6px', borderRadius: '4px', fontWeight: '900' };
 const productBadgeStyle = { fontSize: '11px', color: '#52525b', fontWeight: '700' };

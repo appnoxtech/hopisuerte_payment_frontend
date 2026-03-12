@@ -16,6 +16,7 @@ import {
     Filter,
     Search
 } from 'lucide-react';
+import CustomDropdown from '@/components/CustomDropdown';
 
 const getSuperAdminHeaders = () => ({
     headers: {
@@ -30,6 +31,7 @@ export default function UserManagement() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [displayCurrency, setDisplayCurrency] = useState('USD');
 
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
@@ -89,9 +91,9 @@ export default function UserManagement() {
         try {
             await api.delete(`/super-admin/users/${id}`, getSuperAdminHeaders());
             setUsers(users.filter(u => u.id !== id));
-            showToast('Agent access revoked', 'warning');
+            showToast('Freelancer deleted successfully', 'success');
         } catch (err) {
-            showToast(err.response?.data?.message || 'Revocation failed', 'error');
+            showToast(err.response?.data?.message || 'Deletion failed', 'error');
         }
     };
 
@@ -160,7 +162,25 @@ export default function UserManagement() {
                             <th style={{ ...thStyle, paddingLeft: '24px' }}>Freelancer Profiles</th>
                             <th style={thStyle}>Status</th>
                             <th style={thCenterStyle}>Products</th>
-                            <th style={thCenterStyle}>Amount</th>
+                            <th style={thCenterStyle}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', alignItems: 'center' }}>
+                                    <div /> {/* Spacer */}
+                                    <span style={{ whiteSpace: 'nowrap' }}>Earnings</span>
+                                    <div style={{ width: 85, marginLeft: 8 }}>
+                                    <CustomDropdown
+                                        options={[
+                                            { label: 'USD', value: 'USD' },
+                                            { label: 'EUR', value: 'EUR' },
+                                            { label: 'XCG', value: 'XCG' }
+                                        ]}
+                                        value={displayCurrency}
+                                        onChange={setDisplayCurrency}
+                                        showSearch={false}
+                                        placeholder="CUR"
+                                    />
+                                    </div>
+                                </div>
+                            </th>
                             <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Action</th>
                         </tr>
                     </thead>
@@ -204,9 +224,11 @@ export default function UserManagement() {
                                         </div>
                                     </td>
                                     <td style={{ ...tdCenterStyle }}>
-                                        <div style={earningsStyle}>
-                                            <span >$</span>
-                                            {(user.total_earnings || 0).toLocaleString()}
+                                        <div style={earningsItemStyle}>
+                                            <span style={currencySymbolStyle}>
+                                                {displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
+                                            </span>
+                                            {(user.earnings?.[displayCurrency] || 0).toLocaleString()}
                                         </div>
                                     </td>
                                     <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
@@ -297,7 +319,7 @@ const statsOverviewStyle = {
     background: 'rgba(255,255,255,0.01)',
     padding: '6px 14px',
     borderRadius: '10px',
-    border: '1px solid rgba(255,255,255,0.04)'
+    border: '1px solid rgba(255,255,255,0.2)'
 };
 
 const miniStatStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center' };
@@ -322,12 +344,12 @@ const addBtnStyle = {
 const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '8px' };
 const searchBoxStyle = { position: 'relative', width: '200px' };
 const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
-const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255, 255, 255, 0.23)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
+const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
 const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
 
-const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.04)', overflow: 'hidden' };
+const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.2)', overflow: 'hidden' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderRowStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.04)' };
+const tableHeaderRowStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
 const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid rgba(255, 255, 255, 0.01)', transition: 'background 0.2s ease' };
@@ -335,16 +357,16 @@ const tdStyle = { padding: '16px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
 const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
-const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '14px' };
+const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '14px' };
 const userNameTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
 const userEmailTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600' };
 
 const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' };
 const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
 const assetBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '11px', color: '#a1a1aa', fontWeight: '600' };
-const earningsStyle = { fontSize: '14px', fontWeight: '600', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 };
-const currencySymbolStyle = { color: '#3f3f46', fontSize: '11px' };
-const deleteBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.04)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', cursor: 'pointer' };
+const earningsItemStyle = { fontSize: '11px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' };
+const currencySymbolStyle = { color: '#fbbf24', fontSize: '10px', fontWeight: '900' };
+const deleteBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', cursor: 'pointer' };
 
 const loadingContainerStyle = { padding: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' };
 const spinnerStyle = { width: '30px', height: '30px', borderRadius: '50%', border: '3px solid rgba(251, 191, 36, 0.05)', borderTop: '3px solid #fbbf24', animation: 'spin 1s linear infinite' };

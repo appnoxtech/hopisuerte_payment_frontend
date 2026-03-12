@@ -25,15 +25,16 @@ export default function SuccessPage() {
             <div style={containerStyle}>
 
                 {/* Logo */}
-                {/* <div style={logoWrap}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
                         width={180}
-                        height={70}
+                        height={54}
                         priority
+                        style={{ objectFit: 'contain' }}
                     />
-                </div> */}
+                </div>
 
                 {/* Card */}
                 <div style={cardStyle}>

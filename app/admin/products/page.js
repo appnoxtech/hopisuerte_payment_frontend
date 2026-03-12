@@ -84,7 +84,7 @@ export default function ProductManagement() {
                                         borderColor: product.active ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
                                     }}>
                                         <div style={{ ...dotStyle, background: product.active ? '#10b981' : '#f43f5e' }} />
-                                        {product.active ? "Ready" : "Inactive"}
+                                        {product.active ? "Active" : "Inactive"}
                                     </div>
                                     <ShieldCheck size={16} color="rgba(255,255,255,0.1)" />
                                 </div>
@@ -183,7 +183,7 @@ const infoBoxStyle = {
     gap: '8px',
     padding: '6px 14px',
     background: 'rgba(251, 191, 36, 0.05)',
-    border: '1px solid rgba(251, 191, 36, 0.1)',
+    border: '1px solid rgba(251, 191, 36, 0.2)',
     borderRadius: '20px',
     fontSize: '11px',
     color: '#fbbf24',
@@ -201,7 +201,7 @@ const productGridStyle = {
 const productCardStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
     backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: '16px',
     padding: '20px',
     position: 'relative',
@@ -254,7 +254,7 @@ const toggleLinkBtnStyle = {
     width: '100%',
     padding: '10px 18px',
     background: 'rgba(251, 191, 36, 0.08)',
-    border: '1px solid rgba(251, 191, 36, 0.15)',
+    border: '1px solid rgba(251, 191, 36, 0.2)',
     borderRadius: '10px',
     color: '#fbbf24',
     fontSize: '14px',
@@ -277,7 +277,7 @@ const linksGridStyle = {
 const linkWidgetStyle = {
     display: 'flex',
     background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.2)',
     borderRadius: '8px',
     overflow: 'hidden'
 };
@@ -291,7 +291,7 @@ const currencyLabelStyle = {
     fontWeight: '800',
     fontSize: '11px',
     color: '#fbbf24',
-    borderRight: '1px solid rgba(251, 191, 36, 0.05)'
+    borderRight: '1px solid rgba(251, 191, 36, 0.2)'
 };
 
 const urlPreviewStyle = {
@@ -314,7 +314,7 @@ const copyBtnStyle = {
     justifyContent: 'center',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    borderLeft: '1px solid rgba(255,255,255,0.04)'
+    borderLeft: '1px solid rgba(255,255,255,0.2)'
 };
 
 const emptyStateStyle = {
@@ -322,7 +322,7 @@ const emptyStateStyle = {
     textAlign: 'center',
     background: 'rgba(15, 15, 20, 0.4)',
     borderRadius: '20px',
-    border: '1px solid rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.2)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
