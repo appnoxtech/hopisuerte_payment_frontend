@@ -18,13 +18,21 @@ export const UserProvider = ({ children }) => {
     const pathname = usePathname();
 
     const fetchUser = useCallback(async () => {
-        const isAdminPath = pathname.startsWith('/admin') || pathname.startsWith('/super-admin');
-        if (!isAdminPath) {
+        const isSuperAdminPath = pathname.startsWith('/super-admin');
+        const isAdminPanelPath = pathname.startsWith('/admin');
+        
+        if (!isSuperAdminPath && !isAdminPanelPath) {
             setLoading(false);
             return;
         }
 
-        const token = localStorage.getItem('auth_token') || localStorage.getItem('admin_token') || localStorage.getItem('super_admin_token');
+        let token = null;
+        if (isSuperAdminPath) {
+            token = localStorage.getItem('super_admin_token');
+        } else if (isAdminPanelPath) {
+            token = localStorage.getItem('auth_token');
+        }
+
         if (!token) {
             setUser(null);
             setLoading(false);
@@ -32,6 +40,7 @@ export const UserProvider = ({ children }) => {
         }
 
         try {
+            // Use the specific token for the fetch
             const response = await api.get('/user', {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -53,11 +62,16 @@ export const UserProvider = ({ children }) => {
     }, [fetchUser]);
 
     const logout = useCallback(() => {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('super_admin_token');
+        if (pathname.startsWith('/super-admin')) {
+            localStorage.removeItem('super_admin_token');
+        } else if (pathname.startsWith('/admin')) {
+            localStorage.removeItem('auth_token');
+        } else {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('super_admin_token');
+        }
         setUser(null);
-    }, []);
+    }, [pathname]);
 
     return (
         <UserContext.Provider value={{ user, setUser, loading, refreshUser, logout }}>

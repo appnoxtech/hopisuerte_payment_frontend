@@ -49,7 +49,6 @@ export default function AdminLogin() {
             const response = await api.post('/login', { email, password });
 
             localStorage.setItem('auth_token', response.data.access_token);
-            localStorage.removeItem('super_admin_token');
 
             showToast('Login successfully', 'success');
             await refreshUser();
@@ -188,7 +187,7 @@ export default function AdminLogin() {
                             disabled={loading}
                             style={submitStyle}
                         >
-                            {loading ? 'Authenticating...' : 'Sign In'}
+                            {loading ? 'Authenticating...' : 'Login'}
                         </button>
 
                         <div style={{ textAlign: 'center' }}>

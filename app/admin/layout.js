@@ -38,7 +38,7 @@ export default function AdminLayout({ children }) {
         } catch (err) {
             // silent fail
         } finally {
-            localStorage.removeItem('auth_token');
+            contextLogout();
             router.push('/admin/login');
         }
     };

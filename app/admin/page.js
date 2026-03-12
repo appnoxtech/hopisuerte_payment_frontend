@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import api from '@/utils/api';
 import Link from 'next/link';
+import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
 import {
     CheckCircle2,
@@ -66,7 +67,7 @@ export default function AdminDashboard() {
     }
 
     const successfulPayments = payments.filter(p => p.status === 'success');
-    
+
     const totals = successfulPayments.reduce((acc, p) => {
         const cur = (p.currency || 'USD').toUpperCase();
         if (acc.hasOwnProperty(cur)) {
@@ -236,7 +237,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </td>
                                         <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '16px' }}>
-                                            <div style={timestampStyle}>{new Date(p.created_at).toLocaleString('en-GB')}</div>
+                                            <div style={timestampStyle}>{formatLocalTime(p.created_at)}</div>
                                         </td>
                                     </tr>
                                 ))
@@ -418,7 +419,8 @@ const tableContainerStyle = {
     background: 'rgba(15, 15, 20, 0.4)',
     border: '1px solid rgba(255, 255, 255, 0.2)',
     borderRadius: '12px',
-    overflow: 'hidden'
+    overflow: 'auto',
+    maxHeight: '600px',
 };
 
 const tableStyle = {

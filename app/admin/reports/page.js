@@ -15,6 +15,7 @@ import {
     XCircle,
     Clock
 } from 'lucide-react';
+import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
 
 export default function ReportsPage() {
@@ -166,7 +167,7 @@ export default function ReportsPage() {
                                         {p.status === 'success' ? <CheckCircle2 size={14} color="#10b981" /> : (p.status === 'failed' ? <XCircle size={14} color="#f43f5e" /> : <Clock size={14} color="#fbbf24" />)}
                                         <div style={{ overflow: 'hidden' }}>
                                             <div style={primaryTextStyle}>{p.customer_name}</div>
-                                            <div style={secondaryTextStyle}>{new Date(p.created_at).toLocaleDateString('en-GB')}</div>
+                                            <div style={secondaryTextStyle}>{formatLocalTime(p.created_at)}</div>
                                         </div>
                                     </div>
                                     <div style={amountValueStyle}><span style={{ fontSize: 9, fontWeight: '800', color: '#52525b' }}>{p.currency}</span>{p.amount} </div>
@@ -239,7 +240,7 @@ const btnStyle = {
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
 };
 
-const activityListStyle = { display: 'flex', flexDirection: 'column', gap: '12px' };
+const activityListStyle = { display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '400px', overflowY: 'auto' };
 const activityItemStyle = {
     display: 'flex',
     justifyContent: 'space-between',

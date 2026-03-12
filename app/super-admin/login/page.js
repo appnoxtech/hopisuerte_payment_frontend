@@ -47,7 +47,6 @@ export default function SuperAdminLogin() {
             const response = await api.post('/super-admin/login', { email, password });
 
             localStorage.setItem('super_admin_token', response.data.access_token);
-            localStorage.removeItem('auth_token');
             showToast('Login successfully', 'success');
             await refreshUser();
             router.push('/super-admin');

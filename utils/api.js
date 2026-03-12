@@ -17,17 +17,19 @@ api.interceptors.request.use((config) => {
     if (typeof window !== 'undefined') {
         const pathname = window.location.pathname;
 
-        // Determine which token to prioritize based on the route
         const superAdminToken = localStorage.getItem('super_admin_token');
         const authToken = localStorage.getItem('auth_token');
 
         let token = null;
 
         if (pathname.startsWith('/super-admin')) {
-            // In super-admin area, always prefer super-admin token
-            token = superAdminToken || authToken;
+            // Strictly use super admin token for super admin routes
+            token = superAdminToken;
+        } else if (pathname.startsWith('/admin')) {
+            // Strictly use auth token for freelancer routes
+            token = authToken;
         } else {
-            // Everywhere else, prefer auth_token (standard login)
+            // Public area: prefer auth_token, fallback to super_admin_token
             token = authToken || superAdminToken;
         }
 

@@ -12,6 +12,7 @@ import {
     ArrowUpRight,
     ArrowLeft
 } from 'lucide-react';
+import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
 
 const getSuperAdminHeaders = () => ({
@@ -251,7 +252,9 @@ export default function GlobalPayments() {
                                         </td> */}
                                         <td style={tdCenterStyle}>
                                             <div style={amountGroupStyle}>
-                                                <span style={currencySymbolStyle}>{p.currency === 'USD' ? '$' : p.currency}</span>
+                                                <span style={currencySymbolStyle}>
+                                                    {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}
+                                                </span>
                                                 <span style={amountTextStyle}>{(p.amount || 0).toLocaleString()}</span>
                                             </div>
                                         </td>
@@ -267,7 +270,7 @@ export default function GlobalPayments() {
                                             </div>
                                         </td>
                                         <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
-                                            <div style={dateTextStyle}>{new Date(p.created_at).toLocaleDateString('en-GB')}</div>
+                                            <div style={dateTextStyle}>{formatLocalTime(p.created_at)}</div>
                                         </td>
                                     </tr>
                                 ))

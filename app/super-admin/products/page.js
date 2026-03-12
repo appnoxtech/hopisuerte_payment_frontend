@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import api from '@/utils/api';
+import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
 import {
     Plus,
@@ -360,16 +361,41 @@ export default function SuperAdminProducts() {
                                     ) : (
                                         selectedProductPayments.map((p) => (
                                             <tr key={p.id} style={trStyle}>
-                                                <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa' }}>{new Date(p.created_at).toLocaleString('en-GB')}</td>
+                                                <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa' }}>{formatLocalTime(p.created_at)}</td>
                                                 <td style={tdStyle}>
                                                     <div style={userTextStyle}>{p.customer_name}</div>
                                                     <div style={{ fontSize: 11, color: '#a1a1aa' }}>{p.customer_email}</div>
                                                 </td>
-                                                <td style={{ ...tdStyle, textAlign: 'right', color: '#fbbf24', fontWeight: '900' }}>
-                                                    {Number(p.amount).toLocaleString()} {p.currency}
+                                                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '900' }}>
+                                                    <span style={{ color: '#fbbf24', marginRight: 8 }}>
+                                                        {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}
+                                                    </span>
+                                                    <span style={{ color: '#fff' }}>{Number(p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                                 </td>
                                                 <td style={tdCenterStyle}>
-                                                    <span style={{ color: p.status === 'success' ? '#10b981' : '#f43f5e', fontSize: 10, fontWeight: '900', textTransform: 'uppercase' }}>{p.status}</span>
+                                                    <div style={{ 
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '6px',
+                                                        padding: '4px 10px',
+                                                        borderRadius: '20px',
+                                                        border: '1px solid',
+                                                        fontSize: '10px',
+                                                        fontWeight: '900',
+                                                        textTransform: 'uppercase',
+                                                        letterSpacing: '0.05em',
+                                                        background: p.status === 'success' ? 'rgba(16, 185, 129, 0.05)' : (p.status === 'pending' ? 'rgba(251, 191, 36, 0.05)' : 'rgba(244, 63, 94, 0.05)'),
+                                                        color: p.status === 'success' ? '#10b981' : (p.status === 'pending' ? '#fbbf24' : '#f43f5e'),
+                                                        borderColor: p.status === 'success' ? 'rgba(16, 185, 129, 0.1)' : (p.status === 'pending' ? 'rgba(251, 191, 36, 0.1)' : 'rgba(244, 63, 94, 0.1)')
+                                                    }}>
+                                                        <div style={{ 
+                                                            width: '4px', 
+                                                            height: '4px', 
+                                                            borderRadius: '50%', 
+                                                            background: p.status === 'success' ? '#10b981' : (p.status === 'pending' ? '#fbbf24' : '#f43f5e') 
+                                                        }} />
+                                                        {p.status}
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))
