@@ -34,6 +34,7 @@ export default function CustomDropdown({
         const query = searchQuery.toLowerCase();
         return options.filter(opt =>
             opt.label.toLowerCase().includes(query) ||
+            (opt.value && opt.value.toLowerCase().includes(query)) ||
             (opt.searchTerms && opt.searchTerms.toLowerCase().includes(query))
         );
     }, [options, searchQuery]);
@@ -126,9 +127,9 @@ export default function CustomDropdown({
 
             <div style={optionsListStyle}>
                 {filteredOptions.length > 0 ? (
-                    filteredOptions.map((opt) => (
+                    filteredOptions.map((opt, index) => (
                         <div
-                            key={opt.value}
+                            key={`${opt.label}-${index}`}
                             onClick={() => handleSelect(opt)}
                             style={{
                                 ...optionStyle,
