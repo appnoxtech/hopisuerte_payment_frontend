@@ -54,18 +54,24 @@ export default function SuperAdminDashboard() {
         );
     }
 
-    const StatCard = ({ title, value, unit = '', color = '#fbbf24', icon: Icon }) => (
+    const StatCard = ({ title, value, unit = '', color = '#fbbf24', icon: Icon, extra = null }) => (
         <div style={cardStyle}>
             <div style={cardHeaderStyle}>
                 <div style={{ ...cardLabelStyle, flex: 1 }}>{title}</div>
                 <Icon size={14} color={color} style={{ opacity: 0.6 }} />
             </div>
-            <div style={cardValueStyle}>
-                {unit && unit !== '%' && <span style={unitStyle}>{unit}</span>}
-                {value}
-                {unit === '%' && <span style={unitStyle}>{unit}</span>}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <div style={cardValueStyle}>
+                    {unit && unit !== '%' && <span style={unitStyle}>{unit}</span>}
+                    {value}
+                    {unit === '%' && <span style={unitStyle}>{unit}</span>}
+                </div>
+                {extra && (
+                    <div style={{ width: 85 }}>
+                        {extra}
+                    </div>
+                )}
             </div>
-
         </div>
     );
 
@@ -77,28 +83,24 @@ export default function SuperAdminDashboard() {
             <section style={statGridStyle}>
                 <StatCard title="Total Freelancers" value={stats?.total_users || 0} icon={Users} color="#6366f1" />
                 <StatCard
-                    title={
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                            <span>Total Volume</span>
-                            <div style={{ width: 85 }}>
-                                <CustomDropdown
-                                    options={[
-                                        { label: 'USD', value: 'USD' },
-                                        { label: 'EUR', value: 'EUR' },
-                                        { label: 'XCG', value: 'XCG' }
-                                    ]}
-                                    value={displayCurrency}
-                                    onChange={setDisplayCurrency}
-                                    showSearch={false}
-                                    placeholder="Cur"
-                                />
-                            </div>
-                        </div>
-                    }
+                    title="Total Amount"
                     value={
                         displayCurrency === 'USD' ? (stats?.total_volume_usd || 0).toLocaleString() :
-                        (displayCurrency === 'EUR' ? (stats?.total_volume_eur || 0).toLocaleString() :
-                        (stats?.total_volume_xcg || 0).toLocaleString())
+                            (displayCurrency === 'EUR' ? (stats?.total_volume_eur || 0).toLocaleString() :
+                                (stats?.total_volume_xcg || 0).toLocaleString())
+                    }
+                    extra={
+                        <CustomDropdown
+                            options={[
+                                { label: 'USD', value: 'USD' },
+                                { label: 'EUR', value: 'EUR' },
+                                { label: 'XCG', value: 'XCG' }
+                            ]}
+                            value={displayCurrency}
+                            onChange={setDisplayCurrency}
+                            showSearch={false}
+                            placeholder="Cur"
+                        />
                     }
                     unit={displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
                     icon={Globe}
