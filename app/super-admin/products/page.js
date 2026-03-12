@@ -18,7 +18,10 @@ import {
     User,
     Shield,
     Box,
-    ExternalLink
+    ExternalLink,
+    Repeat,
+    Clock,
+    ArrowRight
 } from 'lucide-react';
 
 import { useToast } from '@/context/ToastContext';
@@ -47,6 +50,18 @@ export default function SuperAdminProducts() {
     const [viewingProductName, setViewingProductName] = useState('');
     const [filterName, setFilterName] = useState('');
     const [filterAssignedTo, setFilterAssignedTo] = useState('');
+
+    // Reassignment state
+    const [isReassignModalOpen, setIsReassignModalOpen] = useState(false);
+    const [reassignProduct, setReassignProduct] = useState(null);
+    const [reassignUserId, setReassignUserId] = useState('');
+    const [reassignReason, setReassignReason] = useState('');
+    const [reassignLoading, setReassignLoading] = useState(false);
+
+    // Reassignment history state
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+    const [reassignmentHistory, setReassignmentHistory] = useState([]);
+    const [historyProductName, setHistoryProductName] = useState('');
 
     useEffect(() => {
         fetchProducts();
@@ -138,6 +153,50 @@ export default function SuperAdminProducts() {
         setCopiedId(id);
         showToast('Link copied successfully');
         setTimeout(() => setCopiedId(null), 2000);
+    };
+
+    // ── Reassignment handlers ──
+    const openReassignModal = (product) => {
+        setReassignProduct(product);
+        setReassignUserId('');
+        setReassignReason('');
+        setIsReassignModalOpen(true);
+    };
+
+    const handleReassign = async () => {
+        if (!reassignUserId) {
+            showToast('Please select a freelancer to reassign to.', 'error');
+            return;
+        }
+        if (reassignUserId == reassignProduct?.user_id) {
+            showToast('Product is already assigned to this freelancer.', 'error');
+            return;
+        }
+        setReassignLoading(true);
+        try {
+            const res = await api.post(`/super-admin/products/${reassignProduct.id}/reassign`, {
+                new_user_id: reassignUserId,
+                reason: reassignReason,
+            });
+            showToast(res.data.message || 'Product reassigned successfully.', 'success');
+            setIsReassignModalOpen(false);
+            fetchProducts();
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Reassignment failed.', 'error');
+        } finally {
+            setReassignLoading(false);
+        }
+    };
+
+    const fetchReassignmentHistory = async (product) => {
+        try {
+            const res = await api.get(`/super-admin/products/${product.id}/reassignment-history`);
+            setReassignmentHistory(res.data);
+            setHistoryProductName(product.name);
+            setIsHistoryModalOpen(true);
+        } catch (err) {
+            showToast('Failed to load reassignment history.', 'error');
+        }
     };
 
     if (loading) {
@@ -274,10 +333,13 @@ export default function SuperAdminProducts() {
                                         </td>
                                         <td style={{ ...tdStyle, paddingRight: '24px', textAlign: 'right' }}>
                                             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                                                <button onClick={() => handleOpenModal(product)} style={actionBtnStyle}>
+                                                <button onClick={() => openReassignModal(product)} style={actionBtnStyle} title="Reassign Freelancer">
+                                                    <Repeat size={12} color="#38bdf8" />
+                                                </button>
+                                                <button onClick={() => handleOpenModal(product)} style={actionBtnStyle} title="Edit Product">
                                                     <Edit2 size={12} color="#fbbf24" />
                                                 </button>
-                                                <button onClick={() => handleDelete(product.id)} style={actionBtnStyle}>
+                                                <button onClick={() => handleDelete(product.id)} style={actionBtnStyle} title="Delete Product">
                                                     <Trash2 size={12} color="#f43f5e" />
                                                 </button>
                                             </div>
@@ -376,6 +438,143 @@ export default function SuperAdminProducts() {
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reassign Product Modal */}
+            {isReassignModalOpen && reassignProduct && (
+                <div style={modalOverlayStyle}>
+                    <div style={modalCardStyle}>
+                        <div style={modalHeaderStyle}>
+                            <div>
+                                <h2 style={modalTitleStyle}>Reassign Product</h2>
+                                <p style={{ fontSize: 11, color: '#a1a1aa', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 }}>
+                                    Transfer ownership to another freelancer
+                                </p>
+                            </div>
+                            <button onClick={() => setIsReassignModalOpen(false)} style={modalCloseBtnStyle}><X size={18} /></button>
+                        </div>
+
+                        {/* Current Assignment Info */}
+                        <div style={reassignInfoCardStyle}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                <div style={iconBoxStyle}><Box size={14} color="#fbbf24" /></div>
+                                <div>
+                                    <div style={{ fontSize: '14px', fontWeight: '800', color: '#fff' }}>{reassignProduct.name}</div>
+                                    <div style={{ fontSize: '11px', color: '#71717a', marginTop: 2 }}>Currently assigned to</div>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+                                <div style={avatarCircleStyle}>{reassignProduct.user?.name?.[0] || 'A'}</div>
+                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#fbbf24' }}>{reassignProduct.user?.name || 'Unknown'}</span>
+                                <ArrowRight size={14} color="#52525b" style={{ margin: '0 4px' }} />
+                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#38bdf8' }}>
+                                    {reassignUserId ? (users.find(u => u.id == reassignUserId)?.name || 'Select...') : '?'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 20 }}>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>New Freelancer</label>
+                                <CustomDropdown
+                                    options={userOptions.filter(u => u.value != reassignProduct.user_id)}
+                                    value={reassignUserId}
+                                    onChange={(val) => setReassignUserId(val)}
+                                    showSearch={true}
+                                    placeholder="Search freelancer..."
+                                />
+                            </div>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Reason (Optional)</label>
+                                <textarea
+                                    placeholder="Provide a reason for this reassignment..."
+                                    value={reassignReason}
+                                    onChange={(e) => setReassignReason(e.target.value)}
+                                    style={{ ...modalInputStyle, height: '70px', resize: 'none' }}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: 'rgba(251, 191, 36, 0.05)', border: '1px solid rgba(251, 191, 36, 0.1)', borderRadius: 10 }}>
+                                <Shield size={14} color="#fbbf24" />
+                                <p style={{ fontSize: '11px', color: '#a1a1aa', lineHeight: 1.5 }}>
+                                    The new freelancer will start with <strong style={{ color: '#fff' }}>0 balance</strong> for this product. Previous payment history will be preserved but not visible to the new assignee.
+                                </p>
+                            </div>
+                            <div style={modalFooterStyle}>
+                                <button onClick={() => fetchReassignmentHistory(reassignProduct)} style={{ ...cancelBtnStyle, display: 'flex', alignItems: 'center', gap: 6 }}>
+                                    <Clock size={12} />
+                                    <span>History</span>
+                                </button>
+                                <button type="button" onClick={() => setIsReassignModalOpen(false)} style={cancelBtnStyle}>Cancel</button>
+                                <button
+                                    onClick={handleReassign}
+                                    disabled={reassignLoading || !reassignUserId}
+                                    style={{
+                                        ...saveBtnStyle,
+                                        background: reassignLoading || !reassignUserId ? '#52525b' : '#38bdf8',
+                                        cursor: reassignLoading || !reassignUserId ? 'not-allowed' : 'pointer',
+                                    }}
+                                >
+                                    {reassignLoading ? 'Reassigning...' : 'Confirm Reassignment'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reassignment History Modal */}
+            {isHistoryModalOpen && (
+                <div style={modalOverlayStyle}>
+                    <div style={{ ...modalCardStyle, width: '680px' }}>
+                        <div style={modalHeaderStyle}>
+                            <div>
+                                <h2 style={modalTitleStyle}>Reassignment History</h2>
+                                <p style={{ fontSize: 11, color: '#a1a1aa', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 }}>
+                                    {historyProductName}
+                                </p>
+                            </div>
+                            <button onClick={() => setIsHistoryModalOpen(false)} style={modalCloseBtnStyle}><X size={18} /></button>
+                        </div>
+                        <div style={historyTableWrapStyle}>
+                            {reassignmentHistory.length === 0 ? (
+                                <div style={emptyStateStyle}>No reassignment records found for this product.</div>
+                            ) : (
+                                <table style={tableStyle}>
+                                    <thead>
+                                        <tr style={tableHeaderStyle}>
+                                            <th style={thStyle}>Date</th>
+                                            <th style={thStyle}>From</th>
+                                            <th style={thStyle}>To</th>
+                                            <th style={thStyle}>By</th>
+                                            <th style={thStyle}>Reason</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {reassignmentHistory.map((entry) => (
+                                            <tr key={entry.id} style={trStyle}>
+                                                <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa', whiteSpace: 'nowrap' }}>
+                                                    {new Date(entry.reassigned_at).toLocaleString('en-GB')}
+                                                </td>
+                                                <td style={tdStyle}>
+                                                    <div style={{ fontSize: 13, fontWeight: 800, color: '#f87171' }}>{entry.previous_user?.name || 'N/A'}</div>
+                                                </td>
+                                                <td style={tdStyle}>
+                                                    <div style={{ fontSize: 13, fontWeight: 800, color: '#4ade80' }}>{entry.new_user?.name || 'N/A'}</div>
+                                                </td>
+                                                <td style={tdStyle}>
+                                                    <div style={{ fontSize: 12, fontWeight: 700, color: '#a1a1aa' }}>{entry.performed_by_admin?.name || 'System'}</div>
+                                                </td>
+                                                <td style={{ ...tdStyle, fontSize: 11, color: '#71717a', maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {entry.reason || '\u2014'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -553,3 +752,10 @@ const cancelBtnStyle = {
 };
 
 const historyTableWrapStyle = { overflowX: 'auto', maxHeight: '50vh', marginTop: 8 };
+
+const reassignInfoCardStyle = {
+    background: 'rgba(255, 255, 255, 0.02)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    borderRadius: '12px',
+    padding: '16px',
+};
