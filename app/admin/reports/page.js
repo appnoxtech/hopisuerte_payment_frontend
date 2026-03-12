@@ -180,7 +180,7 @@ export default function ReportsPage() {
 
             <div style={infoBoxStyle}>
                 <Info size={14} color="#71717a" />
-                <span>Reports only include 'Success' status payments by default for financial accuracy.</span>
+                <span>Reports now include all transactions (Success, Pending, and Failed) for complete financial auditing.</span>
             </div>
         </div>
     );
