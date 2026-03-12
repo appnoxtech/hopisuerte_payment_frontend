@@ -91,7 +91,7 @@ export default function SuperAdminReportsPage() {
             window.URL.revokeObjectURL(url);
             showToast('Report downloaded successfully', 'success');
         } catch (err) {
-            showToast('Extraction sequence failed', 'error');
+            showToast('Download failed', 'error');
         } finally {
             setLoading(false);
         }
