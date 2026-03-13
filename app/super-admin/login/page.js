@@ -66,23 +66,70 @@ export default function SuperAdminLogin() {
 
     return (
         <div style={mainStyle}>
+            {/* Responsive Styles */}
+            <style>{`
+                .login-container {
+                    width: 100%;
+                    max-width: 440px;
+                    z-index: 2;
+                    padding: 0 16px;
+                }
+                .login-logo-wrap {
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 16px;
+                }
+                .login-logo-wrap img {
+                    width: 100%;
+                    max-width: 160px;
+                    height: auto !important;
+                }
+                .login-card {
+                    background: #FFFFFF;
+                    border: 1px solid #E3E8EF;
+                    border-radius: 24px;
+                    padding: 40px;
+                    box-shadow: 0 25px 50px -12px rgba(0, 28, 100, 0.2);
+                }
+                @media (max-width: 480px) {
+                    .login-card {
+                        padding: 28px 20px;
+                        border-radius: 20px;
+                    }
+                    .login-logo-wrap img {
+                        max-width: 130px;
+                    }
+                    .login-logo-wrap {
+                        margin-bottom: 12px;
+                    }
+                }
+                @media (min-width: 1200px) {
+                    .login-container {
+                        max-width: 460px;
+                    }
+                    .login-logo-wrap img {
+                        max-width: 180px;
+                    }
+                }
+            `}</style>
+
             <div style={glowStyle} />
 
-            <div style={containerStyle}>
+            <div className="login-container">
                 {/* Logo */}
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                <div className="login-logo-wrap">
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
-                        width={300}
-                        height={90}
+                        width={400}
+                        height={120}
                         priority
-                        style={{ objectFit: 'contain' }}
+                        style={{ objectFit: 'contain', width: '100%', height: 'auto' }}
                     />
                 </div>
                 {/* Card */}
-                <div style={cardStyle}>
-                    <h1 style={{ ...titleStyle, fontSize: 26 }}>Super Admin</h1>
+                <div className="login-card">
+                    <h1 style={{ ...titleStyle, fontSize: 28 }}>Super Admin</h1>
 
                     <p style={{ ...subtitleStyle, marginBottom: 28 }}>
                         Restricted management portal
@@ -202,7 +249,7 @@ const mainStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     background: '#F7F9FC',
-    padding: 24,
+    padding: '24px 16px',
     position: 'relative',
     overflow: 'hidden'
 };
@@ -217,21 +264,6 @@ const glowStyle = {
     background: 'radial-gradient(circle, rgba(0, 112, 224, 0.05) 0%, transparent 70%)',
     borderRadius: '50%',
     zIndex: 0
-};
-
-const containerStyle = {
-    width: '100%',
-    maxWidth: 440,
-    zIndex: 2,
-    marginTop: -40
-};
-
-const cardStyle = {
-    background: '#FFFFFF',
-    border: '1px solid #E3E8EF',
-    borderRadius: 24,
-    padding: 48,
-    boxShadow: '0 20px 25px -5px rgba(0, 28, 100, 0.05), 0 10px 10px -5px rgba(0, 28, 100, 0.02)'
 };
 
 const titleStyle = {

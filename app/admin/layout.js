@@ -102,8 +102,8 @@ export default function AdminLayout({ children }) {
                         <Image
                             src="/paysigur.png"
                             alt="Paysigur"
-                            width={120}
-                            height={72}
+                            width={160}
+                            height={80}
                             priority
                             style={{ objectFit: 'contain' }}
                         />
@@ -141,7 +141,11 @@ export default function AdminLayout({ children }) {
                 <div style={userFooterStyle}>
                     <div style={userBriefStyle}>
                         <div style={userAvatarStyle}>
-                            {user?.name?.[0]?.toUpperCase() || ''}
+                            {user?.profile_image_url ? (
+                                <img src={user.profile_image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+                            ) : (
+                                user?.name?.[0]?.toUpperCase() || ''
+                            )}
                         </div>
                         <div style={userDetailsStyle}>
                             <p style={userNameStyle}>{user?.name || ''}</p>

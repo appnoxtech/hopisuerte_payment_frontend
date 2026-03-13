@@ -12,7 +12,8 @@ import {
     CreditCard,
     LogOut,
     ShieldAlert,
-    BarChart3
+    BarChart3,
+    User
 } from 'lucide-react';
 import NextLink from 'next/link';
 
@@ -68,7 +69,8 @@ export default function SuperAdminLayout({ children }) {
         { name: 'Merchants', href: '/super-admin/users', icon: Users },
         { name: 'Products', href: '/super-admin/products', icon: ShoppingBag },
         { name: 'Transactions', href: '/super-admin/payments', icon: CreditCard },
-        { name: 'Reports', href: '/super-admin/reports', icon: BarChart3 }
+        { name: 'Reports', href: '/super-admin/reports', icon: BarChart3 },
+        { name: 'Profile Settings', href: '/super-admin/profile', icon: User }
     ];
 
     const isActive = (href) => pathname === href;
@@ -120,7 +122,11 @@ export default function SuperAdminLayout({ children }) {
                 <div style={userFooterStyle}>
                     <div style={userBriefStyle}>
                         <div style={userAvatarStyle}>
-                            {user?.name?.[0]?.toUpperCase() || ''}
+                            {user?.profile_image_url ? (
+                                <img src={user.profile_image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+                            ) : (
+                                user?.name?.[0]?.toUpperCase() || ''
+                            )}
                         </div>
                         <div style={userDetailsStyle}>
                             <p style={userNameStyle}>{user?.name || ''}</p>

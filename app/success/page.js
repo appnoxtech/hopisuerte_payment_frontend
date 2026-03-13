@@ -2,35 +2,22 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { CheckCircle2, Home, ArrowRight } from 'lucide-react';
 
 export default function SuccessPage() {
     return (
         <div style={mainStyle}>
-
-            <style>{`
-                @keyframes fadeIn {
-                    from {opacity:0; transform: translateY(10px);}
-                    to {opacity:1; transform: translateY(0);}
-                }
-
-                @keyframes pulse {
-                    0%,100% {opacity:1;}
-                    50% {opacity:0.4;}
-                }
-            `}</style>
-
-            {/* Glow */}
+            {/* Background Glow */}
             <div style={glowStyle} />
 
             <div style={containerStyle}>
-
                 {/* Logo */}
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                <div style={logoWrap}>
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
-                        width={240}
-                        height={72}
+                        width={300}
+                        height={90}
                         priority
                         style={{ objectFit: 'contain' }}
                     />
@@ -38,10 +25,9 @@ export default function SuccessPage() {
 
                 {/* Card */}
                 <div style={cardStyle}>
-
                     {/* Success Icon */}
                     <div style={iconWrap}>
-                        ✓
+                        <CheckCircle2 size={48} strokeWidth={2.5} />
                     </div>
 
                     <h1 style={titleStyle}>
@@ -53,44 +39,31 @@ export default function SuccessPage() {
                         A confirmation receipt has been sent to your email.
                     </p>
 
+                    <div style={dividerStyle} />
+
                     {/* Buttons */}
                     <div style={btnWrap}>
-
-                        {/* <button
-                            onClick={() => window.close()}
-                            style={primaryBtn}
-                        >
-                            Close Window
-                        </button> */}
-
                         <Link
                             href="/"
-                            style={secondaryBtn}
+                            style={primaryBtn}
                         >
-                            Back to Home
+                            <Home size={18} />
+                            <span>Return to Dashboard</span>
                         </Link>
-
                     </div>
 
-                    {/* Status */}
+                    {/* Status Tracker */}
                     <div style={statusWrap}>
-
                         <div style={statusDot} />
-
                         <span style={statusText}>
-                            Transaction Completed
+                            SECURE TRANSACTION COMPLETED
                         </span>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
     );
 }
-
 
 /* ---------- STYLES ---------- */
 
@@ -99,120 +72,123 @@ const mainStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#000',
-    padding: 20,
-    position: 'relative'
+    background: '#F7F9FC',
+    padding: '24px',
+    position: 'relative',
+    fontFamily: "'Inter', sans-serif",
+    overflow: 'hidden'
 };
 
 const containerStyle = {
     width: '100%',
-    maxWidth: 420,
-    zIndex: 2
+    maxWidth: '440px',
+    zIndex: 2,
+    animation: 'fadeIn 0.6s ease-out'
 };
 
 const logoWrap = {
     display: 'flex',
     justifyContent: 'center',
-    marginBottom: 24
+    marginBottom: '32px'
 };
 
 const cardStyle = {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 18,
-    padding: 28,
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '32px',
+    padding: '48px 40px',
     textAlign: 'center',
-    animation: 'fadeIn .5s ease'
+    boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.2)',
 };
 
 const iconWrap = {
-    width: 70,
-    height: 70,
-    margin: '0 auto 20px',
-    borderRadius: 14,
-    background: 'rgba(34,197,94,0.1)',
-    border: '1px solid rgba(34,197,94,0.25)',
-    color: '#22c55e',
-    fontSize: 32,
+    width: '80px',
+    height: '80px',
+    margin: '0 auto 24px',
+    borderRadius: '24px',
+    background: '#f0fdf4',
+    border: '1px solid #bbf7d0',
+    color: '#16a34a',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: 800
 };
 
 const titleStyle = {
-    fontSize: 24,
-    fontWeight: 800,
-    color: '#fff',
-    marginBottom: 10
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#001C64',
+    marginBottom: '12px',
+    letterSpacing: '-0.02em',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const descStyle = {
-    fontSize: 14,
-    color: '#71717a',
-    marginBottom: 24,
-    lineHeight: 1.6
+    fontSize: '15px',
+    color: '#6B7C93',
+    marginBottom: '32px',
+    lineHeight: '1.6',
+    fontWeight: '500'
+};
+
+const dividerStyle = {
+    height: '1px',
+    background: '#E3E8EF',
+    width: '100%',
+    marginBottom: '32px'
 };
 
 const btnWrap = {
     display: 'flex',
     flexDirection: 'column',
-    gap: 10
+    gap: '12px'
 };
 
 const primaryBtn = {
-    padding: 14,
-    background: '#22c55e',
-    border: 'none',
-    borderRadius: 10,
-    fontWeight: 700,
-    cursor: 'pointer',
-    color: '#000'
-};
-
-const secondaryBtn = {
-    padding: 14,
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: 10,
-    fontSize: 14,
-    color: '#fff',
-    textDecoration: 'none',
-    fontWeight: 800,
-    transition: 'all 0.2s ease'
-};
-
-const statusWrap = {
-    marginTop: 20,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6
+    gap: '10px',
+    padding: '16px 24px',
+    background: '#0070E0',
+    color: '#FFFFFF',
+    borderRadius: '14px',
+    fontSize: '15px',
+    fontWeight: '700',
+    textDecoration: 'none',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)'
+};
+
+const statusWrap = {
+    marginTop: '32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px'
 };
 
 const statusDot = {
-    width: 6,
-    height: 6,
+    width: '6px',
+    height: '6px',
     borderRadius: '50%',
-    background: '#22c55e',
-    animation: 'pulse 1.5s infinite'
+    background: '#16a34a',
 };
 
 const statusText = {
-    fontSize: 10,
-    letterSpacing: 2,
-    color: '#52525b',
-    fontWeight: 700
+    fontSize: '11px',
+    letterSpacing: '0.1em',
+    color: '#94A3B8',
+    fontWeight: '800'
 };
 
 const glowStyle = {
     position: 'absolute',
-    top: 0,
+    top: '0',
     left: '50%',
     transform: 'translateX(-50%)',
-    width: 600,
-    height: 300,
-    background: 'rgba(34,197,94,0.12)',
-    borderRadius: '50%',
-    filter: 'blur(120px)'
+    width: '100%',
+    height: '600px',
+    background: 'radial-gradient(circle at 50% 0%, rgba(0, 112, 224, 0.08) 0%, transparent 70%)',
+    pointerEvents: 'none'
 };

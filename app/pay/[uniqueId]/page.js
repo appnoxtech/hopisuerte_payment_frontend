@@ -323,12 +323,46 @@ function UniqueProductPaymentContent() {
                 {/* Card */}
                 <div style={cardStyle}>
                     <div style={{ marginBottom: 28, textAlign: 'center' }}>
-                        <h1 className="gradient-text" style={{ fontSize: '26px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+                        <h1 className="gradient-text" style={{ fontSize: '26px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" }}>
                             Complete Your Payment
                         </h1>
-                        <p style={{ color: '#6B7C93', fontSize: '15px' }}>
+                        <p style={{ color: '#6B7C93', fontSize: '15px', marginBottom: 20 }}>
                             {product ? product.name : 'Secure Transaction'}
                         </p>
+
+                        {/* Merchant Identity */}
+                        <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            padding: '6px 16px',
+                            background: '#F7F9FC',
+                            borderRadius: '20px',
+                            border: '1px solid #E3E8EF',
+                        }}>
+                            <div style={{
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '8px',
+                                background: '#0070E0',
+                                color: '#FFF',
+                                fontSize: '12px',
+                                fontWeight: '800',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                overflow: 'hidden'
+                            }}>
+                                {product?.user?.profile_image_url ? (
+                                    <img src={product.user.profile_image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    product?.user?.name?.[0]?.toUpperCase() || 'M'
+                                )}
+                            </div>
+                            <span style={{ fontSize: '13px', fontWeight: '600', color: '#1A1F36' }}>
+                                Payable to {product?.user?.name || 'Authorized Merchant'}
+                            </span>
+                        </div>
                     </div>
 
                     {!clientSecret ? (

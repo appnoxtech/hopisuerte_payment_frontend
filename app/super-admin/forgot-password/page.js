@@ -49,12 +49,68 @@ export default function SuperAdminForgotPassword() {
 
     return (
         <div style={mainStyle}>
+            {/* Responsive Styles */}
+            <style>{`
+                .login-container {
+                    width: 100%;
+                    max-width: 440px;
+                    z-index: 2;
+                    padding: 0 16px;
+                }
+                .login-logo-wrap {
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 16px;
+                }
+                .login-logo-wrap img {
+                    width: 100%;
+                    max-width: 160px;
+                    height: auto !important;
+                }
+                .login-card {
+                    background: #FFFFFF;
+                    border: 1px solid #E3E8EF;
+                    border-radius: 24px;
+                    padding: 40px;
+                    box-shadow: 0 25px 50px -12px rgba(0, 28, 100, 0.2);
+                }
+                @media (max-width: 480px) {
+                    .login-card {
+                        padding: 28px 20px;
+                        border-radius: 20px;
+                    }
+                    .login-logo-wrap img {
+                        max-width: 130px;
+                    }
+                    .login-logo-wrap {
+                        margin-bottom: 12px;
+                    }
+                }
+                @media (min-width: 1200px) {
+                    .login-container {
+                        max-width: 460px;
+                    }
+                    .login-logo-wrap img {
+                        max-width: 180px;
+                    }
+                }
+            `}</style>
+
             <div style={glowStyle} />
 
-            <div style={containerStyle}>
+            <div className="login-container">
+                {/* Logo */}
+                <div className="login-logo-wrap">
+                    <img
+                        src="/paysigur.png"
+                        alt="Paysigur"
+                        style={{ objectFit: 'contain', width: '100%', height: 'auto' }}
+                    />
+                </div>
+
                 {/* Card */}
-                <div style={cardStyle}>
-                    <h1 style={{ ...titleStyle, fontSize: 24 }}>Forgot Password</h1>
+                <div className="login-card">
+                    <h1 style={titleStyle}>Forgot Password</h1>
 
                     <p style={subtitleStyle}>
                         Enter your email to receive a reset link
@@ -63,9 +119,9 @@ export default function SuperAdminForgotPassword() {
                     {message && (
                         <div style={{
                             ...messageStyle,
-                            color: '#4ade80',
-                            borderColor: 'rgba(74,222,128,0.2)',
-                            background: 'rgba(74,222,128,0.08)'
+                            color: '#16a34a',
+                            borderColor: '#bbf7d0',
+                            background: '#f0fdf4'
                         }}>
                             {message}
                         </div>
@@ -109,7 +165,7 @@ export default function SuperAdminForgotPassword() {
                             disabled={loading}
                             style={{
                                 ...submitStyle,
-                                background: loading ? '#d4a017' : '#facc15',
+                                opacity: loading ? 0.7 : 1,
                                 cursor: loading ? 'not-allowed' : 'pointer',
                             }}
                         >
@@ -122,17 +178,6 @@ export default function SuperAdminForgotPassword() {
                             </Link>
                         </div>
                     </form>
-
-                    <div style={{
-                        marginTop: 28,
-                        paddingTop: 20,
-                        borderTop: '1px solid rgba(255,255,255,0.06)',
-                        textAlign: 'center',
-                        fontSize: 11,
-                        color: '#52525b',
-                    }}>
-                        Access restricted to authorized super administrators
-                    </div>
                 </div>
             </div>
         </div>
@@ -149,7 +194,7 @@ const mainStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     background: '#F7F9FC',
-    padding: 24,
+    padding: '24px 16px',
     position: 'relative',
     overflow: 'hidden'
 };
@@ -178,7 +223,7 @@ const cardStyle = {
     border: '1px solid #E3E8EF',
     borderRadius: 24,
     padding: '48px 40px',
-    boxShadow: '0 20px 25px -5px rgba(0, 28, 100, 0.05), 0 10px 10px -5px rgba(0, 28, 100, 0.02)'
+    boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.2)'
 };
 
 const titleStyle = {

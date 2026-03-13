@@ -45,23 +45,25 @@ export default function CheckoutForm({ amount, currency }) {
                     marginTop: '2rem',
                     width: '100%',
                     padding: 20,
-                    background: '#facc15',
-                    color: '#000',
+                    background: '#0070E0',
+                    color: '#FFFFFF',
                     borderRadius: 14,
                     border: 'none',
-                    fontWeight: 800,
+                    fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: 1.5,
                     cursor: 'pointer',
                     fontSize: 15,
-                    opacity: isLoading || !stripe || !elements ? 0.5 : 1
+                    opacity: isLoading || !stripe || !elements ? 0.5 : 1,
+                    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+                    transition: 'all 0.2s ease'
                 }}
             >
                 <span id="button-text">
                     {isLoading ? "Processing..." : `Complete Payment`}
                 </span>
             </button>
-            {message && <div id="payment-message" style={{ color: 'var(--error)', marginTop: '1rem' }}>{message}</div>}
+            {message && <div id="payment-message" style={{ color: '#EF4444', marginTop: '1rem', fontSize: '14px', fontWeight: '600', textAlign: 'center' }}>{message}</div>}
         </form>
     );
 }

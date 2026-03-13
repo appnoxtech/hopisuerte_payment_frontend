@@ -148,6 +148,13 @@ export default function CustomDropdown({
                                 />
                             )}
                             {opt.icon && <span style={{ flexShrink: 0 }}>{opt.icon}</span>}
+                            {opt.avatarUrl && (
+                                <img 
+                                    src={opt.avatarUrl} 
+                                    alt="" 
+                                    style={{ width: '24px', height: '24px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                                />
+                            )}
                             <span>{opt.label}</span>
                         </div>
                     ))
@@ -188,6 +195,13 @@ export default function CustomDropdown({
                             src={`https://flagcdn.com/w40/${selectedOption.flag.toLowerCase()}.png`} 
                             alt="" 
                             style={{ width: '18px', height: 'auto', borderRadius: '2px', flexShrink: 0 }}
+                        />
+                    )}
+                    {selectedOption?.avatarUrl && (
+                        <img 
+                            src={selectedOption.avatarUrl} 
+                            alt="" 
+                            style={{ width: '18px', height: '18px', borderRadius: '4px', objectFit: 'cover', flexShrink: 0 }}
                         />
                     )}
                     <span>{selectedOption ? (selectedOption.shortLabel || selectedOption.label) : placeholder}</span>

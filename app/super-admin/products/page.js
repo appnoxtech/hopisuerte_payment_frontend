@@ -34,7 +34,11 @@ export default function SuperAdminProducts() {
     const [expandedProductId, setExpandedProductId] = useState(null);
     const [copiedId, setCopiedId] = useState(null);
 
-    const userOptions = users.map(u => ({ label: `${u.name} (${u.email})`, value: u.id }));
+    const userOptions = users.map(u => ({ 
+        label: `${u.name} (${u.email})`, 
+        value: u.id,
+        avatarUrl: u.profile_image_url 
+    }));
 
     const [formData, setFormData] = useState({
         user_id: '',
@@ -240,7 +244,13 @@ export default function SuperAdminProducts() {
                                         </td>
                                         <td style={tdStyle}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                                <div style={avatarCircleStyle}>{product.user?.name?.[0] || 'A'}</div>
+                                                <div style={avatarCircleStyle}>
+                                                    {product.user?.profile_image_url ? (
+                                                        <img src={product.user.profile_image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        product.user?.name?.[0] || 'A'
+                                                    )}
+                                                </div>
                                                 <span style={userTextStyle}>{product.user?.name || 'Nexus Hub'}</span>
                                             </div>
                                         </td>

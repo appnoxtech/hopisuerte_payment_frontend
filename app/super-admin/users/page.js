@@ -14,8 +14,14 @@ import {
     DollarSign,
     X,
     Filter,
-    Search
+    Search,
+    Camera,
+    Image as ImageIcon,
+    Loader2,
+    Upload,
+    ImageOff
 } from 'lucide-react';
+import { useRef } from 'react';
 import CustomDropdown from '@/components/CustomDropdown';
 
 const getSuperAdminHeaders = () => ({
@@ -39,6 +45,11 @@ export default function UserManagement() {
         email: ''
     });
     const [formLoading, setFormLoading] = useState(false);
+    const fileInputRef = useRef(null);
+    const [selectedUserId, setSelectedUserId] = useState(null);
+    const [avatarLoadingId, setAvatarLoadingId] = useState(null);
+    const [avatarModal, setAvatarModal] = useState(null); // holds the user object for avatar modal
+    const [avatarPreview, setAvatarPreview] = useState(null);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -108,6 +119,73 @@ export default function UserManagement() {
         }
     };
 
+    const handleAvatarClick = (userId) => {
+        setSelectedUserId(userId);
+        fileInputRef.current.value = '';
+        fileInputRef.current.click();
+    };
+
+    const openAvatarModal = (user) => {
+        setAvatarModal(user);
+        setAvatarPreview(null);
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeAvatarModal = () => {
+        setAvatarModal(null);
+        setAvatarPreview(null);
+        document.body.style.overflow = 'unset';
+    };
+
+    const handleUserAvatarUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file || !selectedUserId) return;
+
+        // Show local preview immediately
+        const previewURL = URL.createObjectURL(file);
+        setAvatarPreview(previewURL);
+
+        setAvatarLoadingId(selectedUserId);
+        const fd = new FormData();
+        fd.append('image', file);
+
+        try {
+            const response = await api.post(`/super-admin/users/${selectedUserId}/profile-image`, fd, {
+                ...getSuperAdminHeaders(),
+                headers: { 
+                    ...getSuperAdminHeaders().headers,
+                    'Content-Type': 'multipart/form-data' 
+                }
+            });
+            showToast('Profile picture updated', 'success');
+            const updatedImageUrl = response.data?.user?.profile_image_url;
+            // Update the avatar modal's user data
+            setAvatarModal(prev => prev ? { ...prev, profile_image_url: updatedImageUrl || prev.profile_image_url } : null);
+            setAvatarPreview(null);
+            fetchUsers();
+        } catch (err) {
+            showToast('Failed to update image', 'error');
+            setAvatarPreview(null);
+        } finally {
+            setAvatarLoadingId(null);
+            setSelectedUserId(null);
+        }
+    };
+
+    const handleUserAvatarRemove = async (userId) => {
+        if (!confirm('Remove this merchant\'s profile image?')) return;
+        setAvatarLoadingId(userId);
+        try {
+            await api.delete(`/super-admin/users/${userId}/profile-image`, getSuperAdminHeaders());
+            showToast('Merchant profile image removed', 'success');
+            fetchUsers();
+        } catch (err) {
+            showToast('Failed to remove image', 'error');
+        } finally {
+            setAvatarLoadingId(null);
+        }
+    };
+
     if (loading && users.length === 0) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
@@ -165,6 +243,8 @@ export default function UserManagement() {
                 </div> */}
             </div>
 
+
+
             {/* Main Data Perspective */}
             <div style={tableContainerStyle}>
                 <table style={tableStyle}>
@@ -204,9 +284,24 @@ export default function UserManagement() {
                             filteredUsers.map(user => (
                                 <tr key={user.id} style={trStyle}>
                                     <td style={{ ...tdStyle, paddingLeft: '24px' }}>
-                                        <div style={userCellWrapperStyle}>
-                                            <div style={tableAvatarStyle}>
-                                                {user.name[0].toUpperCase()}
+                                         <div style={userCellWrapperStyle}>
+                                             <div style={tableAvatarStyle}>
+                                                {avatarLoadingId === user.id ? (
+                                                    <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                                                ) : (
+                                                    <>
+                                                        {user.profile_image_url ? (
+                                                            <img 
+                                                                src={user.profile_image_url} 
+                                                                alt="" 
+                                                                style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
+                                                                onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerText = user.name[0].toUpperCase(); }}
+                                                            />
+                                                        ) : (
+                                                            user.name[0].toUpperCase()
+                                                        )}
+                                                    </>
+                                                )}
                                             </div>
                                             <div>
                                                 <div style={userNameTextStyle}>{user.name}</div>
@@ -243,13 +338,22 @@ export default function UserManagement() {
                                         </div>
                                     </td>
                                     <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
-                                        <button
-                                            onClick={() => handleDeleteUser(user.id, user.name)}
-                                            style={deleteBtnStyle}
-                                            title="Revoke Permission"
-                                        >
-                                            <Trash2 size={14} />
-                                        </button>
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+                                            <button
+                                                onClick={() => openAvatarModal(user)}
+                                                style={editPhotoBtnStyle}
+                                                title="Edit Profile Picture"
+                                            >
+                                                <Camera size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteUser(user.id, user.name)}
+                                                style={deleteBtnStyle}
+                                                title="Revoke Permission"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -258,6 +362,15 @@ export default function UserManagement() {
                 </table>
             </div>
 
+            {/* Hidden File Input for Avatar Management */}
+            <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleUserAvatarUpload} 
+                accept="image/*" 
+                style={{ display: 'none' }} 
+            />
+
             {/* Registration Modal */}
             {showModal && (
                 <div style={modalOverlayStyle}>
@@ -265,7 +378,6 @@ export default function UserManagement() {
                         <div style={modalHeaderStyle}>
                             <div>
                                 <h2 style={modalTitleStyle}>Add Merchant</h2>
-
                             </div>
                             <button onClick={() => setShowModal(false)} style={modalCloseBtnStyle}><X size={18} /></button>
                         </div>
@@ -306,6 +418,75 @@ export default function UserManagement() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Avatar Management Modal */}
+            {avatarModal && (
+                <div style={modalOverlayStyle}>
+                    <div style={{ ...modalCardStyle, width: '480px' }}>
+                        <div style={modalHeaderStyle}>
+                            <div>
+                                <h2 style={modalTitleStyle}>Edit Profile Picture</h2>
+                                <p style={{ fontSize: '14px', color: '#6B7C93', marginTop: '4px' }}>{avatarModal.name} &middot; {avatarModal.email}</p>
+                            </div>
+                            <button onClick={closeAvatarModal} style={modalCloseBtnStyle}><X size={18} /></button>
+                        </div>
+
+                        {/* Current Avatar Preview */}
+                        <div style={avatarModalPreviewSection}>
+                            <div style={avatarModalLargeAvatar}>
+                                {avatarLoadingId === avatarModal.id ? (
+                                    <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: '#0070E0' }} />
+                                ) : avatarPreview ? (
+                                    <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+                                ) : avatarModal.profile_image_url ? (
+                                    <img src={avatarModal.profile_image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                    />
+                                ) : (
+                                    <span style={{ fontSize: '40px', fontWeight: '800', color: '#0070E0' }}>{avatarModal.name?.[0]?.toUpperCase()}</span>
+                                )}
+                            </div>
+                            <p style={{ fontSize: '12px', color: '#6B7C93', marginTop: '12px', textAlign: 'center' }}>
+                                Accepted: JPG, PNG, WEBP &middot; Max 10MB
+                            </p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div style={avatarModalActionsStyle}>
+                            <button
+                                onClick={() => {
+                                    setSelectedUserId(avatarModal.id);
+                                    fileInputRef.current.value = '';
+                                    fileInputRef.current.click();
+                                }}
+                                disabled={avatarLoadingId === avatarModal.id}
+                                style={avatarModalUploadBtn}
+                            >
+                                <Upload size={16} />
+                                <span>Upload New Photo</span>
+                            </button>
+                            {avatarModal.profile_image_url && (
+                                <button
+                                    onClick={async () => {
+                                        await handleUserAvatarRemove(avatarModal.id);
+                                        setAvatarModal(prev => prev ? { ...prev, profile_image_url: null } : null);
+                                        setAvatarPreview(null);
+                                    }}
+                                    disabled={avatarLoadingId === avatarModal.id}
+                                    style={avatarModalRemoveBtn}
+                                >
+                                    <ImageOff size={16} />
+                                    <span>Remove Photo</span>
+                                </button>
+                            )}
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+                            <button onClick={closeAvatarModal} style={cancelBtnStyle}>Close</button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -370,7 +551,91 @@ const tdStyle = { padding: '20px 24px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
 const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '16px' };
-const tableAvatarStyle = { width: '40px', height: '40px', borderRadius: '12px', background: '#F0F7FF', border: '1px solid #E3E8EF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#0070E0', fontSize: '16px' };
+const tableAvatarStyle = { 
+    width: '40px', 
+    height: '40px', 
+    borderRadius: '12px', 
+    background: '#F0F7FF', 
+    border: '1px solid #E3E8EF', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    fontWeight: '700', 
+    color: '#0070E0', 
+    fontSize: '16px',
+    overflow: 'hidden'
+};
+
+const editPhotoBtnStyle = {
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    background: '#F0F7FF',
+    border: '1px solid #E3E8EF',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#0070E0',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
+};
+
+const avatarModalPreviewSection = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '32px 0 24px',
+};
+
+const avatarModalLargeAvatar = {
+    width: '120px',
+    height: '120px',
+    borderRadius: '24px',
+    background: 'linear-gradient(135deg, #F0F7FF, #E8F4FD)',
+    border: '3px solid #E3E8EF',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    boxShadow: '0 8px 24px rgba(0, 28, 100, 0.08)',
+};
+
+const avatarModalActionsStyle = {
+    display: 'flex',
+    gap: '12px',
+    justifyContent: 'center',
+};
+
+const avatarModalUploadBtn = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 24px',
+    background: '#0070E0',
+    color: '#FFFFFF',
+    border: 'none',
+    borderRadius: '12px',
+    fontSize: '14px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+    transition: 'all 0.2s',
+};
+
+const avatarModalRemoveBtn = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 24px',
+    background: '#FEF2F2',
+    color: '#EF4444',
+    border: '1px solid #FEE2E2',
+    borderRadius: '12px',
+    fontSize: '14px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+};
 const userNameTextStyle = { fontSize: '15px', fontWeight: '700', color: '#1A1F36' };
 const userEmailTextStyle = { fontSize: '13px', color: '#6B7C93', fontWeight: '500' };
 

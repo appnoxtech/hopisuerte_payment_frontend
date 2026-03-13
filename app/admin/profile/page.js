@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import api from '@/utils/api';
 import {
     User,
@@ -10,7 +10,10 @@ import {
     CheckCircle2,
     AlertCircle,
     Loader2,
-    Fingerprint
+    Fingerprint,
+    Upload,
+    Trash2,
+    Camera
 } from 'lucide-react';
 
 import { useUser } from '@/context/UserContext';
@@ -19,15 +22,18 @@ import { useToast } from '@/context/ToastContext';
 export default function ProfileSettings() {
     const { refreshUser } = useUser();
     const { showToast } = useToast();
+    const fileInputRef = useRef(null);
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [slug, setSlug] = useState('');
-    const [originalName, setOriginalName] = useState('');
-    const [originalEmail, setOriginalEmail] = useState('');
-    const [originalSlug, setOriginalSlug] = useState('');
+    const [profileImageUrl, setProfileImageUrl] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [avatarLoading, setAvatarLoading] = useState(false);
+    
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [imageError, setImageError] = useState(false);
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -37,9 +43,8 @@ export default function ProfileSettings() {
                 setName(user.name);
                 setEmail(user.email);
                 setSlug(user.slug);
-                setOriginalName(user.name);
-                setOriginalEmail(user.email);
-                setOriginalSlug(user.slug);
+                setProfileImageUrl(user.profile_image_url);
+                setImageError(false);
             } catch (err) {
                 showToast('Failed to load profile data', 'error');
             } finally {
@@ -54,20 +59,79 @@ export default function ProfileSettings() {
         setSaving(true);
 
         try {
-            const response = await api.put('/user', { name, email, slug });
+            await api.put('/user', { name, email, slug });
             showToast('Profile updated successfully.', 'success');
-
-            setSlug(response.data.slug);
-            setOriginalName(response.data.name);
-            setOriginalEmail(response.data.email);
-            setOriginalSlug(response.data.slug);
-
-            // Sync with sidebar
             await refreshUser();
         } catch (err) {
             showToast(err.response?.data?.message || 'Update synchronization failed', 'error');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validation
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!validTypes.includes(file.type)) {
+            showToast('Invalid format. Please upload JPG, PNG or WEBP.', 'error');
+            return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            showToast('Image too large. Max size is 10MB.', 'error');
+            return;
+        }
+
+        // Preview
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result);
+            setImageError(false);
+        };
+        reader.readAsDataURL(file);
+
+        uploadAvatar(file);
+    };
+
+    const uploadAvatar = async (file) => {
+        setAvatarLoading(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await api.post('/user/profile-image', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setProfileImageUrl(response.data.user.profile_image_url);
+            setPreviewUrl(null);
+            setImageError(false);
+            showToast('Profile image updated successfully', 'success');
+            await refreshUser();
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Image upload failed', 'error');
+            setPreviewUrl(null);
+        } finally {
+            setAvatarLoading(false);
+        }
+    };
+
+    const handleRemoveAvatar = async () => {
+        if (!confirm('Remove your profile image?')) return;
+        setAvatarLoading(true);
+        try {
+            await api.delete('/user/profile-image');
+            setProfileImageUrl(null);
+            setPreviewUrl(null);
+            setImageError(false);
+            showToast('Profile image removed', 'success');
+            await refreshUser();
+        } catch (err) {
+            showToast('Failed to remove image', 'error');
+        } finally {
+            setAvatarLoading(false);
         }
     };
 
@@ -83,22 +147,87 @@ export default function ProfileSettings() {
             <header style={headerWrapperStyle}>
                 <div>
                     <h1 style={titleStyle}>Profile Settings</h1>
-                    <p style={subtitleStyle}>Manage your personal account details</p>
+                    <p style={subtitleStyle}>Manage your personal account details and brand presence</p>
                 </div>
             </header>
 
-            {/* Profile Form */}
+            {/* Profile Section */}
             <section style={formSectionStyle}>
                 <div style={formCardStyle}>
-                    <div style={formHeaderStyle}>
-                        <div style={avatarCircleStyle}>{name?.[0]?.toUpperCase() || 'A'}</div>
-                        <div>
-                            <h2 style={formTitleStyle}>Account Information</h2>
-                            <p style={formSubStyle}>These details are visible to customers on link pages</p>
+                    
+                    {/* Avatar Upload UI */}
+                    <div style={avatarSectionStyle}>
+                        <div style={avatarWrapperStyle}>
+                            {avatarLoading ? (
+                                <div style={{...avatarFallbackStyle, background: '#F8FAFC'}}>
+                                    <Loader2 size={24} style={{ animation: 'spin 1.5s linear infinite', color: '#0070E0' }} />
+                                </div>
+                            ) : (
+                                <>
+                                    {(previewUrl || profileImageUrl) && !imageError ? (
+                                        <img 
+                                            src={previewUrl || profileImageUrl} 
+                                            alt="Avatar" 
+                                            style={avatarImageStyle} 
+                                            onError={() => setImageError(true)}
+                                        />
+                                    ) : (
+                                        <div style={avatarFallbackStyle}>
+                                            {name?.[0]?.toUpperCase() || 'A'}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                            <button 
+                                onClick={() => !avatarLoading && fileInputRef.current.click()} 
+                                style={{
+                                    ...cameraBtnStyle,
+                                    opacity: avatarLoading ? 0.5 : 1,
+                                    cursor: avatarLoading ? 'not-allowed' : 'pointer'
+                                }}
+                                title="Change Image"
+                                disabled={avatarLoading}
+                            >
+                                <Camera size={16} />
+                            </button>
                         </div>
+                        
+                        <div style={avatarInfoStyle}>
+                            <h3 style={avatarTitleStyle}>Profile Picture</h3>
+                            <p style={avatarSubStyle}>JPG, PNG or WEBP. Max 10MB.</p>
+                            <div style={avatarActionsStyle}>
+                                <button 
+                                    onClick={() => fileInputRef.current.click()} 
+                                    style={uploadLinkStyle}
+                                >
+                                    <Upload size={14} />
+                                    Upload New
+                                </button>
+                                {(profileImageUrl || previewUrl) && (
+                                    <button 
+                                        onClick={handleRemoveAvatar} 
+                                        style={removeLinkStyle}
+                                    >
+                                        <Trash2 size={14} />
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleFileChange} 
+                            accept="image/jpeg,image/png,image/webp" 
+                            style={{ display: 'none' }} 
+                        />
                     </div>
 
+                    <div style={dividerStyle} />
+
+                    {/* Basic Info Form */}
                     <form onSubmit={handleUpdate} style={formStyle}>
+                        <h2 style={sectionTitleStyle}>General Information</h2>
                         <div style={inputGridStyle}>
                             <div style={inputScopeStyle}>
                                 <label style={labelStyle}>Full Name</label>
@@ -147,11 +276,6 @@ export default function ProfileSettings() {
                         </div>
 
                         <div style={actionScopeStyle}>
-                            {/* <div style={disclaimerStyle}>
-                                <AlertCircle size={12} style={{ marginTop: '2px' }} />
-                                <span>Slug changes will break any previous payment links you have shared.</span>
-                            </div> */}
-
                             <button
                                 type="submit"
                                 disabled={saving}
@@ -169,7 +293,7 @@ export default function ProfileSettings() {
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <Save size={16} />
-                                        <span>Save Changes</span>
+                                        <span>Save Profile</span>
                                     </div>
                                 )}
                             </button>
@@ -200,43 +324,18 @@ const headerWrapperStyle = {
 };
 
 const titleStyle = {
-    fontSize: '24px',
+    fontSize: '28px',
     fontWeight: '800',
     color: '#001c64',
-    letterSpacing: '-0.02em'
+    letterSpacing: '-0.02em',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const subtitleStyle = {
-    fontSize: '13px',
+    fontSize: '14px',
     color: '#6B7C93',
     marginTop: '4px',
     fontWeight: '500'
-};
-
-const idBadgeStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '4px 12px',
-    background: 'rgba(16, 185, 129, 0.05)',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
-    borderRadius: '20px',
-    fontSize: '11px',
-    fontWeight: '600',
-    color: '#10b981',
-    textTransform: 'uppercase'
-};
-
-const messageBoxStyle = {
-    padding: '12px 16px',
-    borderRadius: '12px',
-    fontSize: '12px',
-    fontWeight: '700',
-    border: '1px solid',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    backdropFilter: 'blur(20px)'
 };
 
 const formSectionStyle = { marginTop: '4px' };
@@ -245,47 +344,131 @@ const formCardStyle = {
     background: '#FFFFFF',
     border: '1px solid #E3E8EF',
     borderRadius: '24px',
-    padding: '32px',
+    padding: '40px',
     position: 'relative',
-    overflow: 'hidden',
-    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
+    boxShadow: '0 4px 20px -1px rgba(0, 28, 100, 0.03)'
 };
 
-const formHeaderStyle = {
+const avatarSectionStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '20px',
-    marginBottom: '32px',
-    borderBottom: '1px solid #E3E8EF',
-    paddingBottom: '24px'
+    gap: '32px',
+    marginBottom: '40px'
 };
 
-const avatarCircleStyle = {
-    width: '56px',
-    height: '56px',
-    borderRadius: '16px',
-    background: '#F0F7FF',
-    border: '1px solid #D0E2FF',
-    color: '#0070E0',
+const avatarWrapperStyle = {
+    position: 'relative',
+    width: '100px',
+    height: '100px',
+    flexShrink: 0
+};
+
+const avatarImageStyle = {
+    width: '100%',
+    height: '100%',
+    borderRadius: '30px',
+    objectFit: 'cover',
+    border: '4px solid #FFF',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+};
+
+const avatarFallbackStyle = {
+    width: '100%',
+    height: '100%',
+    borderRadius: '30px',
+    background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
+    border: '2px solid #E2E8F0',
+    color: '#001C64',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '24px',
-    fontWeight: '700'
+    fontSize: '40px',
+    fontWeight: '800',
+    fontFamily: "'Outfit', sans-serif"
 };
 
-const formTitleStyle = {
+const avatarOverlayStyle = {
+    position: 'absolute',
+    inset: 0,
+    background: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: '30px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2
+};
+
+const cameraBtnStyle = {
+    position: 'absolute',
+    right: '-8px',
+    bottom: '-8px',
+    width: '36px',
+    height: '36px',
+    borderRadius: '12px',
+    background: '#0070E0',
+    color: '#FFF',
+    border: '4px solid #FFF',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    transition: 'all 0.2s ease'
+};
+
+const avatarInfoStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px'
+};
+
+const avatarTitleStyle = {
     fontSize: '18px',
     fontWeight: '700',
-    color: '#1A1F36',
-    margin: 0
+    color: '#1A1F36'
 };
 
-const formSubStyle = {
+const avatarSubStyle = {
+    fontSize: '13px',
+    color: '#6B7C93'
+};
+
+const avatarActionsStyle = {
+    display: 'flex',
+    gap: '16px',
+    marginTop: '12px'
+};
+
+const uploadLinkStyle = {
+    background: 'transparent',
+    border: 'none',
+    color: '#0070E0',
     fontSize: '14px',
-    color: '#6B7C93',
-    marginTop: '4px',
-    fontWeight: '500'
+    fontWeight: '700',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    cursor: 'pointer',
+    padding: 0
+};
+
+const removeLinkStyle = {
+    ...uploadLinkStyle,
+    color: '#E74C3C'
+};
+
+const dividerStyle = {
+    height: '1px',
+    background: '#E3E8EF',
+    width: '100%',
+    margin: '32px 0'
+};
+
+const sectionTitleStyle = {
+    fontSize: '16px',
+    fontWeight: '700',
+    color: '#1A1F36',
+    marginBottom: '20px'
 };
 
 const formStyle = {
@@ -296,18 +479,18 @@ const formStyle = {
 
 const inputGridStyle = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '20px'
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '24px'
 };
 
 const inputScopeStyle = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px'
+    gap: '10px'
 };
 
 const labelStyle = {
-    fontSize: '13px',
+    fontSize: '14px',
     fontWeight: '600',
     color: '#4A5568'
 };
@@ -320,49 +503,37 @@ const inputWrapperStyle = {
 
 const inputIconStyle = {
     position: 'absolute',
-    left: '12px',
-    color: '#52525b'
+    left: '14px',
+    color: '#94A3B8'
 };
 
 const inputStyle = {
     width: '100%',
-    background: '#FFFFFF',
+    background: '#F8FAFC',
     border: '1px solid #E3E8EF',
-    borderRadius: '12px',
-    padding: '12px 12px 12px 40px',
+    borderRadius: '14px',
+    padding: '14px 14px 14px 44px',
     color: '#1A1F36',
     fontSize: '14px',
     fontWeight: '500',
     outline: 'none',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
 };
 
 const actionScopeStyle = {
-    paddingTop: '32px',
-    borderTop: '1px solid #E3E8EF',
+    paddingTop: '24px',
     display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: '16px'
-};
-
-const disclaimerStyle = {
-    fontSize: '12px',
-    color: '#52525b',
-    maxWidth: '320px',
-    lineHeight: '1.5',
-    display: 'flex',
-    gap: '8px'
+    justifyContent: 'flex-end'
 };
 
 const submitButtonStyle = {
     background: '#0070E0',
     color: '#FFF',
-    padding: '14px 28px',
-    borderRadius: '14px',
+    padding: '16px 36px',
+    borderRadius: '16px',
     border: 'none',
     fontSize: '15px',
-    fontWeight: '600',
-    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+    fontWeight: '700',
+    boxShadow: '0 10px 15px -3px rgba(0, 112, 224, 0.2)',
     transition: 'all 0.2s ease',
 };
