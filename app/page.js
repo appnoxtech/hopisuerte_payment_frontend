@@ -158,7 +158,7 @@ export default function Home() {
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    style={{ ...inputStyle, paddingLeft: 34 }}
+                    style={{ ...inputStyle, paddingLeft: 38 }}
                   />
                 </div>
 

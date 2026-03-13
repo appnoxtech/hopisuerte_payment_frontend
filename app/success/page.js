@@ -81,24 +81,26 @@ const mainStyle = {
 
 const containerStyle = {
     width: '100%',
-    maxWidth: '440px',
-    zIndex: 2,
-    animation: 'fadeIn 0.6s ease-out'
+    maxWidth: '480px',
+    zIndex: 10
 };
 
 const logoWrap = {
     display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: '32px'
+    marginBottom: '12px',
+    width: '100%'
 };
 
 const cardStyle = {
     background: '#FFFFFF',
     border: '1px solid #E3E8EF',
-    borderRadius: '32px',
-    padding: '48px 40px',
+    borderRadius: '24px',
+    padding: '40px',
     textAlign: 'center',
-    boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.2)',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
 };
 
 const iconWrap = {
@@ -184,11 +186,11 @@ const statusText = {
 
 const glowStyle = {
     position: 'absolute',
-    top: '0',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: '100%',
-    height: '600px',
-    background: 'radial-gradient(circle at 50% 0%, rgba(0, 112, 224, 0.08) 0%, transparent 70%)',
-    pointerEvents: 'none'
+    top: -150,
+    right: -150,
+    width: 500,
+    height: 500,
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.08) 0%, rgba(247, 249, 252, 0) 70%)',
+    borderRadius: '50%',
+    zIndex: 1
 };

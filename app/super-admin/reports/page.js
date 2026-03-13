@@ -25,7 +25,7 @@ export default function SuperAdminReportsPage() {
     const [year, setYear] = useState(new Date().getFullYear().toString());
     const [merchantId, setMerchantId] = useState('');
     const [merchants, setMerchants] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [downloadingType, setDownloadingType] = useState(null);
 
     const years = Array.from({ length: 5 }, (_, i) => {
         const y = (new Date().getFullYear() - i).toString();
@@ -60,7 +60,7 @@ export default function SuperAdminReportsPage() {
     }, [showToast]);
 
     const handleDownload = async (format = 'csv') => {
-        setLoading(true);
+        setDownloadingType(format);
         showToast('Report downloading...', 'info');
         try {
             const params = new URLSearchParams();
@@ -93,7 +93,7 @@ export default function SuperAdminReportsPage() {
         } catch (err) {
             showToast('Download failed', 'error');
         } finally {
-            setLoading(false);
+            setDownloadingType(null);
         }
     };
 
@@ -164,8 +164,8 @@ export default function SuperAdminReportsPage() {
 
                     <div style={footerActionStyle}>
                         <div style={{ display: 'flex', gap: '16px' }}>
-                            <button onClick={() => handleDownload('csv')} style={{ ...btnStyle, flex: 1, background: '#F0F7FF', color: '#0070E0', border: '1px solid #0070E0' }} disabled={loading}>
-                                {loading ? (
+                            <button onClick={() => handleDownload('csv')} style={{ ...btnStyle, flex: 1, background: '#F0F7FF', color: '#0070E0', border: '1px solid #0070E0' }} disabled={!!downloadingType}>
+                                {downloadingType === 'csv' ? (
                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                                         <div style={{ ...spinnerStyle, borderTopColor: '#0070E0', width: 14, height: 14 }} />
                                         <span>Processing...</span>
@@ -177,8 +177,8 @@ export default function SuperAdminReportsPage() {
                                     </div>
                                 )}
                             </button>
-                            <button onClick={() => handleDownload('pdf')} style={{ ...btnStyle, flex: 1, background: '#0070E0', color: '#FFF' }} disabled={loading}>
-                                {loading ? (
+                            <button onClick={() => handleDownload('pdf')} style={{ ...btnStyle, flex: 1, background: '#0070E0', color: '#FFF' }} disabled={!!downloadingType}>
+                                {downloadingType === 'pdf' ? (
                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                                         <div style={{ ...spinnerStyle, borderTopColor: '#FFF', width: 14, height: 14 }} />
                                         <span>Processing...</span>

@@ -21,7 +21,7 @@ import CustomDropdown from '@/components/CustomDropdown';
 export default function ReportsPage() {
     const [month, setMonth] = useState('');
     const [year, setYear] = useState(new Date().getFullYear().toString());
-    const [loading, setLoading] = useState(false);
+    const [downloadingType, setDownloadingType] = useState(null);
     const [payments, setPayments] = useState([]);
     const [fetching, setFetching] = useState(true);
 
@@ -63,7 +63,7 @@ export default function ReportsPage() {
     };
 
     const handleDownload = async (format) => {
-        setLoading(true);
+        setDownloadingType(format);
         try {
             const response = await api.get('/admin/export-report', {
                 params: { format, month, year },
@@ -81,7 +81,7 @@ export default function ReportsPage() {
         } catch (err) {
             alert('Failed to generate report. Please try again.');
         } finally {
-            setLoading(false);
+            setDownloadingType(null);
         }
     };
 
@@ -129,17 +129,17 @@ export default function ReportsPage() {
                         <button
                             onClick={() => handleDownload('csv')}
                             style={{ ...btnStyle, background: '#F0F7FF', color: '#0070E0', border: '1px solid #0070E0' }}
-                            disabled={loading}
+                            disabled={!!downloadingType}
                         >
-                            {loading ? <Loader2 size={18} className="spin" /> : <FileText size={18} />}
+                            {downloadingType === 'csv' ? <Loader2 size={18} className="spin" /> : <FileText size={18} />}
                             Download CSV
                         </button>
                         <button
                             onClick={() => handleDownload('pdf')}
                             style={{ ...btnStyle, background: '#0070E0', color: '#FFF' }}
-                            disabled={loading}
+                            disabled={!!downloadingType}
                         >
-                            {loading ? <Loader2 size={18} className="spin" /> : <Download size={18} />}
+                            {downloadingType === 'pdf' ? <Loader2 size={18} className="spin" /> : <Download size={18} />}
                             Export PDF
                         </button>
                     </div>
