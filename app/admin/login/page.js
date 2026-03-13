@@ -83,8 +83,8 @@ export default function AdminLogin() {
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
-                        width={180}
-                        height={54}
+                        width={300}
+                        height={90}
                         priority
                         style={{ objectFit: 'contain' }}
                     />
@@ -216,120 +216,126 @@ const mainStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#000',
-    padding: 20,
-    position: 'relative'
+    background: '#F7F9FC',
+    padding: 24,
+    position: 'relative',
+    overflow: 'hidden'
 };
 
 const containerStyle = {
     width: '100%',
-    maxWidth: 420,
-    zIndex: 2
-};
-
-const logoWrap = {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: 24
+    maxWidth: 440,
+    zIndex: 2,
+    marginTop: -40
 };
 
 const cardStyle = {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: 18,
-    padding: 28
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: 24,
+    padding: 48,
+    boxShadow: '0 20px 25px -5px rgba(0, 28, 100, 0.05), 0 10px 10px -5px rgba(0, 28, 100, 0.02)'
 };
 
 const titleStyle = {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: 800,
-    color: '#fff',
-    textAlign: 'center'
+    color: '#001C64',
+    textAlign: 'center',
+    letterSpacing: '-0.03em',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const subtitleStyle = {
-    fontSize: 12,
-    color: '#71717a',
+    fontSize: 15,
+    color: '#6B7C93',
     textAlign: 'center',
-    marginBottom: 20
+    marginBottom: 32,
+    fontWeight: 500,
+    lineHeight: 1.6
 };
 
 const labelStyle = {
-    fontSize: 12,
-    color: '#cbd5f5',
-    marginBottom: 6,
-    display: 'block'
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#4A5568',
+    marginBottom: 8,
+    display: 'block',
+    marginLeft: 2
 };
 
 const inputStyle = {
     width: '100%',
-    padding: 12,
-    borderRadius: 10,
-    background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.2)',
-    color: '#fff',
-    fontSize: 14,
-    outline: 'none'
+    padding: '14px 16px',
+    borderRadius: 12,
+    background: '#F8FAFC',
+    border: '1px solid #E3E8EF',
+    color: '#1A1F36',
+    fontSize: '15px',
+    outline: 'none',
+    transition: 'all 0.2s ease'
 };
 
 const toggleBtn = {
     position: 'absolute',
-    right: 10,
+    right: 14,
     top: '50%',
     transform: 'translateY(-50%)',
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    color: '#71717a'
+    color: '#6B7C93'
 };
 
 const submitStyle = {
-    marginTop: 6,
-    padding: 14,
-    background: '#facc15',
+    marginTop: 12,
+    padding: '16px',
+    background: '#0070E0',
     border: 'none',
-    borderRadius: 10,
+    borderRadius: 12,
     fontWeight: 700,
+    color: '#FFFFFF',
+    fontSize: 16,
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+    transition: 'all 0.2s ease',
     cursor: 'pointer'
 };
 
 const forgotStyle = {
-    fontSize: 12,
-    color: '#71717a',
-    textDecoration: 'none'
+    fontSize: 14,
+    color: '#0070E0',
+    textDecoration: 'none',
+    fontWeight: 600
 };
 
 const fieldErrorStyle = {
-    color: '#f87171',
-    fontSize: 11,
-    marginTop: 4
+    color: '#EF4444',
+    fontSize: 12,
+    marginTop: 6,
+    fontWeight: 500,
+    marginLeft: 2
 };
 
 const errorStyle = {
-    marginBottom: 16,
-    padding: 10,
-    background: 'rgba(239,68,68,0.1)',
-    border: '1px solid rgba(239,68,68,0.2)',
-    color: '#ef4444',
-    borderRadius: 8,
-    fontSize: 12
-};
-
-const footerStyle = {
+    marginBottom: 24,
+    padding: 14,
+    background: '#FEF2F2',
+    border: '1px solid #FEE2E2',
+    color: '#EF4444',
+    borderRadius: 12,
+    fontSize: 14,
     textAlign: 'center',
-    marginTop: 16,
-    fontSize: 10,
-    color: '#52525b'
+    fontWeight: 600
 };
 
 const glowStyle = {
     position: 'absolute',
-    top: 0,
+    top: -150,
     left: '50%',
     transform: 'translateX(-50%)',
     width: 600,
-    height: 300,
-    background: 'rgba(250,204,21,0.12)',
+    height: 400,
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.05) 0%, transparent 70%)',
     borderRadius: '50%',
-    filter: 'blur(120px)'
+    zIndex: 0
 };

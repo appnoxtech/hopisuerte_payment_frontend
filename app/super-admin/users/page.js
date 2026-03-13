@@ -56,13 +56,24 @@ export default function UserManagement() {
         fetchUsers();
     }, []);
 
+    useEffect(() => {
+        if (showModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [showModal]);
+
     const handleCreateUser = async (e) => {
         e.preventDefault();
         setFormLoading(true);
 
         try {
-            const response = await api.post('/super-admin/register-freelancer', formData, getSuperAdminHeaders());
-            showToast(response.data.message || 'Agent provisioned successfully', 'success');
+            const response = await api.post('/super-admin/register-merchant', formData, getSuperAdminHeaders());
+            showToast(response.data.message || 'Merchant provisioned successfully', 'success');
             setFormData({ name: '', email: '' });
             fetchUsers();
             setShowModal(false);
@@ -77,7 +88,7 @@ export default function UserManagement() {
         try {
             const response = await api.patch(`/super-admin/users/${id}/status`, {}, getSuperAdminHeaders());
             setUsers(users.map(u => u.id === id ? { ...u, status: response.data.status } : u));
-            showToast(`Freelancer ${response.data.status} successfully.`, 'info');
+            showToast(`Merchant ${response.data.status} successfully.`, 'info');
         } catch (err) {
             showToast(err.response?.data?.message || 'Verification shift failed', 'error');
         }
@@ -91,7 +102,7 @@ export default function UserManagement() {
         try {
             await api.delete(`/super-admin/users/${id}`, getSuperAdminHeaders());
             setUsers(users.filter(u => u.id !== id));
-            showToast('Freelancer deleted successfully', 'success');
+            showToast('Merchant deleted successfully', 'success');
         } catch (err) {
             showToast(err.response?.data?.message || 'Deletion failed', 'error');
         }
@@ -100,7 +111,7 @@ export default function UserManagement() {
     if (loading && users.length === 0) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }
@@ -115,8 +126,8 @@ export default function UserManagement() {
             {/* Professional Header */}
             <header style={headerWrapperStyle}>
                 <div>
-                    <h1 style={titleStyle}>Freelancers Portal</h1>
-                    <p style={subtitleStyle}>Create and manage verified freelancers</p>
+                    <h1 style={titleStyle}>Merchants Portal</h1>
+                    <p style={subtitleStyle}>Create and manage verified merchants</p>
                 </div>
 
                 <div style={headerActionsStyle}>
@@ -133,7 +144,7 @@ export default function UserManagement() {
                     </div>
                     <button onClick={() => setShowModal(true)} style={addBtnStyle}>
                         <UserPlus size={16} />
-                        <span>Create Freelancer</span>
+                        <span>Create Merchant</span>
                     </button>
                 </div>
             </header>
@@ -143,7 +154,7 @@ export default function UserManagement() {
                 <div style={searchBoxStyle}>
                     <Search style={searchIconStyle} size={14} />
                     <input
-                        placeholder="Search Freelancer..."
+                        placeholder="Search Merchant..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={filterInputStyle}
@@ -159,7 +170,7 @@ export default function UserManagement() {
                 <table style={tableStyle}>
                     <thead>
                         <tr style={tableHeaderRowStyle}>
-                            <th style={{ ...thStyle, paddingLeft: '24px' }}>Freelancer Profiles</th>
+                            <th style={{ ...thStyle, paddingLeft: '24px' }}>Merchant Profiles</th>
                             <th style={thStyle}>Status</th>
                             <th style={thCenterStyle}>Products</th>
                             <th style={thCenterStyle}>
@@ -167,17 +178,17 @@ export default function UserManagement() {
                                     <div /> {/* Spacer */}
                                     <span style={{ whiteSpace: 'nowrap' }}>Earnings</span>
                                     <div style={{ width: 85, marginLeft: 8 }}>
-                                    <CustomDropdown
-                                        options={[
-                                            { label: 'USD', value: 'USD' },
-                                            { label: 'EUR', value: 'EUR' },
-                                            { label: 'XCG', value: 'XCG' }
-                                        ]}
-                                        value={displayCurrency}
-                                        onChange={setDisplayCurrency}
-                                        showSearch={false}
-                                        placeholder="CUR"
-                                    />
+                                        <CustomDropdown
+                                            options={[
+                                                { label: 'USD', value: 'USD' },
+                                                { label: 'EUR', value: 'EUR' },
+                                                { label: 'XCG', value: 'XCG' }
+                                            ]}
+                                            value={displayCurrency}
+                                            onChange={setDisplayCurrency}
+                                            showSearch={false}
+                                            placeholder="CUR"
+                                        />
                                     </div>
                                 </div>
                             </th>
@@ -187,7 +198,7 @@ export default function UserManagement() {
                     <tbody>
                         {filteredUsers.length === 0 ? (
                             <tr>
-                                <td colSpan="5" style={emptyStateStyle}>Zero agents found in active registry</td>
+                                <td colSpan="5" style={emptyStateStyle}>Zero merchants found in active registry</td>
                             </tr>
                         ) : (
                             filteredUsers.map(user => (
@@ -226,7 +237,7 @@ export default function UserManagement() {
                                     <td style={{ ...tdCenterStyle }}>
                                         <div style={earningsItemStyle}>
                                             <span style={currencySymbolStyle}>
-                                                {displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
+                                                {displayCurrency === 'EUR' ? '€' : (displayCurrency === 'XCG' ? 'Cg' : '$')}
                                             </span>
                                             {(user.earnings?.[displayCurrency] || 0).toLocaleString()}
                                         </div>
@@ -253,7 +264,7 @@ export default function UserManagement() {
                     <div style={modalCardStyle}>
                         <div style={modalHeaderStyle}>
                             <div>
-                                <h2 style={modalTitleStyle}>Add Freelancer</h2>
+                                <h2 style={modalTitleStyle}>Add Merchant</h2>
 
                             </div>
                             <button onClick={() => setShowModal(false)} style={modalCloseBtnStyle}><X size={18} /></button>
@@ -306,89 +317,90 @@ export default function UserManagement() {
 // STYLES
 // ──────────────────────────────────────────────
 
-const pageContainerStyle = { display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.4s ease' };
-const headerWrapperStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
-const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const pageContainerStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' };
+const headerWrapperStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' };
+const titleStyle = { fontSize: '24px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
+const subtitleStyle = { fontSize: '14px', color: '#6B7C93', fontWeight: '500', marginTop: '4px' };
 const headerActionsStyle = { display: 'flex', alignItems: 'center', gap: '16px' };
 
 const statsOverviewStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    background: 'rgba(255,255,255,0.01)',
-    padding: '6px 14px',
-    borderRadius: '10px',
-    border: '1px solid rgba(255,255,255,0.2)'
+    gap: '16px',
+    background: '#FFFFFF',
+    padding: '8px 16px',
+    borderRadius: '12px',
+    border: '1px solid #E3E8EF',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
 };
 
 const miniStatStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center' };
-const miniStatValueStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
-const miniStatLabelStyle = { fontSize: '11px', color: '#7f7f88ff', fontWeight: '600', textTransform: 'uppercase' };
-const miniStatDividerStyle = { width: '1px', height: '16px', background: 'rgba(255,255,255,0.05)' };
+const miniStatValueStyle = { fontSize: '15px', fontWeight: '700', color: '#1A1F36' };
+const miniStatLabelStyle = { fontSize: '11px', color: '#6B7C93', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05e' };
+const miniStatDividerStyle = { width: '1px', height: '16px', background: '#E3E8EF' };
 
 const addBtnStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    background: '#fbbf24',
+    background: '#0070E0',
     border: 'none',
-    padding: '10px 18px',
-    color: '#000',
+    padding: '12px 20px',
+    color: '#FFF',
     fontWeight: '600',
-    borderRadius: '10px',
+    borderRadius: '12px',
     cursor: 'pointer',
-    fontSize: '14px'
+    fontSize: '14px',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+    transition: 'all 0.2s'
 };
 
-const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '8px' };
-const searchBoxStyle = { position: 'relative', width: '200px' };
-const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
-const filterInputStyle = { width: '100%', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', borderRadius: '8px', padding: '8px 12px 8px 30px', color: '#fff', fontSize: '14px', outline: 'none' };
-const countBadgeWrap = { fontSize: '10px', fontWeight: '800', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 'auto' };
+const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '4px' };
+const searchBoxStyle = { position: 'relative', width: '280px' };
+const searchIconStyle = { position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#6B7C93' };
+const filterInputStyle = { width: '100%', background: '#FFFFFF', border: '1px solid #E3E8EF', borderRadius: '10px', padding: '10px 12px 10px 36px', color: '#1A1F36', fontSize: '14px', outline: 'none', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' };
 
-const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.2)', overflow: 'hidden' };
+const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E3E8EF', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderRowStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
-const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
+const tableHeaderRowStyle = { background: '#F8FAFC', borderBottom: '1px solid #E3E8EF' };
+const thStyle = { padding: '16px 24px', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
-const trStyle = { borderBottom: '1px solid rgba(255, 255, 255, 0.01)', transition: 'background 0.2s ease' };
-const tdStyle = { padding: '16px' };
+const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
+const tdStyle = { padding: '20px 24px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
-const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '12px' };
-const tableAvatarStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', color: '#fff', fontSize: '14px' };
-const userNameTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
-const userEmailTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600' };
+const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '16px' };
+const tableAvatarStyle = { width: '40px', height: '40px', borderRadius: '12px', background: '#F0F7FF', border: '1px solid #E3E8EF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#0070E0', fontSize: '16px' };
+const userNameTextStyle = { fontSize: '15px', fontWeight: '700', color: '#1A1F36' };
+const userEmailTextStyle = { fontSize: '13px', color: '#6B7C93', fontWeight: '500' };
 
-const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: '20px', border: '1px solid', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' };
-const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
-const assetBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', background: 'rgba(255,255,255,0.02)', borderRadius: '6px', fontSize: '11px', color: '#a1a1aa', fontWeight: '600' };
-const earningsItemStyle = { fontSize: '11px', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' };
-const currencySymbolStyle = { color: '#fbbf24', fontSize: '10px', fontWeight: '900' };
-const deleteBtnStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.2)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#f87171', cursor: 'pointer' };
+const statusBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: '20px', border: '1px solid', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer' };
+const dotStyle = { width: '6px', height: '6px', borderRadius: '50%' };
+const assetBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', background: '#F7F9FC', borderRadius: '8px', fontSize: '12px', color: '#4A5568', fontWeight: '600', border: '1px solid #E3E8EF' };
+const earningsItemStyle = { fontSize: '16px', fontWeight: '700', color: '#1A1F36', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' };
+const currencySymbolStyle = { color: '#6B7C93', fontSize: '14px', fontWeight: '600' };
+const deleteBtnStyle = { width: '36px', height: '36px', borderRadius: '10px', background: '#FFFFFF', border: '1px solid #E3E8EF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#E53E3E', cursor: 'pointer', transition: 'all 0.2s' };
 
 const loadingContainerStyle = { padding: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' };
-const spinnerStyle = { width: '30px', height: '30px', borderRadius: '50%', border: '3px solid rgba(251, 191, 36, 0.05)', borderTop: '3px solid #fbbf24', animation: 'spin 1s linear infinite' };
-const loadingTextStyle = { fontSize: '10px', color: '#3f3f46', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase' };
+const spinnerStyle = { width: '32px', height: '32px', borderRadius: '50%', border: '3px solid #F1F5F9', borderTop: '3px solid #0070E0', animation: 'spin 1s linear infinite' };
+const loadingTextStyle = { fontSize: '12px', color: '#6B7C93', fontWeight: '600', textTransform: 'uppercase' };
 
 const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
-const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 0, 0, 0.8)", backdropFilter: 'blur(12px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalCardStyle = { background: "#050506", width: "420px", borderRadius: "24px", padding: '32px', border: '1px solid rgba(255, 255, 255, 0.19)', boxShadow: '0 32px 128px rgba(0, 0, 0, 0.8)' };
-const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' };
-const modalTitleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const modalSubTitle = { fontSize: '11px', color: '#a1a1aa', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 };
-const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#a1a1aa', cursor: 'pointer' };
-const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
-const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '6px' };
-const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
+const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 28, 100, 0.2)", backdropFilter: 'blur(8px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
+const modalCardStyle = { background: "#FFFFFF", width: "450px", borderRadius: "24px", padding: '40px', border: '1px solid #E3E8EF', boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.15)' };
+const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' };
+const modalTitleStyle = { fontSize: '24px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
+const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#6B7C93', cursor: 'pointer', padding: '4px' };
+const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '20px' };
+const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
+const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#4A5568', marginLeft: 4 };
 const inputWrapperStyle = { position: 'relative' };
-const modalInputStyle = { width: "100%", padding: "12px 14px", background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)', color: 'white', borderRadius: 10, fontSize: '13px', outline: 'none' };
-const modalFooterStyle = { display: "flex", justifyContent: "flex-end", gap: 12, marginTop: "8px" };
+const modalInputStyle = { width: "100%", padding: "14px 16px", background: '#F8FAFC', border: '1px solid #E3E8EF', color: '#1A1F36', borderRadius: 12, fontSize: '15px', outline: 'none', transition: 'all 0.2s' };
+const modalFooterStyle = { display: "flex", justifyContent: "flex-end", gap: 12, marginTop: "12px" };
 
-const submitBtnStyle = { padding: "12px 24px", background: "#fbbf24", color: '#000', border: "none", fontWeight: "900", borderRadius: 10, cursor: "pointer", fontSize: '12px' };
-const cancelBtnStyle = { padding: "12px 24px", background: 'rgba(255, 255, 255, 0.05)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.15)', borderRadius: 10, cursor: 'pointer', fontSize: '12px', fontWeight: '800' };
+const submitBtnStyle = { padding: "14px 28px", background: "#0070E0", color: '#FFF', border: "none", fontWeight: "700", borderRadius: 12, cursor: "pointer", fontSize: '14px', boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)' };
+const cancelBtnStyle = { padding: "14px 28px", background: '#FFF', color: '#4A5568', border: '1px solid #E3E8EF', borderRadius: 12, cursor: 'pointer', fontSize: '14px', fontWeight: '600' };
 
-const errorBannerStyle = { padding: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '10px', color: '#f87171', fontSize: '12px', marginBottom: '16px', fontWeight: '700' };
-const successBannerStyle = { padding: '12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', color: '#4ade80', fontSize: '12px', marginBottom: '16px', fontWeight: '700' };
+const errorBannerStyle = { padding: '12px', background: '#FEF2F2', border: '1px solid #FEE2E2', borderRadius: '10px', color: '#EF4444', fontSize: '13px', marginBottom: '16px', fontWeight: '600' };
+const successBannerStyle = { padding: '12px', background: '#ECFDF5', border: '1px solid #D1FAE5', borderRadius: '10px', color: '#10B981', fontSize: '13px', marginBottom: '16px', fontWeight: '600' };

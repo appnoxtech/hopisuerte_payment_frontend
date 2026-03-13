@@ -83,16 +83,16 @@ export default function UserPaymentPage() {
         return (
             <div style={{
                 textAlign: 'center',
-                color: '#94a3b8',
+                color: '#001c64',
                 minHeight: '100vh',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: '#000',
+                background: '#F7F9FC',
                 fontSize: 18,
                 fontWeight: 600
             }}>
-                Loading payment profile...
+                Loading Profile...
             </div>
         );
     }
@@ -109,30 +109,31 @@ export default function UserPaymentPage() {
         <main
             style={{
                 minHeight: '100vh',
-                background: '#000',
+                background: '#F7F9FC',
                 position: 'relative',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: 24
+                padding: 24,
+                fontFamily: '"Inter", sans-serif'
             }}
         >
             {/* glow background */}
             <div
                 style={{
                     position: 'absolute',
-                    top: 0,
+                    top: -200,
                     left: '50%',
                     transform: 'translateX(-50%)',
                     width: '100%',
-                    maxWidth: 900,
-                    height: 400,
-                    background: 'rgba(250,204,21,0.1)',
+                    maxWidth: 1000,
+                    height: 500,
+                    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.05) 0%, rgba(247, 249, 252, 0) 70%)',
                     borderRadius: '50%',
-                    filter: 'blur(100px)',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    zIndex: 1
                 }}
             />
 
@@ -143,27 +144,27 @@ export default function UserPaymentPage() {
                         style={{
                             width: 80,
                             height: 80,
-                            background: 'rgba(255,255,255,0.05)',
-                            border: '1px solid rgba(255,255,255,0.1)',
+                            background: '#F0F7FF',
+                            border: '1px solid #E3E8EF',
                             borderRadius: 24,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            margin: '0 auto 24px auto'
+                            margin: '0 auto 24px auto',
+                            boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.1)'
                         }}
                     >
-                        <span style={{ fontSize: 40, fontWeight: 900, color: '#facc15' }}>
-                            {user?.name?.charAt(0) || 'H'}
+                        <span style={{ fontSize: 40, fontWeight: 900, color: '#0070E0' }}>
+                            {user?.name?.charAt(0) || 'M'}
                         </span>
                     </div>
 
                     <h1
+                        className="gradient-text"
                         style={{
                             fontSize: 42,
                             fontWeight: 900,
-                            letterSpacing: -1,
-                            textTransform: 'uppercase',
-                            color: '#fff',
+                            letterSpacing: '-0.04em',
                             marginBottom: 8
                         }}
                     >
@@ -172,35 +173,35 @@ export default function UserPaymentPage() {
 
                     <p
                         style={{
-                            color: '#71717a',
-                            fontSize: 13,
-                            fontWeight: 700,
+                            color: '#6B7C93',
+                            fontSize: 14,
+                            fontWeight: '600',
                             textTransform: 'uppercase',
-                            letterSpacing: 2
+                            letterSpacing: '0.1em'
                         }}
                     >
-                        Global Payment Gateway
+                        Verified Merchant Partner
                     </p>
                 </div>
 
                 <div
                     style={{
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: 24,
-                        padding: 40
+                        background: '#FFFFFF',
+                        border: '1px solid #E3E8EF',
+                        borderRadius: 32,
+                        padding: 48,
+                        boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.08)'
                     }}
                 >
                     {!clientSecret ? (
                         <form onSubmit={handleStartPayment}>
-                            {/* product selection */}
+                             {/* product selection */}
                             <div style={{ marginBottom: 40 }}>
                                 <h2
                                     style={{
                                         fontSize: 18,
-                                        fontWeight: 900,
-                                        color: '#fff',
-                                        textTransform: 'uppercase',
+                                        fontWeight: 800,
+                                        color: '#001c64',
                                         marginBottom: 20,
                                         display: 'flex',
                                         alignItems: 'center'
@@ -210,19 +211,20 @@ export default function UserPaymentPage() {
                                         style={{
                                             width: 32,
                                             height: 32,
-                                            background: '#facc15',
-                                            borderRadius: '50%',
+                                            background: '#0070E0',
+                                            borderRadius: '10px',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            fontSize: 12,
-                                            color: '#000',
+                                            fontSize: 14,
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
                                             marginRight: 12
                                         }}
                                     >
                                         1
                                     </span>
-                                    Select Product
+                                    Choose Service
                                 </h2>
 
                                 <div
@@ -238,23 +240,24 @@ export default function UserPaymentPage() {
                                             onClick={() => setSelectedProduct(product)}
                                             style={{
                                                 padding: 20,
-                                                borderRadius: 16,
+                                                borderRadius: 20,
                                                 border: selectedProduct?.id === product.id
-                                                    ? '2px solid #facc15'
-                                                    : '2px solid rgba(255,255,255,0.05)',
+                                                    ? '2px solid #0070E0'
+                                                    : '2px solid #E3E8EF',
                                                 cursor: 'pointer',
                                                 background: selectedProduct?.id === product.id
-                                                    ? 'rgba(250,204,21,0.05)'
-                                                    : 'rgba(255,255,255,0.02)'
+                                                    ? '#F0F7FF'
+                                                    : '#FFFFFF',
+                                                transition: 'all 0.2s ease',
+                                                boxShadow: selectedProduct?.id === product.id ? '0 10px 15px -3px rgba(0, 112, 224, 0.1)' : 'none'
                                             }}
                                         >
                                             <div
                                                 style={{
                                                     fontWeight: 700,
-                                                    color: '#fff',
+                                                    color: selectedProduct?.id === product.id ? '#001c64' : '#4A5568',
                                                     marginBottom: 6,
-                                                    fontSize: 13,
-                                                    textTransform: 'uppercase'
+                                                    fontSize: 15,
                                                 }}
                                             >
                                                 {product.name}
@@ -275,9 +278,8 @@ export default function UserPaymentPage() {
                                 <h2
                                     style={{
                                         fontSize: 18,
-                                        fontWeight: 900,
-                                        color: '#fff',
-                                        textTransform: 'uppercase',
+                                        fontWeight: 800,
+                                        color: '#001c64',
                                         marginBottom: 20,
                                         display: 'flex',
                                         alignItems: 'center'
@@ -287,24 +289,25 @@ export default function UserPaymentPage() {
                                         style={{
                                             width: 32,
                                             height: 32,
-                                            background: '#facc15',
-                                            borderRadius: '50%',
+                                            background: '#0070E0',
+                                            borderRadius: '10px',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            fontSize: 12,
-                                            color: '#000',
+                                            fontSize: 14,
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
                                             marginRight: 12
                                         }}
                                     >
                                         2
                                     </span>
-                                    Payment Details
+                                    Payment Amount
                                 </h2>
                                 <div style={{ display: 'flex', gap: 16 }}>
                                     <div style={{ flex: 1, position: 'relative' }}>
                                         <input
-                                            style={{ ...inputStyle, paddingLeft: 44, fontSize: 24, fontWeight: 900, color: '#facc15' }}
+                                            style={{ ...inputStyle, paddingLeft: 44, fontSize: 24, fontWeight: 900, color: '#001c64' }}
                                             type="number"
                                             min="1"
                                             step="0.01"
@@ -313,7 +316,7 @@ export default function UserPaymentPage() {
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
                                         />
-                                        <span style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', color: '#facc15', fontSize: 20, fontWeight: 800 }}>
+                                        <span style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', color: '#6B7C93', fontSize: 20, fontWeight: 800 }}>
                                             {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
                                         </span>
                                     </div>
@@ -328,15 +331,13 @@ export default function UserPaymentPage() {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* customer form */}
+                             {/* customer form */}
                             <div style={{ marginBottom: 40 }}>
                                 <h2
                                     style={{
                                         fontSize: 18,
-                                        fontWeight: 900,
-                                        color: '#fff',
-                                        textTransform: 'uppercase',
+                                        fontWeight: 800,
+                                        color: '#001c64',
                                         marginBottom: 20,
                                         display: 'flex',
                                         alignItems: 'center'
@@ -346,19 +347,20 @@ export default function UserPaymentPage() {
                                         style={{
                                             width: 32,
                                             height: 32,
-                                            background: '#facc15',
-                                            borderRadius: '50%',
+                                            background: '#0070E0',
+                                            borderRadius: '10px',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            fontSize: 12,
-                                            color: '#000',
+                                            fontSize: 14,
+                                            fontWeight: 'bold',
+                                            color: '#FFF',
                                             marginRight: 12
                                         }}
                                     >
                                         3
                                     </span>
-                                    Client Identity
+                                    Information
                                 </h2>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -394,26 +396,26 @@ export default function UserPaymentPage() {
                                     />
                                 </div>
                             </div>
-
-                            {/* submit */}
+                             {/* submit */}
                             <button
                                 type="submit"
                                 disabled={!selectedProduct || !amount || submitting}
                                 style={{
                                     width: '100%',
                                     padding: 20,
-                                    background: '#facc15',
-                                    color: '#000',
-                                    borderRadius: 14,
+                                    background: '#0070E0',
+                                    color: '#FFF',
+                                    borderRadius: 16,
                                     border: 'none',
-                                    fontWeight: 800,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: 2,
+                                    fontWeight: 700,
+                                    fontSize: 18,
                                     cursor: 'pointer',
+                                    boxShadow: '0 10px 15px -3px rgba(0, 112, 224, 0.2)',
+                                    transition: 'all 0.2s ease',
                                     opacity: !selectedProduct || !amount || submitting ? 0.5 : 1
                                 }}
                             >
-                                {submitting ? 'Processing...' : `Initialize Checkout: ${amount || '0.00'} ${currency}`}
+                                {submitting ? 'Processing...' : `Pay ${amount || '0.00'} ${currency}`}
                             </button>
 
                         </form>
@@ -438,10 +440,13 @@ export default function UserPaymentPage() {
 
 const inputStyle = {
     width: '100%',
-    padding: 14,
-    background: '#000',
-    border: '1px solid rgba(255,255,255,0.1)',
+    padding: '12px 16px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
     borderRadius: 12,
-    color: '#fff',
-    fontSize: 14
+    color: '#1A1F36',
+    fontSize: '15px',
+    outline: 'none',
+    transition: 'border-color 0.2s ease',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
 };

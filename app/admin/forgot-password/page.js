@@ -53,18 +53,18 @@ export default function ForgotPassword() {
                 <div style={cardStyle}>
                     <div style={headerScope}>
                         <div style={iconWrapper}>
-                            <svg width="24" height="24" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
+                            <svg width="24" height="24" fill="none" stroke="#0070E0" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
                         <h1 style={titleStyle}>Secure Recovery</h1>
-                        <p style={subtitleStyle}>Submit account identifier to initialize credential override</p>
+                        <p style={subtitleStyle}>Submit account email to initialize password reset</p>
                     </div>
 
 
                     <form onSubmit={handleSubmit} style={formStyle}>
                         <div style={inputScope}>
-                            <label style={labelStyle}>Freelaner Email Address</label>
+                            <label style={labelStyle}>Merchant Email Address</label>
                             <div style={fieldWrapper}>
                                 <input
                                     type="email"
@@ -76,7 +76,7 @@ export default function ForgotPassword() {
                                     placeholder="your@email.com"
                                     style={{
                                         ...inputStyle,
-                                        borderColor: fieldErrors.email ? 'rgba(244, 63, 94, 0.4)' : 'rgba(255, 255, 255, 0.08)'
+                                        borderColor: fieldErrors.email ? '#EF4444' : '#E3E8EF'
                                     }}
                                 />
                             </div>
@@ -128,7 +128,7 @@ const mainStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#050506',
+    background: '#F7F9FC',
     padding: '24px',
     position: 'relative',
     overflow: 'hidden',
@@ -142,7 +142,7 @@ const glowTopStyle = {
     transform: 'translateX(-50%)',
     width: '800px',
     height: '400px',
-    background: 'radial-gradient(circle, rgba(251, 191, 36, 0.06) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.04) 0%, transparent 70%)',
     pointerEvents: 'none',
     zIndex: 1
 };
@@ -168,12 +168,11 @@ const containerStyle = {
 };
 
 const cardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    backdropFilter: 'blur(32px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
     borderRadius: '28px',
     padding: '44px',
-    boxShadow: '0 24px 80px rgba(0, 0, 0, 0.4)'
+    boxShadow: '0 20px 40px rgba(0, 28, 100, 0.08)'
 };
 
 const headerScope = {
@@ -182,56 +181,56 @@ const headerScope = {
 };
 
 const iconWrapper = {
-    width: '48px',
-    height: '48px',
-    borderRadius: '14px',
-    background: 'rgba(251, 191, 36, 0.05)',
-    border: '1px solid rgba(251, 191, 36, 0.2)',
+    width: '56px',
+    height: '56px',
+    borderRadius: '16px',
+    background: '#F0F7FF',
+    border: '1px solid #D0E2FF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: '0 auto 20px auto'
+    margin: '0 auto 24px auto'
 };
 
 const titleStyle = {
-    fontSize: '24px',
-    fontWeight: '900',
-    color: '#fff',
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#001c64',
     letterSpacing: '-0.02em',
     marginBottom: '8px'
 };
 
 const subtitleStyle = {
-    fontSize: '13px',
-    color: '#71717a',
-    lineHeight: '1.5',
-    maxWidth: '280px',
+    fontSize: '15px',
+    color: '#6B7C93',
+    lineHeight: '1.6',
+    maxWidth: '320px',
     margin: '0 auto'
 };
 
 const successBoxStyle = {
-    background: 'rgba(16, 185, 129, 0.06)',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
+    background: '#ECFDF5',
+    border: '1px solid #A7F3D0',
     borderRadius: '12px',
     padding: '14px 18px',
-    color: '#10b981',
-    fontSize: '13px',
-    fontWeight: '700',
+    color: '#10B981',
+    fontSize: '14px',
+    fontWeight: '600',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '12px',
-    marginBottom: '28px',
-    textAlign: 'center'
+    marginBottom: '28px'
 };
 
 const errorBoxStyle = {
-    background: 'rgba(244, 63, 94, 0.06)',
-    border: '1px solid rgba(244, 63, 94, 0.2)',
+    background: '#FEF2F2',
+    border: '1px solid #FECACA',
     borderRadius: '12px',
     padding: '14px 18px',
-    color: '#f43f5e',
-    fontSize: '13px',
-    fontWeight: '700',
+    color: '#EF4444',
+    fontSize: '14px',
+    fontWeight: '600',
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
@@ -251,11 +250,9 @@ const inputScope = {
 };
 
 const labelStyle = {
-    fontSize: '11px',
-    fontWeight: '800',
-    color: '#52525b',
-    textTransform: 'uppercase',
-    letterSpacing: '0.1em',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#4A5568',
     marginLeft: '4px'
 };
 
@@ -265,37 +262,35 @@ const fieldWrapper = {
 
 const inputStyle = {
     width: '100%',
-    background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
     borderRadius: '14px',
     padding: '14px 18px',
-    color: '#fff',
-    fontSize: '14px',
-    fontWeight: '600',
+    color: '#1A1F36',
+    fontSize: '15px',
+    fontWeight: '500',
     outline: 'none',
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
 };
 
 const fieldErrorText = {
-    fontSize: '11px',
-    color: '#f43f5e',
-    fontWeight: '700',
+    fontSize: '13px',
+    color: '#EF4444',
+    fontWeight: '500',
     marginLeft: '4px'
 };
 
 const submitBtnStyle = {
     marginTop: '8px',
     padding: '16px',
-    background: '#fbbf24',
+    background: '#0070E0',
     border: 'none',
     borderRadius: '14px',
-    color: '#000',
-    fontSize: '14px',
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: '0.02em',
+    color: '#FFFFFF',
+    fontSize: '15px',
+    fontWeight: '700',
     cursor: 'pointer',
-    boxShadow: '0 8px 30px rgba(251, 191, 36, 0.2)',
+    boxShadow: '0 8px 16px rgba(0, 112, 224, 0.2)',
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
 };
 
@@ -307,11 +302,11 @@ const loadingScope = {
 };
 
 const miniSpinnerStyle = {
-    width: '14px',
-    height: '14px',
+    width: '16px',
+    height: '16px',
     borderRadius: '50%',
-    border: '2px solid rgba(0, 0, 0, 0.1)',
-    borderTop: '2px solid #000',
+    border: '2px solid rgba(255, 255, 255, 0.2)',
+    borderTop: '2px solid #FFFFFF',
     animation: 'spin 0.8s linear infinite'
 };
 
@@ -321,10 +316,10 @@ const footerActionScope = {
 };
 
 const backLinkStyle = {
-    fontSize: '12px',
-    color: '#52525b',
+    fontSize: '14px',
+    color: '#6B7C93',
     textDecoration: 'none',
-    fontWeight: '700',
+    fontWeight: '600',
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
@@ -333,8 +328,7 @@ const backLinkStyle = {
 
 const footerCopyright = {
     textAlign: 'center',
-    fontSize: '11px',
-    color: '#3f3f46',
-    fontWeight: '600',
-    letterSpacing: '0.02em'
+    fontSize: '13px',
+    color: '#94A3B8',
+    fontWeight: '500'
 };

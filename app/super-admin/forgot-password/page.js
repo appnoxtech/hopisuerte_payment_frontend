@@ -148,110 +148,128 @@ const mainStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#000',
-    padding: 20,
-    position: 'relative'
+    background: '#F7F9FC',
+    padding: 24,
+    position: 'relative',
+    overflow: 'hidden'
 };
 
 const glowStyle = {
     position: 'absolute',
-    top: 0,
+    top: -150,
     left: '50%',
     transform: 'translateX(-50%)',
     width: 600,
-    height: 300,
-    background: 'rgba(250,204,21,0.12)',
+    height: 400,
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.05) 0%, transparent 70%)',
     borderRadius: '50%',
-    filter: 'blur(120px)'
+    zIndex: 0
 };
 
 const containerStyle = {
     width: '100%',
-    maxWidth: 420,
-    zIndex: 2
+    maxWidth: 440,
+    zIndex: 2,
+    marginTop: -40
 };
 
 const cardStyle = {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: 18,
-    padding: 28
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: 24,
+    padding: '48px 40px',
+    boxShadow: '0 20px 25px -5px rgba(0, 28, 100, 0.05), 0 10px 10px -5px rgba(0, 28, 100, 0.02)'
 };
 
 const titleStyle = {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 800,
-    color: '#fff',
-    textAlign: 'center'
+    color: '#001C64',
+    textAlign: 'center',
+    letterSpacing: '-0.02em',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const subtitleStyle = {
-    fontSize: 12,
-    color: '#71717a',
+    fontSize: 15,
+    color: '#6B7C93',
     textAlign: 'center',
-    marginBottom: 20
+    marginBottom: 32,
+    fontWeight: 500,
+    lineHeight: 1.6
 };
 
 const labelStyle = {
-    fontSize: 12,
-    color: '#cbd5f5',
-    marginBottom: 6,
-    display: 'block'
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#4A5568',
+    marginBottom: 8,
+    display: 'block',
+    marginLeft: 2
 };
 
 const inputStyle = {
     width: '100%',
-    padding: 12,
-    borderRadius: 10,
-    background: '#09090b',
-    border: '1px solid rgba(255,255,255,0.2)',
-    color: '#fff',
-    fontSize: 14,
-    outline: 'none'
+    padding: '14px 16px',
+    borderRadius: 12,
+    background: '#F8FAFC',
+    border: '1px solid #E3E8EF',
+    color: '#1A1F36',
+    fontSize: '15px',
+    outline: 'none',
+    transition: 'all 0.2s ease'
 };
 
 const submitStyle = {
-    marginTop: 6,
-    padding: 14,
-    background: '#facc15',
+    marginTop: 8,
+    padding: '16px',
+    background: '#0070E0',
     border: 'none',
-    borderRadius: 10,
+    borderRadius: 12,
     fontWeight: 700,
-    color: '#000',
-    fontSize: 14
+    color: '#FFFFFF',
+    fontSize: 16,
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+    transition: 'all 0.2s ease'
 };
 
 const backLinkStyle = {
-    fontSize: 12,
-    color: '#71717a',
+    fontSize: 14,
+    color: '#0070E0',
     textDecoration: 'none',
+    fontWeight: 600,
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6
+    gap: 8,
+    marginTop: 8
 };
 
 const fieldErrorStyle = {
-    color: '#f87171',
-    fontSize: 11,
-    marginTop: 4
+    color: '#EF4444',
+    fontSize: 12,
+    marginTop: 6,
+    fontWeight: 500,
+    marginLeft: 2
 };
 
 const errorStyle = {
-    marginBottom: 16,
-    padding: 10,
-    background: 'rgba(239,68,68,0.1)',
-    border: '1px solid rgba(239,68,68,0.2)',
-    color: '#ef4444',
-    borderRadius: 8,
-    fontSize: 12,
-    textAlign: 'center'
+    marginBottom: 24,
+    padding: 14,
+    background: '#FEF2F2',
+    border: '1px solid #FEE2E2',
+    color: '#EF4444',
+    borderRadius: 12,
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: 600
 };
 
 const messageStyle = {
-    marginBottom: 16,
-    padding: 10,
-    borderRadius: 8,
-    fontSize: 12,
+    marginBottom: 24,
+    padding: 14,
+    borderRadius: 12,
+    fontSize: 14,
     border: '1px solid',
-    textAlign: 'center'
+    textAlign: 'center',
+    fontWeight: 600
 };

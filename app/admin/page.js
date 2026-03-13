@@ -61,7 +61,7 @@ export default function AdminDashboard() {
     if (loading) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }
@@ -112,14 +112,14 @@ export default function AdminDashboard() {
                 <StatCard
                     title="Payment Successful"
                     value={successfulPayments.length}
-                    color="#10b981"
-                    icon={<CheckCircle2 size={16} />}
+                    color="#10B981"
+                    icon={<CheckCircle2 size={18} />}
                 />
                 <StatCard
                     title={
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                             <span>Total Amount</span>
-                            <div style={{ width: 85 }}>
+                            <div style={{ width: 100 }}>
                                 <CustomDropdown
                                     options={[
                                         { label: 'USD', value: 'USD' },
@@ -136,8 +136,8 @@ export default function AdminDashboard() {
                     }
                     value={totals[displayCurrency].toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
                     unit={displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
-                    color="#fbbf24"
-                    icon={displayCurrency === 'USD' ? <DollarSign size={16} /> : <div style={{ fontWeight: '900', fontSize: '13px' }}>{displayCurrency === 'EUR' ? '€' : 'Cg'}</div>}
+                    color="#001c64"
+                    icon={displayCurrency === 'USD' ? <DollarSign size={18} /> : <div style={{ fontWeight: '900', fontSize: '15px' }}>{displayCurrency === 'EUR' ? '€' : 'Cg'}</div>}
                 />
             </div>
 
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
                             ) : (
                                 filteredPayments.map((p) => (
                                     <tr key={p.id} style={trStyle}>
-                                        <td style={{ ...tdStyle, paddingLeft: '16px' }}>
+                                        <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={customerCellWrapper}>
                                                 <div style={avatarCircleStyle}>{p.customer_name?.[0] || 'C'}</div>
                                                 <div style={{ overflow: 'hidden' }}>
@@ -229,14 +229,14 @@ export default function AdminDashboard() {
                                         <td style={tdCenterStyle}>
                                             <div style={{
                                                 ...statusLevelStyle,
-                                                background: p.status === 'success' ? 'rgba(16, 185, 129, 0.08)' : p.status === 'failed' ? 'rgba(244, 63, 94, 0.08)' : 'rgba(251, 191, 36, 0.08)',
-                                                color: p.status === 'success' ? '#10b981' : p.status === 'failed' ? '#f43f5e' : '#fbbf24',
-                                                borderColor: p.status === 'success' ? 'rgba(16, 185, 129, 0.2)' : p.status === 'failed' ? 'rgba(244, 63, 94, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+                                                background: p.status === 'success' ? '#ECFDF5' : p.status === 'failed' ? '#FEF2F2' : '#FFFBEB',
+                                                color: p.status === 'success' ? '#10B981' : p.status === 'failed' ? '#EF4444' : '#F59E0B',
+                                                borderColor: p.status === 'success' ? '#A7F3D0' : p.status === 'failed' ? '#FECACA' : '#FDE68A',
                                             }}>
                                                 {p.status}
                                             </div>
                                         </td>
-                                        <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '16px' }}>
+                                        <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
                                             <div style={timestampStyle}>{formatLocalTime(p.created_at)}</div>
                                         </td>
                                     </tr>
@@ -285,9 +285,9 @@ const dashboardHeaderStyle = {
 };
 
 const titleStyle = {
-    fontSize: '18px',
-    fontWeight: '900',
-    color: '#fff',
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#001c64',
     letterSpacing: '-0.02em'
 };
 
@@ -314,47 +314,47 @@ const dotStyle = {
 
 const statsGridStyle = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '12px'
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '24px'
 };
 
 const statCardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '12px',
-    padding: '12px 16px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '24px',
+    padding: '24px',
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
+    gap: '20px',
     position: 'relative',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
 };
 
 const statIconScope = {
-    width: '32px',
-    height: '32px',
-    borderRadius: '8px',
+    width: '48px',
+    height: '48px',
+    borderRadius: '14px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid'
+    border: '1px solid',
+    background: '#F0F7FF'
 };
 
 const statLabelStyle = {
-    fontSize: '9px',
-    color: '#71717a',
-    fontWeight: '700',
-    textTransform: 'uppercase'
+    fontSize: '13px',
+    color: '#6B7C93',
+    fontWeight: '600'
 };
 
 const statValueStyle = {
-    fontSize: '18px',
-    fontWeight: '900',
-    color: '#fff',
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#1A1F36',
     display: 'flex',
     alignItems: 'baseline',
-    gap: '3px'
+    gap: '4px'
 };
 
 const statUnitStyle = {
@@ -374,9 +374,9 @@ const ledgerHeaderStyle = {
 };
 
 const ledgerTitleStyle = {
-    fontSize: '14px',
-    fontWeight: '800',
-    color: '#fff'
+    fontSize: '18px',
+    fontWeight: '700',
+    color: '#1A1F36'
 };
 
 const filterGroupStyle = {
@@ -387,7 +387,7 @@ const filterGroupStyle = {
 
 const searchBoxStyle = {
     position: 'relative',
-    width: '200px',
+    width: '260px',
 };
 
 const searchIconStyle = {
@@ -400,13 +400,15 @@ const searchIconStyle = {
 
 const filterInputStyle = {
     width: '100%',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '8px',
-    padding: '10px 8px 10px 26px',
-    color: '#fff',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '12px',
+    padding: '12px 12px 12px 32px',
+    color: '#1A1F36',
     fontSize: '14px',
-    outline: 'none'
+    outline: 'none',
+    transition: 'all 0.2s',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
 };
 
 const dateInputStyle = {
@@ -416,30 +418,32 @@ const dateInputStyle = {
 };
 
 const tableContainerStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '12px',
-    overflow: 'auto',
-    maxHeight: '600px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '24px',
+    overflow: 'hidden',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)',
 };
 
 const tableStyle = {
     width: '100%',
-    borderCollapse: 'collapse',
+    borderCollapse: 'separate',
+    borderSpacing: 0,
     textAlign: 'left'
 };
 
 const tableHeaderStyle = {
-    background: 'rgba(255, 255, 255, 0.02)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
+    background: '#F8FAFC',
+    borderBottom: '1px solid #E3E8EF'
 };
 
 const thStyle = {
-    padding: '16px',
+    padding: '18px 16px',
     fontSize: '12px',
-    fontWeight: '900',
-    color: '#7f7f88ff',
-    textTransform: 'uppercase'
+    fontWeight: '700',
+    color: '#64748B',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
 };
 
 const thCenterStyle = {
@@ -448,7 +452,8 @@ const thCenterStyle = {
 };
 
 const trStyle = {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.01)'
+    borderBottom: '1px solid #E3E8EF',
+    transition: 'background 0.2s'
 };
 
 const tdStyle = {
@@ -467,30 +472,29 @@ const customerCellWrapper = {
 };
 
 const avatarCircleStyle = {
-    width: '28px',
-    height: '28px',
-    borderRadius: '6px',
-    background: 'rgba(255, 255, 255, 0.03)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    background: '#F0F7FF',
+    border: '1px solid #D0E2FF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: '10px'
+    color: '#0070E0',
+    fontWeight: '700',
+    fontSize: '14px'
 };
 
-const primaryTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
-const secondaryTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
+const primaryTextStyle = { fontSize: '15px', fontWeight: '700', color: '#1A1F36' };
+const secondaryTextStyle = { fontSize: '13px', color: '#6B7C93', fontWeight: '500' };
 
 const productBadgeStyle = {
-    fontSize: '11px',
+    fontSize: '12px',
     fontWeight: '600',
-    color: '#a1a1aa',
-    textTransform: 'uppercase',
-    padding: '2px 5px',
-    background: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: '4px'
+    color: '#475569',
+    padding: '4px 8px',
+    background: '#F1F5F9',
+    borderRadius: '6px'
 };
 
 const amountWrapperStyle = {
@@ -500,24 +504,23 @@ const amountWrapperStyle = {
     gap: '3px'
 };
 
-const currencyStyle = { fontSize: '9px', fontWeight: '800', color: '#52525b' };
-const amountStyle = { fontSize: '13px', fontWeight: '900', color: '#fff' };
+const currencyStyle = { fontSize: '11px', fontWeight: '600', color: '#64748B' };
+const amountStyle = { fontSize: '16px', fontWeight: '700', color: '#1A1F36' };
 
 const statusLevelStyle = {
     display: 'inline-flex',
     alignItems: 'center',
-    padding: '2px 8px',
-    borderRadius: '20px',
+    padding: '6px 14px',
+    borderRadius: '100px',
     border: '1px solid',
-    fontSize: '8px',
-    fontWeight: '800',
-    textTransform: 'uppercase'
+    fontSize: '12px',
+    fontWeight: '600'
 };
 
 const timestampStyle = {
-    fontSize: '11px',
-    color: '#a1a1aa',
-    fontWeight: '800'
+    fontSize: '14px',
+    color: '#1A1F36',
+    fontWeight: '500'
 };
 
 const emptyStateStyle = {

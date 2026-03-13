@@ -105,8 +105,8 @@ export default function Home() {
           <Image
             src="/paysigur.png"
             alt="Paysigur"
-            width={180}
-            height={54}
+            width={240}
+            height={72}
             priority
             style={{ objectFit: 'contain' }}
           />
@@ -114,11 +114,20 @@ export default function Home() {
 
         {/* Payment Card */}
         <div style={cardStyle}>
+          <div style={{ marginBottom: 24, textAlign: 'center' }}>
+            <h1 className="gradient-text" style={{ fontSize: '28px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+              Secure Payment
+            </h1>
+            <p style={{ color: '#6B7C93', fontSize: '15px' }}>
+              Complete your transaction safely and quickly
+            </p>
+          </div>
+
           <form onSubmit={handleProceed}>
 
             {/* Product */}
             <div style={fieldStyle}>
-              <label style={labelStyle}>Product</label>
+              <label style={labelStyle}>Select Service or Product</label>
               <CustomDropdown
                 options={productOptions}
                 value={selectedProduct?.id || ''}
@@ -132,9 +141,9 @@ export default function Home() {
 
             {/* Amount */}
             <div style={fieldStyle}>
-              <label style={labelStyle}>Amount</label>
+              <label style={labelStyle}>Payment Amount</label>
 
-              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
 
                 <div style={{ position: 'relative', flex: 1 }}>
                   <span style={currencySymbol}>
@@ -167,7 +176,7 @@ export default function Home() {
             </div>
 
             <button type="submit" style={submitStyle}>
-              Continue
+              Continue to Payment
             </button>
 
           </form>
@@ -181,90 +190,95 @@ export default function Home() {
 
 const mainStyle = {
   minHeight: '100vh',
-  background: '#000',
+  background: '#F7F9FC',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   padding: 20,
-  fontFamily: 'system-ui, sans-serif',
-  position: 'relative'
+  fontFamily: '"Inter", sans-serif',
+  position: 'relative',
+  overflow: 'hidden'
 };
 
 const containerStyle = {
   width: '100%',
-  maxWidth: 420,
+  maxWidth: 480,
   zIndex: 10
 };
 
 const cardStyle = {
-  background: 'rgba(255,255,255,0.03)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: 18,
-  padding: 24
+  background: '#FFFFFF',
+  border: '1px solid #E3E8EF',
+  borderRadius: 24,
+  padding: '40px',
+  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
 };
 
 const fieldStyle = {
-  marginBottom: 18
+  marginBottom: 24
 };
 
 const labelStyle = {
   display: 'block',
-  fontSize: 13,
-  fontWeight: 700,
-  color: '#cbd5f5',
-  marginBottom: 6
+  fontSize: '14px',
+  fontWeight: '600',
+  color: '#001c64',
+  marginBottom: 8
 };
 
 const inputStyle = {
   width: '100%',
-  padding: 12,
-  background: '#09090b',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: 10,
-  color: '#fff',
-  fontSize: 14,
-  outline: 'none'
+  padding: '12px 16px',
+  background: '#FFFFFF',
+  border: '1px solid #E3E8EF',
+  borderRadius: 12,
+  color: '#1A1F36',
+  fontSize: '15px',
+  outline: 'none',
+  transition: 'border-color 0.2s ease',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
 };
 
 const submitStyle = {
   width: '100%',
-  marginTop: 8,
-  padding: 14,
-  background: '#facc15',
-  color: '#000',
-  borderRadius: 10,
+  marginTop: 12,
+  padding: '16px',
+  background: '#0070E0',
+  color: '#FFFFFF',
+  borderRadius: 12,
   border: 'none',
-  fontWeight: 700,
+  fontWeight: '600',
   cursor: 'pointer',
-  fontSize: 14
+  fontSize: '16px',
+  transition: 'all 0.2s ease',
+  boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)'
 };
 
 const currencySymbol = {
   position: 'absolute',
-  left: 10,
+  left: 14,
   top: '50%',
   transform: 'translateY(-50%)',
-  color: '#facc15',
-  fontWeight: 700
+  color: '#6B7C93',
+  fontWeight: '600',
+  fontSize: '15px'
 };
 
 const subtitleStyle = {
-  color: '#71717a',
-  fontSize: 12,
+  color: '#6B7C93',
+  fontSize: 14,
   marginTop: 8,
-  letterSpacing: 1
 };
 
 const glowStyle = {
   position: 'absolute',
-  top: 0,
-  left: '50%',
-  transform: 'translateX(-50%)',
-  width: 600,
-  height: 300,
-  background: 'rgba(250,204,21,0.12)',
+  top: -150,
+  right: -150,
+  width: 500,
+  height: 500,
+  background: 'radial-gradient(circle, rgba(0, 112, 224, 0.08) 0%, rgba(247, 249, 252, 0) 70%)',
   borderRadius: '50%',
-  filter: 'blur(120px)'
+  zIndex: 1
 };
 
 const loginStyle = {
@@ -305,12 +319,12 @@ const dropdownItemStyle = {
 
 const msgStyle = {
   textAlign: 'center',
-  color: '#94a3b8',
+  color: '#001c64',
   fontSize: 18,
   fontWeight: 600,
   minHeight: '100vh',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  background: '#000'
+  background: '#F7F9FC'
 };

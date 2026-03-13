@@ -53,8 +53,8 @@ export default function SuperAdminLayout({ children }) {
 
     if (loading) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#050506" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#F7F9FC" }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2.5px solid #0070E0', borderBottom: '2.5px solid #E2E8F0', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }
@@ -65,7 +65,7 @@ export default function SuperAdminLayout({ children }) {
 
     const navLinks = [
         { name: 'Dashboard', href: '/super-admin', icon: LayoutDashboard },
-        { name: 'Freelancers', href: '/super-admin/users', icon: Users },
+        { name: 'Merchants', href: '/super-admin/users', icon: Users },
         { name: 'Products', href: '/super-admin/products', icon: ShoppingBag },
         { name: 'Transactions', href: '/super-admin/payments', icon: CreditCard },
         { name: 'Reports', href: '/super-admin/reports', icon: BarChart3 }
@@ -85,8 +85,8 @@ export default function SuperAdminLayout({ children }) {
                         <Image
                             src="/paysigur.png"
                             alt="Paysigur"
-                            width={80}
-                            height={40}
+                            width={160}
+                            height={80}
                             priority
                             style={{ objectFit: 'contain' }}
                         />
@@ -105,12 +105,11 @@ export default function SuperAdminLayout({ children }) {
                                 href={item.href}
                                 style={{
                                     ...navItemStyle,
-                                    background: active ? 'rgba(251, 191, 36, 0.12)' : 'transparent',
-                                    color: active ? '#fbbf24' : '#a1a1aa',
-                                    border: `1px solid ${active ? 'rgba(251, 191, 36, 0.2)' : 'transparent'}`,
+                                    background: active ? '#0070E0' : 'transparent',
+                                    color: active ? '#FFFFFF' : '#A0AEC0',
                                 }}
                             >
-                                <Icon size={18} style={{ opacity: active ? 1 : 0.6 }} />
+                                <Icon size={18} style={{ opacity: active ? 1 : 0.7 }} />
                                 <span>{item.name}</span>
                                 {active && <div style={activeIndicatorStyle} />}
                             </NextLink>
@@ -140,11 +139,11 @@ export default function SuperAdminLayout({ children }) {
                 <header style={topHeaderStyle}>
                     <div style={headerLeftStyle}>
                         <h2 style={headerTitleStyle}>
-                            {navLinks.find(l => l.href === pathname)?.name || 'Control Terminal'}
+                            {navLinks.find(l => l.href === pathname)?.name || 'Platform Admin'}
                         </h2>
                         <div style={breadcrumbStyle}>
-                            <span>Super Admin</span>
-                            <span style={{ color: '#52525b' }}>/</span>
+                            <span>Paysigur Terminal</span>
+                            <span style={{ color: '#CBD5E1' }}>/</span>
                             <span>{navLinks.find(l => l.href === pathname)?.name || 'Home'}</span>
                         </div>
                     </div>
@@ -163,8 +162,8 @@ export default function SuperAdminLayout({ children }) {
 
 const layoutStyle = {
     minHeight: '100vh',
-    background: '#050506',
-    color: '#fff',
+    background: '#F7F9FC',
+    color: '#1A1F36',
     display: 'flex',
     overflow: 'hidden',
     position: 'relative',
@@ -177,21 +176,21 @@ const overlayGlowStyle = {
     right: -200,
     width: 600,
     height: 600,
-    background: 'radial-gradient(circle, rgba(251, 191, 36, 0.03) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.04) 0%, transparent 70%)',
     pointerEvents: 'none',
     zIndex: 0
 };
 
 const sidebarStyle = {
     width: '260px',
-    background: '#0a0a0c',
-    borderRight: '1px solid rgba(255,255,255,0.2)',
+    background: '#1A1F36',
+    borderRight: '1px solid #E2E8F0',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
     height: '100vh',
     zIndex: 50,
-    boxShadow: '10px 0 30px rgba(0,0,0,0.5)'
+    boxShadow: '4px 0 20px rgba(0, 28, 100, 0.05)'
 };
 
 const sidebarHeaderStyle = {
@@ -207,8 +206,8 @@ const logoWrapperStyle = {
 
 const navDividerStyle = {
     height: '1px',
-    background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.05) 50%, transparent)',
-    margin: '0 24px 24px'
+    background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.1) 50%, transparent)',
+    margin: '0 24px 20px'
 };
 
 const navContainerStyle = {
@@ -238,16 +237,15 @@ const activeIndicatorStyle = {
     left: '0',
     top: '25%',
     bottom: '25%',
-    width: '2px',
-    background: '#fbbf24',
+    width: '3px',
+    background: '#FFFFFF',
     borderRadius: '0 4px 4px 0',
-    boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
 };
 
 const userFooterStyle = {
-    padding: '20px',
-    borderTop: '1px solid rgba(255,255,255,0.2)',
-    background: 'rgba(255,255,255,0.01)'
+    padding: '24px 20px',
+    borderTop: '1px solid rgba(255,255,255,0.08)',
+    background: 'rgba(255,255,255,0.02)'
 };
 
 const userBriefStyle = {
@@ -258,17 +256,16 @@ const userBriefStyle = {
 };
 
 const userAvatarStyle = {
-    width: '36px',
-    height: '36px',
-    borderRadius: '10px',
-    background: 'linear-gradient(135deg, #18181b, #09090b)',
-    border: '1px solid rgba(251, 191, 36, 0.2)',
-    color: '#fbbf24',
+    width: '40px',
+    height: '40px',
+    borderRadius: '12px',
+    background: '#0070E0',
+    color: '#FFFFFF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '800',
-    fontSize: '14px'
+    fontWeight: '700',
+    fontSize: '15px'
 };
 
 const userDetailsStyle = {
@@ -287,7 +284,7 @@ const userNameStyle = {
 
 const userBadgeStyle = {
     fontSize: '10px',
-    color: '#71717a',
+    color: '#A0AEC0',
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
@@ -299,15 +296,16 @@ const logoutBtnStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
-    padding: '10px',
-    background: '#fbbf24',
+    padding: '12px',
+    background: '#0070E0',
     border: 'none',
-    borderRadius: '8px',
-    color: '#000',
-    fontSize: '12px',
+    borderRadius: '10px',
+    color: '#FFFFFF',
+    fontSize: '13px',
     fontWeight: '700',
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)'
 };
 
 const mainContentAreaStyle = {
@@ -319,37 +317,36 @@ const mainContentAreaStyle = {
 };
 
 const topHeaderStyle = {
-    height: '64px',
+    height: '72px',
     padding: '0 32px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    background: 'rgba(5, 5, 6, 0.8)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid rgba(255,255,255,0.2)',
+    background: '#FFFFFF',
+    borderBottom: '1px solid #E2E8F0',
     position: 'sticky',
     top: 0,
     zIndex: 40
 };
 
 const headerTitleStyle = {
-    fontSize: '16px',
+    fontSize: '20px',
     fontWeight: '800',
-    color: '#fff',
+    color: '#001C64',
     margin: 0,
-    letterSpacing: '-0.02em'
+    letterSpacing: '-0.02em',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const breadcrumbStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    fontSize: '10px',
+    fontSize: '12px',
     fontWeight: '600',
-    color: '#52525b',
+    color: '#64748B',
     marginTop: '2px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    letterSpacing: '0.01em'
 };
 
 const headerLeftStyle = { display: 'flex', flexDirection: 'column' };
@@ -358,16 +355,16 @@ const headerRightStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    padding: '6px 12px',
+    padding: '6px 14px',
     borderRadius: '20px',
-    background: 'rgba(251, 191, 36, 0.05)',
-    border: '1px solid rgba(251, 191, 36, 0.1)'
+    background: 'rgba(0, 112, 224, 0.05)',
+    border: '1px solid rgba(0, 112, 224, 0.1)'
 };
 
 const statusTextStyle = {
-    fontSize: '10px',
+    fontSize: '11px',
     fontWeight: '800',
-    color: '#fbbf24',
+    color: '#0070E0',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
 };
@@ -386,7 +383,7 @@ const pageInnerStyle = {
 
 const loadingStyle = {
     minHeight: '100vh',
-    background: '#050506',
+    background: '#F7F9FC',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
@@ -396,7 +393,7 @@ const spinnerStyle = {
     width: '32px',
     height: '32px',
     borderRadius: '50%',
-    border: '3px solid rgba(251, 191, 36, 0.1)',
-    borderTop: '3px solid #fbbf24',
+    border: '3px solid #E2E8F0',
+    borderTop: '3px solid #0070E0',
     animation: 'spin 1s linear infinite'
 };

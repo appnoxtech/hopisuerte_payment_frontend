@@ -1,45 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap');
-@import "tailwindcss";
-@config "../tailwind.config.js";
-
 :root {
-  /* High-Tech Enterprise Palette */
-  --bg-main: #050506;
-  --bg-sub: #0c0d0e;
-  --bg-card: #111214;
-  --bg-accent: #1a1b1e;
+  /* Sky Blue & White Professional Palette */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F0F7FF; /* Very soft sky blue tint */
+  --bg-card: #FFFFFF;
+  
+  /* Brand Colors */
+  --primary: #0070E0; /* Sky blue */
+  --primary-dark: #001c64; /* Deep navy requested by user */
+  --primary-hover: #005BBB;
+  --primary-glow: rgba(0, 112, 224, 0.1);
+  
+  /* Text Palette */
+  --text-main: #001c64; /* Deep navy requested */
+  --text-secondary: #4A5568;
+  --text-on-primary: #FFFFFF;
+  
+  /* Status Colors */
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
 
-  /* Brand - Sophisticated Amber */
-  --primary: #fbbf24;
-  --primary-bright: #fcd34d;
-  --primary-dim: #b45309;
-  --primary-glow: rgba(251, 191, 36, 0.12);
-  --primary-border: rgba(251, 191, 36, 0.15);
-
-  /* Status Tokens */
-  --success: #10b981;
-  --error: #f43f5e;
-  --warning: #f59e0b;
-  --info: #0ea5e9;
-
-  /* Neutrals */
+  /* Neutrals & Borders */
+  --border: #E2E8F0;
+  --divider: #EDF2F7;
   --white: #ffffff;
-  --zinc-50: #fafafa;
-  --zinc-100: #f4f4f5;
-  --zinc-200: #e4e4e7;
-  --zinc-300: #d4d4d8;
-  --zinc-400: #a1a1aa;
-  --zinc-500: #71717a;
-  --zinc-600: #52525b;
-  --zinc-700: #3f3f46;
-  --zinc-800: #27272a;
-  --zinc-900: #18181b;
+  
+  /* Sidebar Specific */
+  --sidebar-bg: #001c64; /* Maintaining dark sidebar for professional contrast */
+  --sidebar-text: #FFFFFF;
+  --sidebar-nav-active: #0070E0;
 
   /* Elevation */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 1px 3px rgba(0, 28, 100, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 28, 100, 0.1), 0 2px 4px -1px rgba(0, 28, 100, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 28, 100, 0.1), 0 4px 6px -2px rgba(0, 28, 100, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 28, 100, 0.1), 0 10px 10px -5px rgba(0, 28, 100, 0.04);
 
   /* Spacing */
   --radius-sm: 8px;
@@ -57,13 +53,14 @@
 
 body {
   color: var(--text-main);
-  background-color: var(--bg-main);
-  background-image:
-    radial-gradient(at 0% 0%, hsla(253, 16%, 7%, 1) 0, transparent 50%),
-    radial-gradient(at 50% 0%, hsla(225, 39%, 10%, 1) 0, transparent 50%);
+  background-color: var(--bg-secondary);
+  background-image: 
+    radial-gradient(at 0% 0%, #FFFFFF 0, transparent 50%),
+    radial-gradient(at 100% 0%, #E0F2FE 0, transparent 50%);
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
 }
 
 h1,
@@ -75,41 +72,30 @@ h6 {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--text-main);
 }
 
-/* Glassmorphism Utilities */
-.glass {
-  background: rgba(12, 13, 14, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.gradient-text {
+  background: linear-gradient(135deg, #001c64 0%, #0070E0 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.glass-card {
-  position: relative;
-  background: linear-gradient(165deg, rgba(24, 24, 27, 0.4) 0%, rgba(12, 13, 14, 0.4) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+/* modern card style */
+.pro-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  padding: 20px
+  padding: 24px;
 }
 
-.glass-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  padding: 1px;
-  border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 40%, transparent 60%, rgba(251, 191, 36, 0.05));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+.pro-card:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
 }
 
 /* Layout Utilities */
@@ -122,19 +108,20 @@ h6 {
 /* Forms & Inputs */
 .saas-input {
   width: 100%;
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid var(--border-main);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
-  color: white;
+  color: var(--text-main);
   font-size: 0.95rem;
   transition: all 0.2s ease-in-out;
+  box-shadow: var(--shadow-sm);
 }
 
 .saas-input:focus {
   outline: none;
   border-color: var(--primary);
-  background: rgba(15, 23, 42, 0.6);
+  background: #FFFFFF;
   box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
@@ -145,23 +132,22 @@ h6 {
   justify-content: center;
   padding: 0.875rem 2rem;
   background: var(--primary);
-  color: #000;
+  color: #FFFFFF;
   font-family: 'Outfit', sans-serif;
-  font-weight: 900;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  border-radius: 9999px;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 8px 20px -6px rgba(251, 191, 36, 0.3);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 112, 224, 0.2);
   border: none;
   cursor: pointer;
 }
 
 .saas-btn-primary:hover {
-  transform: translateY(-2px) scale(1.02);
-  background: var(--primary-bright);
-  box-shadow: 0 12px 24px -6px rgba(251, 191, 36, 0.4);
+  transform: translateY(-1px);
+  background: var(--primary-hover);
+  box-shadow: 0 10px 15px -3px rgba(0, 112, 224, 0.3);
 }
 
 .saas-btn-secondary {
@@ -169,23 +155,23 @@ h6 {
   align-items: center;
   justify-content: center;
   padding: 0.875rem 2rem;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--white);
+  background: #FFFFFF;
+  color: var(--text-main);
   font-family: 'Outfit', sans-serif;
-  font-weight: 900;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
 }
 
 .saas-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 /* Status Badges */
@@ -284,6 +270,7 @@ h6 {
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -291,13 +278,14 @@ h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 31, 100, 0.15);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 31, 100, 0.25);
 }
+
 
 @keyframes spin {
   from {
@@ -314,6 +302,7 @@ h6 {
     opacity: 0;
     transform: translateX(20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateX(0) scale(1);
@@ -325,6 +314,7 @@ h6 {
     opacity: 1;
     transform: translateX(0) scale(1);
   }
+
   to {
     opacity: 0;
     transform: translateX(20px) scale(0.95);

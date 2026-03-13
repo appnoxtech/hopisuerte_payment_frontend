@@ -75,13 +75,13 @@ function ResetPasswordContent() {
                 <div style={containerStyle}>
                     <div style={cardStyle}>
                         <div style={headerScope}>
-                            <div style={{ ...iconWrapper, background: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
-                                <svg width="24" height="24" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+                            <div style={{ ...iconWrapper, background: '#ECFDF5', borderColor: '#A7F3D0' }}>
+                                <svg width="24" height="24" fill="none" stroke="#10B981" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h1 style={{ ...titleStyle, color: '#10b981' }}>Reset Complete</h1>
-                            <p style={subtitleStyle}>Operational credentials have been successfully synchronized</p>
+                            <h1 style={{ ...titleStyle, color: '#10B981' }}>Reset Complete</h1>
+                            <p style={subtitleStyle}>Your credentials have been successfully updated</p>
                         </div>
 
                         <div style={successFooter}>
@@ -103,12 +103,12 @@ function ResetPasswordContent() {
                 <div style={cardStyle}>
                     <div style={headerScope}>
                         <div style={iconWrapper}>
-                            <svg width="24" height="24" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
+                            <svg width="24" height="24" fill="none" stroke="#0070E0" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
                         <h1 style={titleStyle}>Reset Password</h1>
-                        <p style={subtitleStyle}>Initialize new secure passcode for merchant identification</p>
+                        <p style={subtitleStyle}>Initialize new secure password for your merchant account</p>
                     </div>
 
                     {error && (
@@ -129,7 +129,7 @@ function ResetPasswordContent() {
 
                     <form onSubmit={handleReset} style={formStyle}>
                         <div style={inputScope}>
-                            <label style={labelStyle}>New Secure Passcode</label>
+                            <label style={labelStyle}>New Secure Password</label>
                             <div style={fieldWrapper}>
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -143,7 +143,7 @@ function ResetPasswordContent() {
                                     onClick={() => setShowPassword(!showPassword)}
                                     style={visibilityToggle}
                                 >
-                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                         </div>
@@ -158,10 +158,10 @@ function ResetPasswordContent() {
                                             <div key={index} style={ruleItemStyle}>
                                                 <div style={{
                                                     ...ruleIndicatorStyle,
-                                                    background: passed ? '#10b981' : 'rgba(255,255,255,0.05)',
-                                                    borderColor: passed ? '#10b981' : 'rgba(255,255,255,0.1)'
+                                                    background: passed ? '#10B981' : '#E2E8F0',
+                                                    borderColor: passed ? '#10B981' : '#CBD5E1'
                                                 }} />
-                                                <span style={{ color: passed ? '#10b981' : '#52525b', fontSize: '11px', fontWeight: '700' }}>
+                                                <span style={{ color: passed ? '#059669' : '#64748B', fontSize: '12px', fontWeight: '500' }}>
                                                     {rule.label}
                                                 </span>
                                             </div>
@@ -172,7 +172,7 @@ function ResetPasswordContent() {
                         )}
 
                         <div style={inputScope}>
-                            <label style={labelStyle}>Confirm Passcode</label>
+                            <label style={labelStyle}>Confirm Password</label>
                             <div style={fieldWrapper}>
                                 <input
                                     type={showConfirm ? "text" : "password"}
@@ -182,8 +182,8 @@ function ResetPasswordContent() {
                                     style={{
                                         ...inputStyle,
                                         borderColor: passwordConfirmation.length > 0
-                                            ? (passwordsMatch ? 'rgba(16, 185, 129, 0.4)' : 'rgba(244, 63, 94, 0.4)')
-                                            : 'rgba(255,255,255,0.06)'
+                                            ? (passwordsMatch ? '#10B981' : '#EF4444')
+                                            : '#E3E8EF'
                                     }}
                                 />
                                 <button
@@ -191,17 +191,17 @@ function ResetPasswordContent() {
                                     onClick={() => setShowConfirm(!showConfirm)}
                                     style={visibilityToggle}
                                 >
-                                    {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                             {passwordConfirmation.length > 0 && (
                                 <p style={{
-                                    fontSize: '11px',
-                                    fontWeight: '800',
+                                    fontSize: '12px',
+                                    fontWeight: '600',
                                     marginTop: '6px',
-                                    color: passwordsMatch ? '#10b981' : '#f43f5e'
+                                    color: passwordsMatch ? '#10B981' : '#EF4444'
                                 }}>
-                                    {passwordsMatch ? 'IDENTICAL' : 'MISMATCH'}
+                                    {passwordsMatch ? 'PASSWORDS MATCH' : 'PASSWORDS MISMATCH'}
                                 </p>
                             )}
                         </div>
@@ -211,14 +211,14 @@ function ResetPasswordContent() {
                             disabled={loading || !token || !allRulesPassed || !passwordsMatch}
                             style={{
                                 ...submitBtnStyle,
-                                opacity: (loading || !allRulesPassed || !passwordsMatch) ? 0.5 : 1
+                                opacity: (loading || !allRulesPassed || !passwordsMatch) ? 0.6 : 1
                             }}
                         >
                             {loading ? (
                                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "20px" }}>
-                                    <div style={{ width: 16, height: 16, borderRadius: '50%', borderTop: '2px solid #000', borderBottom: '2px solid rgba(0, 0, 0, 0.1)', animation: 'spin 1s linear infinite' }} />
+                                    <div style={{ width: 18, height: 18, borderRadius: '50%', borderTop: '2px solid #FFFFFF', borderBottom: '2px solid rgba(255, 255, 255, 0.1)', animation: 'spin 1s linear infinite' }} />
                                 </div>
-                            ) : 'Finalize Passcode Reset'}
+                            ) : 'Finalize Password Reset'}
                         </button>
                     </form>
                 </div>
@@ -230,8 +230,8 @@ function ResetPasswordContent() {
 export default function ResetPassword() {
     return (
         <Suspense fallback={
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#050506" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#F7F9FC" }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         }>
             <ResetPasswordContent />
@@ -248,7 +248,7 @@ const mainStyle = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#050506',
+    background: '#F7F9FC',
     padding: '24px',
     position: 'relative',
     overflow: 'hidden',
@@ -262,7 +262,7 @@ const glowTopStyle = {
     transform: 'translateX(-50%)',
     width: '800px',
     height: '400px',
-    background: 'radial-gradient(circle, rgba(251, 191, 36, 0.06) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.04) 0%, transparent 70%)',
     pointerEvents: 'none',
     zIndex: 1
 };
@@ -288,12 +288,11 @@ const containerStyle = {
 };
 
 const cardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    backdropFilter: 'blur(32px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
     borderRadius: '28px',
     padding: '44px',
-    boxShadow: '0 24px 80px rgba(0, 0, 0, 0.4)'
+    boxShadow: '0 20px 40px rgba(0, 28, 100, 0.08)'
 };
 
 const headerScope = {
@@ -302,29 +301,29 @@ const headerScope = {
 };
 
 const iconWrapper = {
-    width: '48px',
-    height: '48px',
-    borderRadius: '14px',
-    background: 'rgba(251, 191, 36, 0.05)',
-    border: '1px solid rgba(251, 191, 36, 0.2)',
+    width: '56px',
+    height: '56px',
+    borderRadius: '16px',
+    background: '#F0F7FF',
+    border: '1px solid #D0E2FF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: '0 auto 20px auto'
+    margin: '0 auto 24px auto'
 };
 
 const titleStyle = {
-    fontSize: '24px',
-    fontWeight: '900',
-    color: '#fff',
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#001c64',
     letterSpacing: '-0.02em',
     marginBottom: '8px'
 };
 
 const subtitleStyle = {
-    fontSize: '13px',
-    color: '#71717a',
-    lineHeight: '1.5',
+    fontSize: '15px',
+    color: '#6B7C93',
+    lineHeight: '1.6',
     maxWidth: '320px',
     margin: '0 auto'
 };
@@ -332,24 +331,24 @@ const subtitleStyle = {
 const successFooter = {
     marginTop: '32px',
     paddingTop: '24px',
-    borderTop: '1px solid rgba(255,255,255,0.2)',
+    borderTop: '1px solid #E3E8EF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '12px',
-    fontSize: '13px',
-    color: '#10b981',
-    fontWeight: '700'
+    fontSize: '14px',
+    color: '#10B981',
+    fontWeight: '600'
 };
 
 const errorBoxStyle = {
-    background: 'rgba(244, 63, 94, 0.06)',
-    border: '1px solid rgba(244, 63, 94, 0.2)',
+    background: '#FEF2F2',
+    border: '1px solid #FECACA',
     borderRadius: '12px',
     padding: '14px 18px',
-    color: '#f43f5e',
-    fontSize: '13px',
-    fontWeight: '700',
+    color: '#EF4444',
+    fontSize: '14px',
+    fontWeight: '600',
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
@@ -358,26 +357,26 @@ const errorBoxStyle = {
 
 const accountBatchStyle = {
     padding: '16px',
-    borderRadius: '14px',
-    background: 'rgba(0,0,0,0.2)',
-    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '16px',
+    background: '#F8FAFC',
+    border: '1px solid #E2E8F0',
     marginBottom: '28px'
 };
 
 const labelSmallStyle = {
     display: 'block',
-    fontSize: '10px',
-    fontWeight: '800',
-    color: '#52525b',
+    fontSize: '11px',
+    fontWeight: '600',
+    color: '#64748B',
     textTransform: 'uppercase',
-    letterSpacing: '0.1em',
+    letterSpacing: '0.05em',
     marginBottom: '4px'
 };
 
 const emailValueStyle = {
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: '700',
-    color: '#fbbf24'
+    color: '#0070E0'
 };
 
 const formStyle = {
@@ -393,11 +392,9 @@ const inputScope = {
 };
 
 const labelStyle = {
-    fontSize: '11px',
-    fontWeight: '800',
-    color: '#52525b',
-    textTransform: 'uppercase',
-    letterSpacing: '0.1em',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#4A5568',
     marginLeft: '4px'
 };
 
@@ -407,13 +404,13 @@ const fieldWrapper = {
 
 const inputStyle = {
     width: '100%',
-    background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid rgba(255,255,255,0.2)',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
     borderRadius: '14px',
     padding: '14px 44px 14px 18px',
-    color: '#fff',
-    fontSize: '14px',
-    fontWeight: '600',
+    color: '#1A1F36',
+    fontSize: '15px',
+    fontWeight: '500',
     outline: 'none',
     transition: 'all 0.2s ease'
 };
@@ -426,23 +423,23 @@ const visibilityToggle = {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    color: '#52525b',
+    color: '#94A3B8',
     display: 'flex'
 };
 
 const rulesCardStyle = {
     padding: '16px',
-    borderRadius: '14px',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.2)'
+    borderRadius: '16px',
+    background: '#F8FAFC',
+    border: '1px solid #E2E8F0'
 };
 
 const rulesTitleStyle = {
-    fontSize: '10px',
-    fontWeight: '800',
-    color: '#3f3f46',
+    fontSize: '11px',
+    fontWeight: '700',
+    color: '#64748B',
     textTransform: 'uppercase',
-    letterSpacing: '0.1em',
+    letterSpacing: '0.05em',
     marginBottom: '12px'
 };
 
@@ -468,16 +465,14 @@ const ruleIndicatorStyle = {
 const submitBtnStyle = {
     marginTop: '12px',
     padding: '16px',
-    background: '#fbbf24',
+    background: '#0070E0',
     border: 'none',
     borderRadius: '14px',
-    color: '#000',
-    fontSize: '14px',
-    fontWeight: '900',
-    textTransform: 'uppercase',
-    letterSpacing: '0.02em',
+    color: '#FFFFFF',
+    fontSize: '15px',
+    fontWeight: '700',
     cursor: 'pointer',
-    boxShadow: '0 8px 30px rgba(251, 191, 36, 0.2)',
+    boxShadow: '0 8px 16px rgba(0, 112, 224, 0.2)',
     transition: 'all 0.2s ease'
 };
 

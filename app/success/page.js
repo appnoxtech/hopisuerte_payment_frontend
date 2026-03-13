@@ -29,8 +29,8 @@ export default function SuccessPage() {
                     <Image
                         src="/paysigur.png"
                         alt="Paysigur"
-                        width={180}
-                        height={54}
+                        width={240}
+                        height={72}
                         priority
                         style={{ objectFit: 'contain' }}
                     />

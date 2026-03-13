@@ -47,7 +47,7 @@ export default function ProductManagement() {
     if (loading) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         )
     }
@@ -79,14 +79,14 @@ export default function ProductManagement() {
                                 <div style={cardHeaderStyle}>
                                     <div style={{
                                         ...statusBadgeStyle,
-                                        background: product.active ? 'rgba(16, 185, 129, 0.08)' : 'rgba(244, 63, 94, 0.08)',
-                                        color: product.active ? '#10b981' : '#f43f5e',
-                                        borderColor: product.active ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
+                                        background: product.active ? '#ECFDF5' : '#FEF2F2',
+                                        color: product.active ? '#10B981' : '#EF4444',
+                                        borderColor: product.active ? '#A7F3D0' : '#FECACA',
                                     }}>
-                                        <div style={{ ...dotStyle, background: product.active ? '#10b981' : '#f43f5e' }} />
+                                        <div style={{ ...dotStyle, background: 'currentColor' }} />
                                         {product.active ? "Active" : "Inactive"}
                                     </div>
-                                    <ShieldCheck size={16} color="rgba(255,255,255,0.1)" />
+                                    <ShieldCheck size={18} color="#001c64" style={{ opacity: 0.1 }} />
                                 </div>
 
                                 <h3 style={productTitleStyle}>{product.name}</h3>
@@ -94,7 +94,12 @@ export default function ProductManagement() {
 
                                 <button
                                     onClick={() => setExpandedProductId(isExpanded ? null : product.id)}
-                                    style={toggleLinkBtnStyle}
+                                    style={{
+                                        ...toggleLinkBtnStyle,
+                                        background: isExpanded ? '#0070E0' : '#F0F7FF',
+                                        color: isExpanded ? '#FFF' : '#0070E0',
+                                        borderColor: isExpanded ? '#0070E0' : '#E3E8EF'
+                                    }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <ExternalLink size={14} />
@@ -120,8 +125,8 @@ export default function ProductManagement() {
                                                             onClick={() => handleCopy(url, linkId)}
                                                             style={{
                                                                 ...copyBtnStyle,
-                                                                background: isCopied ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.03)',
-                                                                color: isCopied ? '#10b981' : '#fff'
+                                                                background: isCopied ? '#ECFDF5' : '#F8FAFC',
+                                                                color: isCopied ? '#10B981' : '#1A1F36'
                                                             }}
                                                         >
                                                             {isCopied ? <Check size={12} /> : <Copy size={12} />}
@@ -162,19 +167,17 @@ const headerWrapperStyle = {
 };
 
 const titleStyle = {
-    fontSize: '18px',
-    fontWeight: '900',
-    color: '#fff',
+    fontSize: '24px',
+    fontWeight: '800',
+    color: '#001c64',
     letterSpacing: '-0.02em'
 };
 
 const subtitleStyle = {
-    fontSize: '11px',
-    color: '#52525b',
-    marginTop: '2px',
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    fontSize: '13px',
+    color: '#6B7C93',
+    marginTop: '4px',
+    fontWeight: '500'
 };
 
 const infoBoxStyle = {
@@ -194,19 +197,20 @@ const infoBoxStyle = {
 
 const productGridStyle = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: '16px'
+    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+    gap: '24px'
 };
 
 const productCardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    backdropFilter: 'blur(24px)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: '16px',
-    padding: '20px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '24px',
+    padding: '28px',
     position: 'relative',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)',
+    transition: 'all 0.3s'
 };
 
 const cardHeaderStyle = {
@@ -219,32 +223,30 @@ const cardHeaderStyle = {
 const statusBadgeStyle = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '6px',
-    padding: '4px 10px',
-    borderRadius: '20px',
+    gap: '8px',
+    padding: '6px 14px',
+    borderRadius: '100px',
     border: '1px solid',
-    fontSize: '11px',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    fontSize: '12px',
+    fontWeight: '600'
 };
 
-const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
+const dotStyle = { width: '6px', height: '6px', borderRadius: '50%' };
 
 const productTitleStyle = {
-    fontSize: '14px',
-    fontWeight: '800',
-    color: '#fff',
-    marginBottom: '6px'
+    fontSize: '18px',
+    fontWeight: '700',
+    color: '#1A1F36',
+    marginBottom: '8px'
 };
 
 const productDescStyle = {
-    fontSize: '11px',
-    color: '#52525b',
-    lineHeight: '1.5',
-    marginBottom: '20px',
-    minHeight: '36px',
-    fontWeight: '800'
+    fontSize: '14px',
+    color: '#6B7C93',
+    lineHeight: '1.6',
+    marginBottom: '24px',
+    minHeight: '44px',
+    fontWeight: '500'
 };
 
 const toggleLinkBtnStyle = {
@@ -252,15 +254,13 @@ const toggleLinkBtnStyle = {
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    padding: '10px 18px',
-    background: 'rgba(251, 191, 36, 0.08)',
-    border: '1px solid rgba(251, 191, 36, 0.2)',
-    borderRadius: '10px',
-    color: '#fbbf24',
-    fontSize: '14px',
+    padding: '12px 20px',
+    borderRadius: '14px',
+    fontSize: '15px',
     fontWeight: '600',
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    border: '1px solid'
 };
 
 const linksSectionStyle = {
@@ -276,29 +276,29 @@ const linksGridStyle = {
 
 const linkWidgetStyle = {
     display: 'flex',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: '8px',
+    background: '#F8FAFC',
+    border: '1px solid #E3E8EF',
+    borderRadius: '12px',
     overflow: 'hidden'
 };
 
 const currencyLabelStyle = {
-    width: '40px',
-    background: 'rgba(251, 191, 36, 0.03)',
+    width: '50px',
+    background: '#F1F5F9',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '800',
-    fontSize: '11px',
-    color: '#fbbf24',
-    borderRight: '1px solid rgba(251, 191, 36, 0.2)'
+    fontWeight: '700',
+    fontSize: '12px',
+    color: '#475569',
+    borderRight: '1px solid #E3E8EF'
 };
 
 const urlPreviewStyle = {
     flex: 1,
-    padding: '8px 12px',
-    fontSize: '11px',
-    color: '#a1a1aa',
+    padding: '10px 14px',
+    fontSize: '12px',
+    color: '#64748B',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
@@ -306,7 +306,7 @@ const urlPreviewStyle = {
 };
 
 const copyBtnStyle = {
-    width: '36px',
+    width: '42px',
     padding: 0,
     border: 'none',
     display: 'flex',
@@ -314,7 +314,7 @@ const copyBtnStyle = {
     justifyContent: 'center',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    borderLeft: '1px solid rgba(255,255,255,0.2)'
+    borderLeft: '1px solid #E3E8EF'
 };
 
 const emptyStateStyle = {

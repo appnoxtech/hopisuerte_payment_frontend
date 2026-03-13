@@ -46,6 +46,18 @@ export default function SuperAdminProducts() {
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [selectedProductPayments, setSelectedProductPayments] = useState([]);
     const [viewingProductName, setViewingProductName] = useState('');
+
+    useEffect(() => {
+        if (isModalOpen || isPaymentModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isModalOpen, isPaymentModalOpen]);
+
     const [filterName, setFilterName] = useState('');
     const [filterAssignedTo, setFilterAssignedTo] = useState('');
 
@@ -144,7 +156,7 @@ export default function SuperAdminProducts() {
     if (loading) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         )
     }
@@ -159,12 +171,12 @@ export default function SuperAdminProducts() {
         <div style={containerStyle}>
             <header style={headerSectionStyle}>
                 <div>
-                    <h1 style={titleStyle}>Products Management</h1>
-
+                    <h1 style={titleStyle}>Product Inventory</h1>
+                    <p style={subtitleStyle}>Manage and monitor global product listings</p>
                 </div>
                 <button onClick={() => handleOpenModal()} style={addBtnStyle}>
-                    <Plus size={14} />
-                    <span>Add Product</span>
+                    <Plus size={16} />
+                    <span>Create Product</span>
                 </button>
             </header>
 
@@ -182,7 +194,7 @@ export default function SuperAdminProducts() {
                 <div style={searchBoxStyle}>
                     <User style={searchIconStyle} size={14} />
                     <input
-                        placeholder="Search Freelancer..."
+                        placeholder="Search Merchant..."
                         value={filterAssignedTo}
                         onChange={(e) => setFilterAssignedTo(e.target.value)}
                         style={filterInputStyle}
@@ -198,7 +210,7 @@ export default function SuperAdminProducts() {
                     <thead>
                         <tr style={tableHeaderStyle}>
                             <th style={{ ...thStyle, paddingLeft: '24px' }}>Products</th>
-                            <th style={thStyle}>Freelancer</th>
+                            <th style={thStyle}>Merchant</th>
                             <th style={thStyle}>Links</th>
                             <th style={thCenterStyle}>Status</th>
                             <th style={{ ...thStyle, paddingRight: '24px', textAlign: 'right' }}>Actions</th>
@@ -217,7 +229,7 @@ export default function SuperAdminProducts() {
                                     <tr key={product.id} style={trStyle}>
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                                <div style={iconBoxStyle}><Box size={14} color="#fbbf24" /></div>
+                                                <div style={iconBoxStyle}><Box size={14} color="#0070E0" /></div>
                                                 <div>
                                                     <button onClick={() => fetchProductPayments(product)} style={nameLinkStyle}>
                                                         {product.name}
@@ -235,10 +247,10 @@ export default function SuperAdminProducts() {
                                         <td style={tdStyle}>
                                             <button
                                                 onClick={() => setExpandedProductId(isExpanded ? null : product.id)}
-                                                style={{ ...viewBtnStyle, color: isExpanded ? '#fbbf24' : '#71717a' }}
+                                                style={{ ...viewBtnStyle, background: isExpanded ? '#F0F7FF' : '#FFFFFF', color: isExpanded ? '#0070E0' : '#6B7C93', borderColor: isExpanded ? '#0070E0' : '#E2E8F0' }}
                                             >
                                                 <LinkIcon size={12} />
-                                                <span>{isExpanded ? 'Collapse' : 'View Links'}</span>
+                                                <span>{isExpanded ? 'Collapse' : 'Get Links'}</span>
                                             </button>
 
                                             {isExpanded && (
@@ -254,7 +266,7 @@ export default function SuperAdminProducts() {
                                                                 <span style={currBadgeStyle}>{curr}</span>
                                                                 <input readOnly value={url} style={linkPreviewStyle} />
                                                                 <button onClick={() => handleCopy(url, cid)} style={copyIconBtnStyle}>
-                                                                    {isCopied ? <Check size={10} color="#10b981" /> : <Copy size={10} />}
+                                                                    {isCopied ? <Check size={12} color="#10B981" /> : <Copy size={12} />}
                                                                 </button>
                                                             </div>
                                                         );
@@ -276,10 +288,10 @@ export default function SuperAdminProducts() {
                                         <td style={{ ...tdStyle, paddingRight: '24px', textAlign: 'right' }}>
                                             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                                                 <button onClick={() => handleOpenModal(product)} style={actionBtnStyle}>
-                                                    <Edit2 size={12} color="#fbbf24" />
+                                                    <Edit2 size={12} color="#0070E0" />
                                                 </button>
                                                 <button onClick={() => handleDelete(product.id)} style={actionBtnStyle}>
-                                                    <Trash2 size={12} color="#f43f5e" />
+                                                    <Trash2 size={12} color="#EF4444" />
                                                 </button>
                                             </div>
                                         </td>
@@ -304,13 +316,13 @@ export default function SuperAdminProducts() {
                         </div>
                         <form onSubmit={handleSubmit} style={modalFormStyle}>
                             <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Freelancer</label>
+                                <label style={labelStyle}>Merchant</label>
                                 <CustomDropdown
                                     options={userOptions}
                                     value={formData.user_id}
                                     onChange={(val) => setFormData({ ...formData, user_id: val })}
                                     showSearch={true}
-                                    placeholder="Search freelancer..."
+                                    placeholder="Search merchant..."
                                 />
                             </div>
                             <div style={inputGroupStyle}>
@@ -337,20 +349,20 @@ export default function SuperAdminProducts() {
             {/* Audit History Modal */}
             {isPaymentModalOpen && (
                 <div style={modalOverlayStyle}>
-                    <div style={{ ...modalCardStyle, width: '800px' }}>
+                    <div style={{ ...modalCardStyle, width: '900px' }}>
                         <div style={modalHeaderStyle}>
                             <div>
-                                <h2 style={modalTitleStyle}>Review: <span style={{ color: '#fbbf24' }}>{viewingProductName}</span></h2>
-                                <p style={{ fontSize: 11, color: '#a1a1aa', fontWeight: '800', textTransform: 'uppercase', marginTop: 4 }}>Transaction Records Analytics</p>
+                                <h3 style={{ fontSize: 13, color: '#6B7C93', fontWeight: '700', textTransform: 'uppercase', marginBottom: 4 }}>Audit Trail</h3>
+                                <h2 style={modalTitleStyle}>Review: <span style={{ color: '#0070E0' }}>{viewingProductName}</span></h2>
                             </div>
-                            <button onClick={() => setIsPaymentModalOpen(false)} style={modalCloseBtnStyle}><X size={18} /></button>
+                            <button onClick={() => setIsPaymentModalOpen(false)} style={modalCloseBtnStyle}><X size={20} /></button>
                         </div>
                         <div style={historyTableWrapStyle}>
                             <table style={tableStyle}>
                                 <thead>
                                     <tr style={tableHeaderStyle}>
                                         <th style={thStyle}>Timestamp</th>
-                                        <th style={thStyle}>Freelancer</th>
+                                        <th style={thStyle}>Merchant</th>
                                         <th style={{ ...thStyle, textAlign: 'right' }}>Transactions</th>
                                         <th style={thCenterStyle}>Status</th>
                                     </tr>
@@ -362,15 +374,15 @@ export default function SuperAdminProducts() {
                                         selectedProductPayments.map((p) => (
                                             <tr key={p.id} style={trStyle}>
                                                 <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa' }}>{formatLocalTime(p.created_at)}</td>
-                                                <td style={tdStyle}>
-                                                    <div style={userTextStyle}>{p.customer_name}</div>
-                                                    <div style={{ fontSize: 11, color: '#a1a1aa' }}>{p.customer_email}</div>
+                                                 <td style={tdStyle}>
+                                                    <div style={{ color: '#1A1F36', fontWeight: '700', fontSize: 14 }}>{p.customer_name}</div>
+                                                    <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_email}</div>
                                                 </td>
-                                                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '900' }}>
-                                                    <span style={{ color: '#fbbf24', marginRight: 8 }}>
+                                                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700' }}>
+                                                    <span style={{ color: '#6B7C93', marginRight: 4, fontSize: 12 }}>
                                                         {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}
                                                     </span>
-                                                    <span style={{ color: '#fff' }}>{Number(p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                    <span style={{ color: '#1A1F36', fontSize: 15 }}>{Number(p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                                 </td>
                                                 <td style={tdCenterStyle}>
                                                     <div style={{ 
@@ -384,15 +396,15 @@ export default function SuperAdminProducts() {
                                                         fontWeight: '900',
                                                         textTransform: 'uppercase',
                                                         letterSpacing: '0.05em',
-                                                        background: p.status === 'success' ? 'rgba(16, 185, 129, 0.05)' : (p.status === 'pending' ? 'rgba(251, 191, 36, 0.05)' : 'rgba(244, 63, 94, 0.05)'),
-                                                        color: p.status === 'success' ? '#10b981' : (p.status === 'pending' ? '#fbbf24' : '#f43f5e'),
-                                                        borderColor: p.status === 'success' ? 'rgba(16, 185, 129, 0.1)' : (p.status === 'pending' ? 'rgba(251, 191, 36, 0.1)' : 'rgba(244, 63, 94, 0.1)')
+                                                         background: p.status === 'success' ? '#ECFDF5' : (p.status === 'pending' ? '#FFFBEB' : '#FEF2F2'),
+                                                        color: p.status === 'success' ? '#10B981' : (p.status === 'pending' ? '#F59E0B' : '#EF4444'),
+                                                        borderColor: p.status === 'success' ? '#D1FAE5' : (p.status === 'pending' ? '#FEF3C7' : '#FEE2E2')
                                                     }}>
                                                         <div style={{ 
-                                                            width: '4px', 
-                                                            height: '4px', 
+                                                            width: '6px', 
+                                                            height: '6px', 
                                                             borderRadius: '50%', 
-                                                            background: p.status === 'success' ? '#10b981' : (p.status === 'pending' ? '#fbbf24' : '#f43f5e') 
+                                                            background: p.status === 'success' ? '#10B981' : (p.status === 'pending' ? '#F59E0B' : '#EF4444') 
                                                         }} />
                                                         {p.status}
                                                     </div>
@@ -414,168 +426,163 @@ export default function SuperAdminProducts() {
 // STYLES
 // ──────────────────────────────────────────────
 
-const containerStyle = { display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 0.4s ease' };
-const headerSectionStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
-const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const containerStyle = { display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fadeIn 0.4s ease' };
+const headerSectionStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' };
+const titleStyle = { fontSize: '24px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
+const subtitleStyle = { fontSize: '14px', color: '#6B7C93', fontWeight: '500', marginTop: '4px' };
 
 const addBtnStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    background: '#fbbf24',
+    background: '#0070E0',
     border: 'none',
-    padding: '10px 18px',
-    color: '#000',
-    fontWeight: '600',
-    borderRadius: '10px',
+    padding: '12px 24px',
+    color: '#FFF',
+    fontWeight: '700',
+    borderRadius: '12px',
     cursor: 'pointer',
-    fontSize: '14px'
+    fontSize: '14px',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+    transition: 'all 0.2s'
 };
 
-const filterRowStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    paddingBottom: '8px'
-};
-
-const searchBoxStyle = { position: 'relative', width: '200px' };
-const searchIconStyle = { position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#3f3f46' };
+const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '4px' };
+const searchBoxStyle = { position: 'relative', width: '280px' };
+const searchIconStyle = { position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#6B7C93' };
 
 const filterInputStyle = {
     width: '100%',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '8px',
-    padding: '8px 12px 8px 30px',
-    color: '#fff',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '10px',
+    padding: '10px 12px 10px 36px',
+    color: '#1A1F36',
     fontSize: '14px',
     outline: 'none',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
 };
 
-const countBadgeWrap = {
-    fontSize: '10px',
-    fontWeight: '800',
-    color: '#7f7f88ff',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    marginLeft: 'auto'
-};
+const countBadgeWrap = { fontSize: '12px', fontWeight: '600', color: '#6B7C93', marginLeft: 'auto' };
 
-const tableContainerStyle = { background: 'rgba(15, 15, 20, 0.4)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.2)', overflow: 'hidden' };
+const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E3E8EF', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
+const tableHeaderStyle = { background: '#F8FAFC', borderBottom: '1px solid #E3E8EF' };
 
-const thStyle = { padding: '16px', fontSize: '12px', fontWeight: '900', color: '#7f7f88ff', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'left' };
+const thStyle = { padding: '16px 24px', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
-const trStyle = { borderBottom: '1px solid rgba(255, 255, 255, 0.01)', transition: 'background 0.2s ease' };
-const tdStyle = { padding: '16px' };
+const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
+const tdStyle = { padding: '20px 24px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
-const nameLinkStyle = { background: 'none', border: 'none', padding: 0, color: '#fff', fontSize: '14px', fontWeight: '800', cursor: 'pointer', textAlign: 'left', display: 'block' };
-const descTextStyle = { fontSize: '11px', color: '#52525b', fontWeight: '600', marginTop: 2 };
-const iconBoxStyle = { width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(251, 191, 36, 0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(251, 191, 36, 0.05)' };
-const userTextStyle = { fontSize: '14px', fontWeight: '800', color: '#a1a1aa' };
+const nameLinkStyle = { background: 'none', border: 'none', padding: 0, color: '#0070E0', fontSize: '15px', fontWeight: '700', cursor: 'pointer', textAlign: 'left', display: 'block' };
+const descTextStyle = { fontSize: '12px', color: '#6B7C93', fontWeight: '500', marginTop: 2 };
+const iconBoxStyle = { width: '40px', height: '40px', borderRadius: '12px', background: '#F0F7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E3E8EF' };
+const userTextStyle = { fontSize: '14px', fontWeight: '600', color: '#1A1F36' };
 
 const avatarCircleStyle = {
-    width: '24px',
-    height: '24px',
+    width: '28px',
+    height: '28px',
     borderRadius: '50%',
-    background: 'rgba(255, 255, 255, 0.03)',
+    background: '#F1F5F9',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '9px',
-    fontWeight: '900',
-    color: '#52525b',
-    border: '1px solid rgba(255, 255, 255, 0.05)'
+    fontSize: '11px',
+    fontWeight: '700',
+    color: '#6B7C93',
+    border: '1px solid #E3E8EF'
 };
 
 const viewBtnStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: 6,
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    padding: '6px 12px',
-    borderRadius: '6px',
-    fontSize: '10px',
-    fontWeight: '800',
-    cursor: 'pointer'
+    gap: 8,
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    padding: '8px 14px',
+    borderRadius: '10px',
+    fontSize: '12px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
 };
 
-const linksDropStyle = { marginTop: 10, background: 'rgba(0, 0, 0, 0.4)', borderRadius: '10px', padding: '10px', display: 'flex', flexDirection: 'column', gap: 6, border: '1px solid rgba(255, 255, 255, 0.2)', animation: 'fadeIn 0.2s' };
-const linkRowStyle = { display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255, 255, 255, 0.05)', padding: '6px 10px', borderRadius: '6px' };
-const currBadgeStyle = { fontSize: '12px', fontWeight: '900', color: '#fbbf24', minWidth: 24 };
-const linkPreviewStyle = { flex: 1, background: 'none', border: 'none', color: '#cbd5e1', fontSize: '12px', outline: 'none', fontFamily: 'monospace' };
-const copyIconBtnStyle = { background: 'none', border: 'none', padding: 4, color: '#cbd5e1', cursor: 'pointer', display: 'flex', alignItems: 'center' };
+const linksDropStyle = { marginTop: 12, background: '#F8FAFC', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: 8, border: '1px solid #E3E8EF', animation: 'fadeIn 0.2s' };
+const linkRowStyle = { display: 'flex', alignItems: 'center', gap: 10, background: '#FFFFFF', padding: '8px 12px', borderRadius: '8px', border: '1px solid #E3E8EF' };
+const currBadgeStyle = { fontSize: '12px', fontWeight: '800', color: '#0070E0', minWidth: 28 };
+const linkPreviewStyle = { flex: 1, background: 'none', border: 'none', color: '#4A5568', fontSize: '13px', outline: 'none', fontFamily: 'monospace' };
+const copyIconBtnStyle = { background: '#F1F5F9', border: 'none', padding: 6, borderRadius: 6, color: '#6B7C93', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.2s' };
 
 const statusLevelStyle = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 6,
-    padding: '4px 10px',
+    padding: '6px 12px',
     borderRadius: '20px',
     border: '1px solid',
     fontSize: '11px',
-    fontWeight: '600',
+    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
 };
 
-const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
+const dotStyle = { width: '6px', height: '6px', borderRadius: '50%' };
 
 const actionBtnStyle = {
-    width: '28px',
-    height: '28px',
-    borderRadius: '6px',
-    background: 'rgba(255, 255, 255, 0.02)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    width: '32px',
+    height: '32px',
+    borderRadius: '8px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
 };
 
 const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
-const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 0, 0, 0.8)", backdropFilter: 'blur(12px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalCardStyle = { background: "#050506", width: "480px", borderRadius: "24px", padding: '32px', border: '1px solid rgba(255, 255, 255, 0.19)', boxShadow: '0 32px 128px rgba(0, 0, 0, 0.8)' };
-const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' };
-const modalTitleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#a1a1aa', cursor: 'pointer' };
-const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
-const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '6px' };
-const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
-const modalInputStyle = { width: "100%", padding: "12px 14px", background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.15)', color: 'white', borderRadius: 10, fontSize: '13px', outline: 'none' };
-const checkboxWrapper = { display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 };
-const checkboxStyle = { accentColor: '#fbbf24', width: 14, height: 14 };
-const checkboxLabel = { color: '#71717a', fontSize: '12px', fontWeight: '700', cursor: 'pointer' };
-const modalFooterStyle = { display: "flex", justifyContent: "flex-end", gap: 12, marginTop: "8px" };
+const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 28, 100, 0.15)", backdropFilter: 'blur(8px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
+const modalCardStyle = { background: "#FFFFFF", width: "500px", borderRadius: "24px", padding: '40px', border: '1px solid #E3E8EF', boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.1)' };
+const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' };
+const modalTitleStyle = { fontSize: '24px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
+const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#6B7C93', cursor: 'pointer', padding: '4px' };
+const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '20px' };
+const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
+const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#4A5568', marginLeft: 4 };
+const modalInputStyle = { width: "100%", padding: "14px 16px", background: '#F8FAFC', border: '1px solid #E3E8EF', color: '#1A1F36', borderRadius: 12, fontSize: '15px', outline: 'none', transition: 'all 0.2s' };
+const checkboxWrapper = { display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 };
+const checkboxStyle = { accentColor: '#0070E0', width: 18, height: 18 };
+const checkboxLabel = { color: '#4A5568', fontSize: '14px', fontWeight: '600', cursor: 'pointer' };
+const modalFooterStyle = { display: "flex", justifyContent: "flex-end", gap: 12, marginTop: "12px" };
 
 const saveBtnStyle = {
-    padding: "12px 24px",
-    background: "#fbbf24",
-    color: '#000',
+    padding: "14px 28px",
+    background: "#0070E0",
+    color: '#FFF',
     border: "none",
-    fontWeight: "900",
-    borderRadius: 10,
+    fontWeight: "700",
+    borderRadius: 12,
     cursor: "pointer",
-    fontSize: '12px'
+    fontSize: '14px',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)'
 };
 
 
 const cancelBtnStyle = {
-    padding: "12px 24px",
-    background: 'rgba(255, 255, 255, 0.05)',
-    color: '#fff',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    borderRadius: 10,
+    padding: "14px 28px",
+    background: '#FFF',
+    color: '#4A5568',
+    border: '1px solid #E3E8EF',
+    borderRadius: 12,
     cursor: 'pointer',
-    fontSize: '12px',
-    fontWeight: '800'
+    fontSize: '14px',
+    fontWeight: '600'
 };
 
 const historyTableWrapStyle = { overflowX: 'auto', maxHeight: '50vh', marginTop: 8 };

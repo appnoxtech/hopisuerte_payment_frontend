@@ -320,20 +320,16 @@ function UniqueProductPaymentContent() {
 
             <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 10 }}>
 
-                {/* Header with Logo */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 20 }}>
-                    <Image
-                        src="/paysigur.png"
-                        alt="Paysigur"
-                        width={180}
-                        height={54}
-                        priority
-                        style={{ objectFit: 'contain' }}
-                    />
-                </div>
-
                 {/* Card */}
                 <div style={cardStyle}>
+                    <div style={{ marginBottom: 28, textAlign: 'center' }}>
+                        <h1 className="gradient-text" style={{ fontSize: '26px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+                            Complete Your Payment
+                        </h1>
+                        <p style={{ color: '#6B7C93', fontSize: '15px' }}>
+                            {product ? product.name : 'Secure Transaction'}
+                        </p>
+                    </div>
 
                     {!clientSecret ? (
 
@@ -467,122 +463,106 @@ export default function UniqueProductPaymentPage() {
 
 const mainStyle = {
     minHeight: '100vh',
-    background: '#000',
+    background: '#F7F9FC',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative'
-};
-
-const containerStyle = {
-    width: '100%',
-    maxWidth: 420,
-    zIndex: 2
+    position: 'relative',
+    fontFamily: '"Inter", sans-serif',
+    overflow: 'hidden'
 };
 
 const cardStyle = {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: 18,
-    padding: 24
-};
-
-const logoWrap = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-};
-
-const subtitleStyle = {
-    fontSize: 12,
-    color: '#71717a',
-    marginTop: 8,
-    letterSpacing: 1
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: 24,
+    padding: '40px',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
 };
 
 const labelStyle = {
-    fontSize: 13,
-    color: '#cbd5f5',
-    marginBottom: 6,
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#001c64',
+    marginBottom: 8,
     display: 'block'
-};
-
-const productTitle = {
-    fontSize: 18,
-    fontWeight: 700,
-    color: '#fff',
-    textAlign: 'center'
 };
 
 const inputStyle = {
     width: '100%',
-    padding: 12,
-    background: '#09090b',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: 10,
-    color: '#fff',
-    fontSize: 14,
-    outline: 'none'
+    padding: '12px 16px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: 12,
+    color: '#1A1F36',
+    fontSize: '15px',
+    outline: 'none',
+    transition: 'border-color 0.2s ease',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
 };
 
 const currencySymbol = {
     position: 'absolute',
-    left: 10,
+    left: 14,
     top: '50%',
     transform: 'translateY(-50%)',
-    color: '#facc15',
-    fontWeight: 700
+    color: '#6B7C93',
+    fontWeight: '600',
+    fontSize: '15px',
+    zIndex: 1
 };
 
 const submitStyle = {
     width: '100%',
-    marginTop: 6,
-    padding: 14,
-    background: '#facc15',
-    color: '#000',
+    marginTop: 12,
+    padding: '16px',
+    background: '#0070E0',
+    color: '#FFFFFF',
+    borderRadius: 12,
     border: 'none',
-    borderRadius: 10,
-    fontWeight: 700,
+    fontWeight: '600',
     cursor: 'pointer',
-    fontSize: 14
+    fontSize: '16px',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)'
 };
 
 const glowStyle = {
     position: 'absolute',
-    top: 0,
-    left: '50%',
-    transform: 'translateX(-50%)',
+    top: -150,
+    left: -150,
     width: 600,
-    height: 300,
-    background: 'rgba(250,204,21,0.12)',
+    height: 600,
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.08) 0%, rgba(247, 249, 252, 0) 70%)',
     borderRadius: '50%',
-    filter: 'blur(120px)'
+    zIndex: 1
 };
 
 const msgStyle = {
     textAlign: 'center',
-    color: '#94a3b8',
-    fontSize: 16,
-    fontWeight: 500,
+    color: '#001c64',
+    fontSize: 18,
+    fontWeight: 600,
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#000'
+    background: '#F7F9FC'
 };
 
 const backLinkStyle = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '6px',
-    color: '#a1a1aa',
+    gap: '8px',
+    color: '#6B7C93',
     textDecoration: 'none',
-    fontSize: '13px',
-    fontWeight: '700',
-    padding: '8px 12px',
-    background: 'rgba(255,255,255,0.03)',
-    borderRadius: '8px',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    fontSize: '14px',
+    fontWeight: '600',
+    padding: '10px 16px',
+    background: '#FFFFFF',
+    borderRadius: '12px',
+    border: '1px solid #E3E8EF',
     transition: 'all 0.2s ease',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
 };

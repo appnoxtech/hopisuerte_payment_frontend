@@ -49,18 +49,20 @@ export default function SuperAdminDashboard() {
     if (loading) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2.5px solid #0070E0', borderBottom: '2.5px solid #E2E8F0', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }
 
-    const StatCard = ({ title, value, unit = '', color = '#fbbf24', icon: Icon, extra = null }) => (
+    const StatCard = ({ title, value, unit = '', color = '#0070E0', icon: Icon, extra = null }) => (
         <div style={cardStyle}>
             <div style={cardHeaderStyle}>
-                <div style={{ ...cardLabelStyle, flex: 1 }}>{title}</div>
-                <Icon size={14} color={color} style={{ opacity: 0.6 }} />
+                <div style={cardLabelStyle}>{title}</div>
+                <div style={{ ...iconWrapperSmall, color: color, background: `${color}10` }}>
+                    <Icon size={14} />
+                </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: '8px' }}>
                 <div style={cardValueStyle}>
                     {unit && unit !== '%' && <span style={unitStyle}>{unit}</span>}
                     {value}
@@ -81,9 +83,9 @@ export default function SuperAdminDashboard() {
 
             {/* Matrix Stats */}
             <section style={statGridStyle}>
-                <StatCard title="Total Freelancers" value={stats?.total_users || 0} icon={Users} color="#6366f1" />
+                <StatCard title="Total Merchants" value={stats?.total_users || 0} icon={Users} color="#0070E0" />
                 <StatCard
-                    title="Total Amount"
+                    title="Gross Volume"
                     value={
                         displayCurrency === 'USD' ? (stats?.total_volume_usd || 0).toLocaleString() :
                             (displayCurrency === 'EUR' ? (stats?.total_volume_eur || 0).toLocaleString() :
@@ -104,46 +106,45 @@ export default function SuperAdminDashboard() {
                     }
                     unit={displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
                     icon={Globe}
-                    color="#10b981"
+                    color="#10B981"
                 />
-                <StatCard title="Active Transactions" value={stats?.total_transactions || 0} icon={Zap} color="#f59e0b" />
-                <StatCard title="Success Rate" value={stats?.success_rate || 0} unit="%" icon={TrendingUp} color="#fbbf24" />
+                <StatCard title="Active Transactions" value={stats?.total_transactions || 0} icon={Zap} color="#6366F1" />
+                <StatCard title="Platform Health" value={stats?.success_rate || 0} unit="%" icon={TrendingUp} color="#8B5CF6" />
             </section>
 
             <section style={mainGridStyle}>
-                {/* Control Nodes */}
-                <div style={nodesCardStyle}>
+                {/* Control Nodes */}                <div style={nodesCardStyle}>
                     <div style={sectionHeaderStyle}>
-                        <h3 style={sectionTitleStyle}>System Control Nodes</h3>
-                        <p style={sectionSubStyle}>Direct access to core infrastructure</p>
+                        <h3 style={sectionTitleStyle}>Management Terminals</h3>
+                        <p style={sectionSubStyle}>Administrative access to platform modules</p>
                     </div>
 
                     <div style={nodeListStyle}>
                         <Link href="/super-admin/users" style={nodeItemStyle}>
-                            <div style={nodeIconBox}><Users size={18} color="#fbbf24" /></div>
+                            <div style={{ ...nodeIconBox, background: '#F0F7FF', color: '#0070E0' }}><Users size={20} /></div>
                             <div style={{ flex: 1 }}>
-                                <div style={nodeNameStyle}>Freelancer Directory</div>
-                                <div style={nodeDescStyle}>Manage authorized freelancers</div>
+                                <div style={nodeNameStyle}>Merchants</div>
+                                <div style={nodeDescStyle}>Review and authenticate merchant accounts</div>
                             </div>
-                            <ArrowUpRight size={14} color="#52525b" />
+                            <ArrowUpRight size={16} color="#A0AEC0" />
                         </Link>
 
                         <Link href="/super-admin/payments" style={nodeItemStyle}>
-                            <div style={nodeIconBox}><CreditCard size={18} color="#10b981" /></div>
+                            <div style={{ ...nodeIconBox, background: '#ECFDF5', color: '#10B981' }}><CreditCard size={20} /></div>
                             <div style={{ flex: 1 }}>
-                                <div style={nodeNameStyle}>Transactions</div>
-                                <div style={nodeDescStyle}>Overview of all transactions</div>
+                                <div style={nodeNameStyle}>Global Transactions</div>
+                                <div style={nodeDescStyle}>Complete real-time payment ledger</div>
                             </div>
-                            <ArrowUpRight size={14} color="#52525b" />
+                            <ArrowUpRight size={16} color="#A0AEC0" />
                         </Link>
 
                         <Link href="/super-admin/products" style={nodeItemStyle}>
-                            <div style={nodeIconBox}><BarChart3 size={18} color="#6366f1" /></div>
+                            <div style={{ ...nodeIconBox, background: '#F5F3FF', color: '#6366F1' }}><Activity size={20} /></div>
                             <div style={{ flex: 1 }}>
-                                <div style={nodeNameStyle}>Products</div>
-                                <div style={nodeDescStyle}>Manage all products</div>
+                                <div style={nodeNameStyle}>Inventory & Services</div>
+                                <div style={nodeDescStyle}>Global directory of merchant listings</div>
                             </div>
-                            <ArrowUpRight size={14} color="#52525b" />
+                            <ArrowUpRight size={16} color="#A0AEC0" />
                         </Link>
                     </div>
                 </div>
@@ -192,32 +193,24 @@ export default function SuperAdminDashboard() {
 const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px',
+    gap: '32px',
     padding: '10px 0',
     animation: 'fadeIn 0.5s ease-out'
 };
 
-const headerSectionStyle = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '8px'
-};
-
 const titleStyle = {
-    fontSize: '18px',
-    fontWeight: '900',
-    color: '#fff',
-    letterSpacing: '-0.02em'
+    fontSize: '24px',
+    fontWeight: '800',
+    color: '#001C64',
+    letterSpacing: '-0.02em',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const subtitleStyle = {
-    fontSize: '11px',
-    color: '#52525b',
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    marginTop: '2px'
+    fontSize: '14px',
+    color: '#6B7C93',
+    fontWeight: '500',
+    marginTop: '4px'
 };
 
 const statGridStyle = {
@@ -227,15 +220,25 @@ const statGridStyle = {
 };
 
 const cardStyle = {
-    background: 'rgba(15,15,20,0.4)',
-    border: '1px solid rgba(255,255,255,0.2)',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
     borderRadius: '16px',
-    padding: '20px',
+    padding: '24px',
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
     position: 'relative',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
+};
+
+const iconWrapperSmall = {
+    width: '32px',
+    height: '32px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
 };
 
 const cardHeaderStyle = {
@@ -245,29 +248,29 @@ const cardHeaderStyle = {
 };
 
 const cardLabelStyle = {
-    fontSize: '10px',
-    color: '#52525b',
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    fontSize: '13px',
+    color: '#6B7C93',
+    fontWeight: '600',
+    letterSpacing: '0.01em'
 };
 
 const cardValueStyle = {
-    fontSize: '22px',
-    fontWeight: '900',
-    color: '#fff',
+    fontSize: '28px',
+    fontWeight: '800',
+    color: '#001C64',
     display: 'flex',
     alignItems: 'baseline',
-    gap: '4px'
+    gap: '4px',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const unitStyle = {
-    fontSize: '22px',
+    fontSize: '20px',
     fontWeight: '600',
-    color: '#fff',
+    color: '#6B7C93',
     display: 'inline-flex',
     alignItems: 'baseline',
-    marginLeft: '2px'
+    marginRight: '4px'
 };
 
 const cardFooterStyle = {
@@ -288,29 +291,29 @@ const mainGridStyle = {
 };
 
 const nodesCardStyle = {
-    background: 'rgba(15,15,20,0.4)',
+    background: '#FFFFFF',
     borderRadius: '20px',
-    padding: '24px',
-    border: '1px solid rgba(255,255,255,0.2)',
+    padding: '32px',
+    border: '1px solid #E3E8EF',
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px'
+    gap: '32px',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
 };
 
 const sectionHeaderStyle = { display: 'flex', flexDirection: 'column', gap: '2px' };
 
 const sectionTitleStyle = {
-    fontSize: '15px',
-    fontWeight: '900',
-    color: '#fff'
+    fontSize: '18px',
+    fontWeight: '800',
+    color: '#001C64',
+    fontFamily: "'Outfit', sans-serif"
 };
 
 const sectionSubStyle = {
-    fontSize: '11px',
-    color: '#52525b',
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    fontSize: '14px',
+    color: '#6B7C93',
+    fontWeight: '500'
 };
 
 const nodeListStyle = {
@@ -322,36 +325,36 @@ const nodeListStyle = {
 const nodeItemStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
-    padding: '16px',
-    background: 'rgba(255,255,255,0.01)',
-    borderRadius: '12px',
-    border: '1px solid rgba(255,255,255,0.2)',
+    gap: '20px',
+    padding: '20px',
+    background: '#F7F9FC',
+    borderRadius: '16px',
+    border: '1px solid #E3E8EF',
     textDecoration: 'none',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
 };
 
 const nodeIconBox = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '10px',
-    background: 'rgba(255,255,255,0.02)',
+    width: '48px',
+    height: '48px',
+    borderRadius: '12px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255,255,255,0.2)'
+    border: '1px solid rgba(0,0,0,0.05)'
 };
 
 const nodeNameStyle = {
-    fontSize: '13px',
-    fontWeight: '800',
-    color: '#fff',
-    marginBottom: '2px'
+    fontSize: '15px',
+    fontWeight: '700',
+    color: '#1A1F36',
+    marginBottom: '4px'
 };
 
 const nodeDescStyle = {
-    fontSize: '11px',
-    color: '#52525b'
+    fontSize: '13px',
+    color: '#6B7C93',
+    fontWeight: '500'
 };
 
 const healthCardStyle = {

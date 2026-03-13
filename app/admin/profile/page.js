@@ -73,7 +73,7 @@ export default function ProfileSettings() {
 
     if (loading) return (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+            <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
         </div>
     );
 
@@ -131,7 +131,7 @@ export default function ProfileSettings() {
                             </div>
 
                             <div style={inputScopeStyle}>
-                                <label style={labelStyle}>Freelancer Slug (Public URL)</label>
+                                <label style={labelStyle}>Merchant Slug (Public URL)</label>
                                 <div style={inputWrapperStyle}>
                                     <Fingerprint size={14} style={inputIconStyle} />
                                     <input
@@ -200,19 +200,17 @@ const headerWrapperStyle = {
 };
 
 const titleStyle = {
-    fontSize: '18px',
-    fontWeight: '900',
-    color: '#fff',
+    fontSize: '24px',
+    fontWeight: '800',
+    color: '#001c64',
     letterSpacing: '-0.02em'
 };
 
 const subtitleStyle = {
-    fontSize: '11px',
-    color: '#52525b',
-    marginTop: '2px',
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    fontSize: '13px',
+    color: '#6B7C93',
+    marginTop: '4px',
+    fontWeight: '500'
 };
 
 const idBadgeStyle = {
@@ -244,50 +242,50 @@ const messageBoxStyle = {
 const formSectionStyle = { marginTop: '4px' };
 
 const formCardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    backdropFilter: 'blur(32px)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    borderRadius: '16px',
-    padding: '24px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '24px',
+    padding: '32px',
     position: 'relative',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
 };
 
 const formHeaderStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: '20px',
     marginBottom: '32px',
-    borderBottom: '1px solid rgba(255,255,255,0.2)',
+    borderBottom: '1px solid #E3E8EF',
     paddingBottom: '24px'
 };
 
 const avatarCircleStyle = {
-    width: '48px',
-    height: '48px',
-    borderRadius: '12px',
-    background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.02))',
-    border: '1px solid rgba(251, 191, 36, 0.2)',
-    color: '#fbbf24',
+    width: '56px',
+    height: '56px',
+    borderRadius: '16px',
+    background: '#F0F7FF',
+    border: '1px solid #D0E2FF',
+    color: '#0070E0',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '20px',
-    fontWeight: '900'
+    fontSize: '24px',
+    fontWeight: '700'
 };
 
 const formTitleStyle = {
-    fontSize: '14px',
-    fontWeight: '800',
-    color: '#fff',
+    fontSize: '18px',
+    fontWeight: '700',
+    color: '#1A1F36',
     margin: 0
 };
 
 const formSubStyle = {
-    fontSize: '11px',
-    color: '#52525b',
-    marginTop: '2px',
-    fontWeight: '800'
+    fontSize: '14px',
+    color: '#6B7C93',
+    marginTop: '4px',
+    fontWeight: '500'
 };
 
 const formStyle = {
@@ -309,11 +307,9 @@ const inputScopeStyle = {
 };
 
 const labelStyle = {
-    fontSize: '10px',
-    fontWeight: '900',
-    color: '#a1a1aa',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#4A5568'
 };
 
 const inputWrapperStyle = {
@@ -330,24 +326,23 @@ const inputIconStyle = {
 
 const inputStyle = {
     width: '100%',
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '8px',
-    padding: '10px 12px 10px 36px',
-    color: '#fff',
-    fontSize: '13px',
-    fontWeight: '600',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '12px',
+    padding: '12px 12px 12px 40px',
+    color: '#1A1F36',
+    fontSize: '14px',
+    fontWeight: '500',
     outline: 'none',
     transition: 'all 0.2s ease'
 };
 
 const actionScopeStyle = {
-    paddingTop: '24px',
-    borderTop: '1px solid rgba(255,255,255,0.2)',
+    paddingTop: '32px',
+    borderTop: '1px solid #E3E8EF',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    flexWrap: 'wrap',
     gap: '16px'
 };
 
@@ -361,13 +356,13 @@ const disclaimerStyle = {
 };
 
 const submitButtonStyle = {
-    background: '#fbbf24',
-    color: '#000',
-    padding: '10px 18px',
-    borderRadius: '10px',
+    background: '#0070E0',
+    color: '#FFF',
+    padding: '14px 28px',
+    borderRadius: '14px',
     border: 'none',
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: '600',
-    boxShadow: '0 4px 15px rgba(251, 191, 36, 0.15)',
-    transition: 'transform 0.2s ease',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
+    transition: 'all 0.2s ease',
 };

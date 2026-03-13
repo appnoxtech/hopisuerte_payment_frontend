@@ -125,7 +125,7 @@ export default function CustomDropdown({
                 </div>
             )}
 
-            <div style={optionsListStyle}>
+            <div style={optionsListStyle} className="custom-dropdown-list">
                 {filteredOptions.length > 0 ? (
                     filteredOptions.map((opt, index) => (
                         <div
@@ -133,8 +133,8 @@ export default function CustomDropdown({
                             onClick={() => handleSelect(opt)}
                             style={{
                                 ...optionStyle,
-                                background: value === opt.value ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
-                                color: value === opt.value ? '#fbbf24' : '#fff',
+                                background: value === opt.value ? '#F0F7FF' : 'transparent',
+                                color: value === opt.value ? '#0070E0' : '#1A1F36',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '10px'
@@ -168,11 +168,11 @@ export default function CustomDropdown({
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
                     ...toggleStyle,
-                    borderColor: isOpen ? '#facc15' : 'rgba(255, 255, 255, 0.2)',
+                    borderColor: isOpen ? '#0070E0' : '#E2E8F0',
                 }}
             >
                 <div style={{
-                    color: selectedOption ? '#fff' : '#71717a',
+                    color: selectedOption ? '#1A1F36' : '#71717a',
                     fontSize: 14,
                     display: 'flex',
                     alignItems: 'center',
@@ -214,21 +214,22 @@ const toggleStyle = {
     justifyContent: 'space-between',
     width: '100%',
     padding: '10px 14px',
-    background: '#09090b',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    background: '#FFFFFF',
+    border: '1px solid #E2E8F0',
     borderRadius: 8,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    userSelect: 'none'
+    userSelect: 'none',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
 };
 
 const menuWrapperStyle = {
     position: 'absolute',
-    background: '#121214',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: 10,
+    background: '#FFFFFF',
+    border: '1px solid #E2E8F0',
+    borderRadius: 12,
     zIndex: 9999,
-    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)',
+    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
@@ -238,7 +239,7 @@ const searchContainerStyle = {
     display: 'flex',
     alignItems: 'center',
     padding: '10px 14px',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+    borderBottom: '1px solid #F1F5F9',
     gap: 8,
     flexShrink: 0
 };
@@ -248,20 +249,26 @@ const searchInputStyle = {
     background: 'transparent',
     border: 'none',
     outline: 'none',
-    color: '#fff',
+    color: '#1A1F36',
     fontSize: 14,
     width: '100%'
 };
 
-const optionsListStyle = { overflowY: 'auto', padding: '4px', flex: 1 };
+const optionsListStyle = { 
+    overflowY: 'auto', 
+    padding: '6px', 
+    flex: 1,
+    scrollbarGutter: 'stable',
+    minHeight: '50px'
+};
 const optionStyle = {
     padding: '10px 12px',
     fontSize: 13,
-    borderRadius: 6,
+    borderRadius: 8,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     fontWeight: '600',
     whiteSpace: 'nowrap'
 };
 
-const noResultsStyle = { padding: '16px', textAlign: 'center', color: '#a1a1aa', fontSize: 13 };
+const noResultsStyle = { padding: '16px', textAlign: 'center', color: '#64748B', fontSize: 13 };

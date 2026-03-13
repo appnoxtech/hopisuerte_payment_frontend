@@ -98,7 +98,7 @@ export default function ReportsPage() {
                 {/* Export Controls */}
                 <div style={cardStyle}>
                     <div style={cardHeaderStyle}>
-                        <div style={iconWrapStyle}><Filter size={18} color="#fbbf24" /></div>
+                        <div style={iconWrapStyle}><Filter size={20} color="#0070E0" /></div>
                         <div>
                             <h3 style={cardTitleStyle}>Report Generation</h3>
                             <p style={cardDescStyle}>Configure reporting parameters for your data export.</p>
@@ -128,18 +128,18 @@ export default function ReportsPage() {
                     <div style={btnGroupStyle}>
                         <button
                             onClick={() => handleDownload('csv')}
-                            style={{ ...btnStyle, background: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.3)' }}
+                            style={{ ...btnStyle, background: '#F0F7FF', color: '#0070E0', border: '1px solid #0070E0' }}
                             disabled={loading}
                         >
-                            {loading ? <Loader2 size={16} className="spin" /> : <FileText size={16} />}
+                            {loading ? <Loader2 size={18} className="spin" /> : <FileText size={18} />}
                             Download CSV
                         </button>
                         <button
                             onClick={() => handleDownload('pdf')}
-                            style={{ ...btnStyle, background: '#fbbf24', color: '#000' }}
+                            style={{ ...btnStyle, background: '#0070E0', color: '#FFF' }}
                             disabled={loading}
                         >
-                            {loading ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+                            {loading ? <Loader2 size={18} className="spin" /> : <Download size={18} />}
                             Export PDF
                         </button>
                     </div>
@@ -163,14 +163,14 @@ export default function ReportsPage() {
                         ) : (
                             payments.map((p) => (
                                 <div key={p.id} style={activityItemStyle}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                        {p.status === 'success' ? <CheckCircle2 size={14} color="#10b981" /> : (p.status === 'failed' ? <XCircle size={14} color="#f43f5e" /> : <Clock size={14} color="#fbbf24" />)}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                                        {p.status === 'success' ? <CheckCircle2 size={16} color="#10B981" /> : (p.status === 'failed' ? <XCircle size={16} color="#EF4444" /> : <Clock size={16} color="#F59E0B" />)}
                                         <div style={{ overflow: 'hidden' }}>
                                             <div style={primaryTextStyle}>{p.customer_name}</div>
                                             <div style={secondaryTextStyle}>{formatLocalTime(p.created_at)}</div>
                                         </div>
                                     </div>
-                                    <div style={amountValueStyle}><span style={{ fontSize: 9, fontWeight: '800', color: '#52525b' }}>{p.currency}</span>{p.amount} </div>
+                                    <div style={amountValueStyle}><span style={{ fontSize: 11, fontWeight: '700', color: '#6B7C93', marginRight: 4 }}>{p.currency}</span>{p.amount} </div>
                                 </div>
                             ))
                         )}
@@ -188,72 +188,74 @@ export default function ReportsPage() {
 
 const pageStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease' };
 const headerStyle = { marginBottom: '8px' };
-const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const titleStyle = { fontSize: '24px', fontWeight: '800', color: '#001c64', letterSpacing: '-0.02em' };
+const subtitleStyle = { fontSize: '13px', color: '#6B7C93', fontWeight: '500' };
 
-const mainGridStyle = { display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px', alignItems: 'start' };
+const mainGridStyle = { display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '32px', alignItems: 'start' };
 
 const cardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    backdropFilter: 'blur(32px)',
-    borderRadius: '16px',
-    padding: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    background: '#FFFFFF',
+    borderRadius: '24px',
+    padding: '32px',
+    border: '1px solid #E3E8EF',
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px'
+    gap: '32px',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
 };
 
-const cardHeaderStyle = { display: 'flex', gap: '16px', alignItems: 'center' };
+const cardHeaderStyle = { display: 'flex', gap: '20px', alignItems: 'center' };
 const iconWrapStyle = {
-    width: '42px',
-    height: '42px',
-    borderRadius: '12px',
-    background: 'rgba(255, 255, 255, 0.02)',
+    width: '48px',
+    height: '48px',
+    borderRadius: '14px',
+    background: '#F0F7FF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    border: '1px solid #E3E8EF',
     flexShrink: 0
 };
 
-const cardTitleStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', margin: 0 };
-const cardDescStyle = { fontSize: '11px', color: '#52525b', margin: '4px 0 0', fontWeight: '800' };
+const cardTitleStyle = { fontSize: '18px', fontWeight: '700', color: '#1A1F36', margin: 0 };
+const cardDescStyle = { fontSize: '14px', color: '#6B7C93', margin: '4px 0 0', fontWeight: '500' };
 
-const controlsGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' };
-const inputScopeStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
-const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#a1a1aa', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const controlsGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' };
+const inputScopeStyle = { display: 'flex', flexDirection: 'column', gap: '10px' };
+const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#4A5568' };
 
 const btnGroupStyle = { display: 'flex', gap: '12px' };
 const btnStyle = {
     flex: 1,
-    padding: '12px',
-    borderRadius: '10px',
+    padding: '16px',
+    borderRadius: '14px',
     border: 'none',
-    fontWeight: '900',
-    fontSize: '14px',
+    fontWeight: '700',
+    fontSize: '15px',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '8px',
-    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+    gap: '10px',
+    transition: 'all 0.2s',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.1)'
 };
 
-const activityListStyle = { display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '400px', overflowY: 'auto' };
+const activityListStyle = { display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto', paddingRight: '8px' };
 const activityItemStyle = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '12px',
-    background: 'rgba(255,255,255,0.02)',
-    borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.2)'
+    padding: '16px',
+    background: '#F8FAFC',
+    borderRadius: '16px',
+    border: '1px solid #E3E8EF',
+    transition: 'all 0.2s'
 };
 
-const primaryTextStyle = { fontSize: '14px', fontWeight: '800', color: '#fff' };
-const secondaryTextStyle = { fontSize: '12px', color: '#7f7f88ff', fontWeight: '600' };
-const amountValueStyle = { fontSize: '14px', fontWeight: '900', color: '#fff' };
+const primaryTextStyle = { fontSize: '15px', fontWeight: '700', color: '#1A1F36' };
+const secondaryTextStyle = { fontSize: '13px', color: '#6B7C93', fontWeight: '500' };
+const amountValueStyle = { fontSize: '16px', fontWeight: '700', color: '#1A1F36' };
 
 const loadingWrapStyle = { padding: '40px', display: 'flex', justifyContent: 'center' };
 const emptyTextStyle = { padding: '40px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };

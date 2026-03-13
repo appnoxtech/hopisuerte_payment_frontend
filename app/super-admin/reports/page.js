@@ -23,8 +23,8 @@ export default function SuperAdminReportsPage() {
     const { showToast } = useToast();
     const [month, setMonth] = useState('');
     const [year, setYear] = useState(new Date().getFullYear().toString());
-    const [freelancerId, setFreelancerId] = useState('');
-    const [freelancers, setFreelancers] = useState([]);
+    const [merchantId, setMerchantId] = useState('');
+    const [merchants, setMerchants] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const years = Array.from({ length: 5 }, (_, i) => {
@@ -48,15 +48,15 @@ export default function SuperAdminReportsPage() {
     ];
 
     useEffect(() => {
-        const fetchFreelancers = async () => {
+        const fetchMerchants = async () => {
             try {
                 const response = await api.get('/super-admin/users');
-                setFreelancers(response.data);
+                setMerchants(response.data);
             } catch (error) {
                 showToast('Registry sync failed', 'error');
             }
         };
-        fetchFreelancers();
+        fetchMerchants();
     }, [showToast]);
 
     const handleDownload = async (format = 'csv') => {
@@ -67,7 +67,7 @@ export default function SuperAdminReportsPage() {
             params.append('format', format);
             if (month) params.append('month', month);
             if (year) params.append('year', year);
-            if (freelancerId) params.append('freelancer_id', freelancerId);
+            if (merchantId) params.append('merchant_id', merchantId);
 
             const token = typeof window !== 'undefined' ? localStorage.getItem('super_admin_token') : '';
             const response = await api.get(`/super-admin/export-report?${params.toString()}`, {
@@ -79,8 +79,8 @@ export default function SuperAdminReportsPage() {
             const link = document.createElement('a');
             link.href = url;
 
-            const selectedFreelancer = freelancers.find(f => f.id.toString() === freelancerId);
-            const nameSuf = selectedFreelancer ? `_${selectedFreelancer.name.replace(/\s+/g, '_')}` : '';
+            const selectedMerchant = merchants.find(f => f.id.toString() === merchantId);
+            const nameSuf = selectedMerchant ? `_${selectedMerchant.name.replace(/\s+/g, '_')}` : '';
             const dateStr = month ? `${month}-${year}` : year;
             const extension = format === 'csv' ? 'csv' : 'pdf';
             link.setAttribute('download', `platform_report${nameSuf}_${dateStr}.${extension}`);
@@ -103,8 +103,8 @@ export default function SuperAdminReportsPage() {
         <div style={pageStyle}>
             <header style={headerStyle}>
                 <div>
-                    <h1 style={titleStyle}>Reports and Insights</h1>
-                    {/* <p style={subtitleStyle}>Global intelligence and parameter-based ledger exports</p> */}
+                    <h1 style={titleStyle}>Reports & Insights</h1>
+                    <p style={subtitleStyle}>Analyze platform performance and export financial ledgers</p>
                 </div>
             </header>
 
@@ -113,25 +113,25 @@ export default function SuperAdminReportsPage() {
                 <div style={cardStyle}>
                     <div style={cardHeaderStyle}>
                         <div style={iconWrapStyle}>
-                            <Globe size={18} color="#fbbf24" />
+                            <Globe size={20} color="#0070E0" />
                         </div>
                         <div style={{ flex: 1 }}>
                             <h3 style={cardTitleStyle}>Full System Review</h3>
-                            <p style={cardDescStyle}>Download filtered transaction records.</p>
+                            <p style={cardDescStyle}>Generate and download filtered transaction records for all platform activities.</p>
                         </div>
                     </div>
 
                     <div style={formGridStyle}>
                         {/* Merchant Search Dropdown */}
                         <div style={fieldStyle}>
-                            <label style={labelStyle}>Select Freelancer</label>
+                            <label style={labelStyle}>Select Merchant</label>
                             <CustomDropdown
                                 options={[
-                                    { label: 'All Freelancer Accounts', value: '' },
-                                    ...freelancers.map(f => ({ label: `${f.name} (${f.email})`, value: f.id.toString() }))
+                                    { label: 'All Merchant Accounts', value: '' },
+                                    ...merchants.map(f => ({ label: `${f.name} (${f.email})`, value: f.id.toString() }))
                                 ]}
-                                value={freelancerId}
-                                onChange={(val) => setFreelancerId(val)}
+                                value={merchantId}
+                                onChange={(val) => setMerchantId(val)}
                                 showSearch={true}
                                 placeholder="Search IDs..."
                             />
@@ -163,33 +163,29 @@ export default function SuperAdminReportsPage() {
                     </div>
 
                     <div style={footerActionStyle}>
-                        {/* <p style={auditInfoStyle}>
-                            {freelancerId ? `Auditing Hub: ${freelancers.find(f => f.id.toString() === freelancerId)?.name}` : 'Auditing Platform-Wide Intelligence'}
-                            {month ? ` • ${months.find(m => m.value === month)?.label} ${year}` : ` • Cycle ${year}`}
-                        </p> */}
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button onClick={() => handleDownload('csv')} style={{ ...btnStyle, flex: 1, background: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.3)' }} disabled={loading}>
+                        <div style={{ display: 'flex', gap: '16px' }}>
+                            <button onClick={() => handleDownload('csv')} style={{ ...btnStyle, flex: 1, background: '#F0F7FF', color: '#0070E0', border: '1px solid #0070E0' }} disabled={loading}>
                                 {loading ? (
                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                                        <div style={{ ...spinnerStyle, borderTopColor: '#fbbf24', borderBottomColor: 'transparent', width: 14, height: 14 }} />
+                                        <div style={{ ...spinnerStyle, borderTopColor: '#0070E0', width: 14, height: 14 }} />
                                         <span>Processing...</span>
                                     </div>
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-                                        <FileText size={14} />
+                                        <FileText size={16} />
                                         <span>Download CSV</span>
                                     </div>
                                 )}
                             </button>
-                            <button onClick={() => handleDownload('pdf')} style={{ ...btnStyle, flex: 1 }} disabled={loading}>
+                            <button onClick={() => handleDownload('pdf')} style={{ ...btnStyle, flex: 1, background: '#0070E0', color: '#FFF' }} disabled={loading}>
                                 {loading ? (
                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                                        <div style={{ ...spinnerStyle, borderTopColor: '#000', borderBottomColor: 'transparent', width: 14, height: 14 }} />
+                                        <div style={{ ...spinnerStyle, borderTopColor: '#FFF', width: 14, height: 14 }} />
                                         <span>Processing...</span>
                                     </div>
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-                                        <Download size={14} />
+                                        <Download size={16} />
                                         <span>Export PDF</span>
                                     </div>
                                 )}
@@ -230,58 +226,58 @@ export default function SuperAdminReportsPage() {
 // STYLES
 // ──────────────────────────────────────────────
 
-const pageStyle = { display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.4s ease' };
+const pageStyle = { display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fadeIn 0.4s ease' };
 const headerStyle = { marginBottom: '8px' };
-const titleStyle = { fontSize: '18px', fontWeight: '900', color: '#fff', letterSpacing: '-0.02em' };
-const subtitleStyle = { fontSize: '11px', color: '#52525b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const titleStyle = { fontSize: '24px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
+const subtitleStyle = { fontSize: '14px', color: '#6B7C93', fontWeight: '500', marginTop: '4px' };
 
-const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px' };
+const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))', gap: '24px' };
 const cardStyle = {
-    background: 'rgba(15, 15, 20, 0.4)',
-    borderRadius: '20px',
-    padding: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    background: '#FFFFFF',
+    borderRadius: '24px',
+    padding: '32px',
+    border: '1px solid #E3E8EF',
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px'
+    gap: '32px',
+    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
 };
 
-const cardHeaderStyle = { display: 'flex', alignItems: 'flex-start', gap: '16px' };
+const cardHeaderStyle = { display: 'flex', alignItems: 'flex-start', gap: '20px' };
 const iconWrapStyle = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '10px',
-    background: 'rgba(255, 255, 255, 0.02)',
+    width: '48px',
+    height: '48px',
+    borderRadius: '14px',
+    background: '#F0F7FF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    border: '1px solid #E3E8EF',
     flexShrink: 0
 };
 
-const cardTitleStyle = { fontSize: '14px', fontWeight: '800', color: '#fff', marginBottom: '2px' };
-const cardDescStyle = { fontSize: '11px', color: '#52525b', lineHeight: '1.5', fontWeight: '800' };
+const cardTitleStyle = { fontSize: '18px', fontWeight: '700', color: '#1A1F36', marginBottom: '4px', fontFamily: "'Outfit', sans-serif" };
+const cardDescStyle = { fontSize: '14px', color: '#6B7C93', lineHeight: '1.6', fontWeight: '500' };
 
-const formGridStyle = { display: 'flex', flexDirection: 'column', gap: '16px' };
-const fieldStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
-const labelStyle = { fontSize: '10px', fontWeight: '900', color: '#3f3f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginLeft: 4 };
+const formGridStyle = { display: 'flex', flexDirection: 'column', gap: '20px' };
+const fieldStyle = { display: 'flex', flexDirection: 'column', gap: '10px' };
+const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#4A5568', marginLeft: 4 };
 
-const rowStyle = { display: 'flex', gap: '16px' };
+const rowStyle = { display: 'flex', gap: '20px' };
 
 const footerActionStyle = { display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' };
 const auditInfoStyle = { fontSize: '10px', color: '#3f3f46', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'center' };
 
 const btnStyle = {
     width: '100%',
-    padding: '14px',
-    background: '#fbbf24',
+    padding: '16px',
     border: 'none',
-    borderRadius: '12px',
-    color: '#000',
-    fontWeight: '900',
-    fontSize: '14px',
+    borderRadius: '14px',
+    fontWeight: '700',
+    fontSize: '15px',
     cursor: 'pointer',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
+    boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.1)'
 };
 
 const placeholderContent = {
@@ -325,10 +321,10 @@ const infoBoxStyle = {
 };
 
 const spinnerStyle = {
-    width: '14px',
-    height: '14px',
-    border: '2px solid rgba(0,0,0,0.1)',
-    borderTop: '2px solid #000',
+    width: '16px',
+    height: '16px',
+    border: '2px solid rgba(0,0,0,0.05)',
+    borderTop: '2px solid currentColor',
     borderRadius: '50%',
     animation: 'spin 1s linear infinite'
 };

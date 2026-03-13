@@ -55,8 +55,8 @@ export default function AdminLayout({ children }) {
 
     if (loading) {
         return (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#050506" }}>
-                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #fbbf24', borderBottom: '2px solid rgba(251, 191, 36, 0.1)', animation: 'spin 1s linear infinite' }} />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#F7F9FC" }}>
+                <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }
@@ -102,8 +102,8 @@ export default function AdminLayout({ children }) {
                         <Image
                             src="/paysigur.png"
                             alt="Paysigur"
-                            width={80}
-                            height={48}
+                            width={120}
+                            height={72}
                             priority
                             style={{ objectFit: 'contain' }}
                         />
@@ -122,9 +122,9 @@ export default function AdminLayout({ children }) {
                                 href={item.href}
                                 style={{
                                     ...navItemStyle,
-                                    background: active ? 'rgba(251, 191, 36, 0.12)' : 'transparent',
-                                    color: active ? '#fbbf24' : '#a1a1aa',
-                                    border: `1px solid ${active ? 'rgba(251, 191, 36, 0.2)' : 'transparent'}`,
+                                    background: active ? '#0070E0' : 'transparent',
+                                    color: active ? '#FFF' : 'rgba(255, 255, 255, 0.6)',
+                                    border: `1px solid ${active ? '#0070E0' : 'transparent'}`,
                                 }}
                             >
                                 <Icon
@@ -163,8 +163,8 @@ export default function AdminLayout({ children }) {
                             {menuItems.find(l => l.href === pathname)?.name || 'Command Center'}
                         </h2>
                         <div style={breadcrumbStyle}>
-                            <span>Control Panel</span>
-                            <span style={{ color: '#52525b' }}>/</span>
+                            <span>Merchant Portal</span>
+                            <span style={{ color: '#94A3B8' }}>/</span>
                             <span>{menuItems.find(l => l.href === pathname)?.name || 'Home'}</span>
                         </div>
                     </div>
@@ -183,8 +183,8 @@ export default function AdminLayout({ children }) {
 
 const layoutStyle = {
     minHeight: '100vh',
-    background: '#050506',
-    color: '#fff',
+    background: '#F7F9FC',
+    color: '#1A1F36',
     display: 'flex',
     overflow: 'hidden',
     position: 'relative',
@@ -197,21 +197,21 @@ const overlayGlowStyle = {
     right: -200,
     width: 600,
     height: 600,
-    background: 'radial-gradient(circle, rgba(251, 191, 36, 0.03) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.03) 0%, transparent 70%)',
     pointerEvents: 'none',
     zIndex: 0
 };
 
 const sidebarStyle = {
     width: '260px',
-    background: '#0a0a0c',
-    borderRight: '1px solid rgba(255,255,255,0.2)',
+    background: '#1A1F36',
+    borderRight: '1px solid rgba(255,255,255,0.1)',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
     height: '100vh',
     zIndex: 50,
-    boxShadow: '10px 0 30px rgba(0,0,0,0.5)'
+    boxShadow: '4px 0 24px rgba(0,0,0,0.1)'
 };
 
 const sidebarHeaderStyle = {
@@ -227,7 +227,7 @@ const logoWrapperStyle = {
 
 const navDividerStyle = {
     height: '1px',
-    background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.05) 50%, transparent)',
+    background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.1) 50%, transparent)',
     margin: '0 24px 24px'
 };
 
@@ -258,16 +258,15 @@ const activeIndicatorStyle = {
     left: '0',
     top: '25%',
     bottom: '25%',
-    width: '2px',
-    background: '#fbbf24',
-    borderRadius: '0 4px 4px 0',
-    boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
+    width: '3px',
+    background: '#FFF',
+    borderRadius: '0 4px 4px 0'
 };
 
 const userFooterStyle = {
-    padding: '20px',
-    borderTop: '1px solid rgba(255,255,255,0.2)',
-    background: 'rgba(255,255,255,0.01)'
+    padding: '24px',
+    borderTop: '1px solid rgba(255,255,255,0.1)',
+    background: 'rgba(0,0,0,0.1)'
 };
 
 const userBriefStyle = {
@@ -278,17 +277,17 @@ const userBriefStyle = {
 };
 
 const userAvatarStyle = {
-    width: '36px',
-    height: '36px',
-    borderRadius: '10px',
-    background: 'linear-gradient(135deg, #18181b, #09090b)',
-    border: '1px solid rgba(251, 191, 36, 0.2)',
-    color: '#fbbf24',
+    width: '40px',
+    height: '40px',
+    borderRadius: '12px',
+    background: '#0070E0',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    color: '#FFF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: '800',
-    fontSize: '14px'
+    fontWeight: '700',
+    fontSize: '16px'
 };
 
 const userDetailsStyle = {
@@ -306,9 +305,9 @@ const userNameStyle = {
 };
 
 const userBadgeStyle = {
-    fontSize: '10px',
-    color: '#71717a',
-    fontWeight: '600',
+    fontSize: '11px',
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontWeight: '500',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
 };
@@ -319,15 +318,16 @@ const logoutBtnStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
-    padding: '10px',
-    background: '#fbbf24',
+    padding: '12px',
+    background: '#0070E0',
     border: 'none',
-    borderRadius: '8px',
-    color: '#000',
-    fontSize: '12px',
-    fontWeight: '700',
+    borderRadius: '12px',
+    color: '#FFF',
+    fontSize: '14px',
+    fontWeight: '600',
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
 };
 
 const mainContentAreaStyle = {
@@ -339,23 +339,22 @@ const mainContentAreaStyle = {
 };
 
 const topHeaderStyle = {
-    height: '64px',
+    height: '72px',
     padding: '0 32px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    background: 'rgba(5, 5, 6, 0.8)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid rgba(255,255,255,0.2)',
+    background: '#FFFFFF',
+    borderBottom: '1px solid #E3E8EF',
     position: 'sticky',
     top: 0,
     zIndex: 40
 };
 
 const headerTitleStyle = {
-    fontSize: '16px',
-    fontWeight: '800',
-    color: '#fff',
+    fontSize: '18px',
+    fontWeight: '700',
+    color: '#1A1F36',
     margin: 0,
     letterSpacing: '-0.02em'
 };
@@ -364,12 +363,10 @@ const breadcrumbStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    fontSize: '10px',
-    fontWeight: '600',
-    color: '#52525b',
-    marginTop: '2px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    fontSize: '12px',
+    fontWeight: '500',
+    color: '#6B7C93',
+    marginTop: '4px'
 };
 
 const headerLeftStyle = { display: 'flex', flexDirection: 'column' };
@@ -406,7 +403,7 @@ const pageInnerStyle = {
 
 const loadingStyle = {
     minHeight: '100vh',
-    background: '#050506',
+    background: '#F7F9FC',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
@@ -416,7 +413,7 @@ const spinnerStyle = {
     width: '32px',
     height: '32px',
     borderRadius: '50%',
-    border: '3px solid rgba(251, 191, 36, 0.1)',
-    borderTop: '3px solid #fbbf24',
+    border: '3px solid rgba(0, 112, 224, 0.1)',
+    borderTop: '3px solid #0070E0',
     animation: 'spin 1s linear infinite'
 };

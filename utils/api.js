@@ -26,7 +26,7 @@ api.interceptors.request.use((config) => {
             // Strictly use super admin token for super admin routes
             token = superAdminToken;
         } else if (pathname.startsWith('/admin')) {
-            // Strictly use auth token for freelancer routes
+            // Strictly use auth token for merchant routes
             token = authToken;
         } else {
             // Public area: prefer auth_token, fallback to super_admin_token
