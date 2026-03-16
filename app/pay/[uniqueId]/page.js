@@ -391,7 +391,7 @@ function UniqueProductPaymentContent() {
                                                 placeholder="0.00"
                                                 value={amount}
                                                 onChange={(e) => setAmount(e.target.value)}
-                                                style={{ ...inputStyle, paddingLeft: 34 }}
+                                                style={{ ...inputStyle, paddingLeft: 38 }}
                                             />
                                         </div>
                                         <div style={{ width: 100, opacity: isCurrencyLocked ? 0.6 : 1, pointerEvents: isCurrencyLocked ? 'none' : 'auto' }}>
