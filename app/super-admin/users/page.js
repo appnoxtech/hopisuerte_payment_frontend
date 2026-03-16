@@ -53,6 +53,7 @@ export default function UserManagement() {
     const [avatarLoadingId, setAvatarLoadingId] = useState(null);
     const [avatarModal, setAvatarModal] = useState(null); // holds the user object for avatar modal
     const [avatarPreview, setAvatarPreview] = useState(null);
+    const [imageErrors, setImageErrors] = useState(new Set());
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -186,9 +187,20 @@ export default function UserManagement() {
                 }
             });
             showToast('Profile picture updated', 'success');
-            const updatedImageUrl = response.data?.user?.profile_image_url;
+            const updatedImageUrl = response.data?.profile_image_url || response.data?.user?.profile_image_url;
+            
             // Update the avatar modal's user data
-            setAvatarModal(prev => prev ? { ...prev, profile_image_url: updatedImageUrl || prev.profile_image_url } : null);
+            if (avatarModal && avatarModal.id === selectedUserId) {
+                setAvatarModal(prev => ({ ...prev, profile_image_url: updatedImageUrl }));
+            }
+            
+            // Remove from image errors set if it was there
+            setImageErrors(prev => {
+                const updated = new Set(prev);
+                updated.delete(selectedUserId);
+                return updated;
+            });
+
             setAvatarPreview(null);
             fetchUsers();
         } catch (err) {
@@ -315,20 +327,19 @@ export default function UserManagement() {
                                          <div style={userCellWrapperStyle}>
                                              <div style={tableAvatarStyle}>
                                                 {avatarLoadingId === user.id ? (
-                                                    <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                                                    <Loader2 key={`loader-${user.id}`} size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                                                ) : (user.profile_image_url && !imageErrors.has(user.id)) ? (
+                                                    <img 
+                                                        key={`avatar-${user.id}`}
+                                                        src={user.profile_image_url} 
+                                                        alt="" 
+                                                        style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
+                                                        onError={() => {
+                                                            setImageErrors(prev => new Set(prev).add(user.id));
+                                                        }}
+                                                    />
                                                 ) : (
-                                                    <>
-                                                        {user.profile_image_url ? (
-                                                            <img 
-                                                                src={user.profile_image_url} 
-                                                                alt="" 
-                                                                style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
-                                                                onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerText = user.name[0].toUpperCase(); }}
-                                                            />
-                                                        ) : (
-                                                            user.name[0].toUpperCase()
-                                                        )}
-                                                    </>
+                                                    <span key="fallback">{user.name[0].toUpperCase()}</span>
                                                 )}
                                             </div>
                                             <div>
@@ -491,15 +502,21 @@ export default function UserManagement() {
                         <div style={avatarModalPreviewSection}>
                             <div style={avatarModalLargeAvatar}>
                                 {avatarLoadingId === avatarModal.id ? (
-                                    <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: '#0070E0' }} />
+                                    <Loader2 key="loader" size={32} style={{ animation: 'spin 1s linear infinite', color: '#0070E0' }} />
                                 ) : avatarPreview ? (
-                                    <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
-                                ) : avatarModal.profile_image_url ? (
-                                    <img src={avatarModal.profile_image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
-                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                    <img key="preview" src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+                                ) : (avatarModal.profile_image_url && !imageErrors.has(avatarModal.id)) ? (
+                                    <img 
+                                        key={`modal-avatar-${avatarModal.id}`} 
+                                        src={avatarModal.profile_image_url} 
+                                        alt="" 
+                                        style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
+                                        onError={() => {
+                                            setImageErrors(prev => new Set(prev).add(avatarModal.id));
+                                        }}
                                     />
                                 ) : (
-                                    <span style={{ fontSize: '40px', fontWeight: '800', color: '#0070E0' }}>{avatarModal.name?.[0]?.toUpperCase()}</span>
+                                    <span key="fallback" style={{ fontSize: '40px', fontWeight: '800', color: '#0070E0' }}>{avatarModal.name?.[0]?.toUpperCase()}</span>
                                 )}
                             </div>
                             <p style={{ fontSize: '12px', color: '#6B7C93', marginTop: '12px', textAlign: 'center' }}>

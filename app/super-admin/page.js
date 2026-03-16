@@ -62,14 +62,14 @@ export default function SuperAdminDashboard() {
                     <Icon size={14} />
                 </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: '8px', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={cardValueStyle}>
                     {unit && unit !== '%' && <span style={unitStyle}>{unit}</span>}
-                    {value}
+                    <span style={{ wordBreak: 'break-all' }}>{value}</span>
                     {unit === '%' && <span style={unitStyle}>{unit}</span>}
                 </div>
                 {extra && (
-                    <div style={{ width: 85 }}>
+                    <div style={{ width: 85, flexShrink: 0 }}>
                         {extra}
                     </div>
                 )}

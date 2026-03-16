@@ -156,24 +156,23 @@ export default function SuperAdminProfile() {
                     <div style={avatarSectionStyle}>
                         <div style={avatarWrapperStyle}>
                             {avatarLoading ? (
-                                <div style={{ ...avatarFallbackStyle, background: '#F8FAFC' }}>
+                                <div key="avatar-loading" style={{ ...avatarFallbackStyle, background: '#F8FAFC' }}>
                                     <Loader2 size={24} style={{ animation: 'spin 1.5s linear infinite', color: '#0070E0' }} />
                                 </div>
+                            ) : (previewUrl || profileImageUrl) && !imageError ? (
+                                <img
+                                    key="avatar-image"
+                                    src={previewUrl || profileImageUrl}
+                                    alt="Admin Avatar"
+                                    style={avatarImageStyle}
+                                    onError={() => setImageError(true)}
+                                />
                             ) : (
-                                <>
-                                    {(previewUrl || profileImageUrl) && !imageError ? (
-                                        <img
-                                            src={previewUrl || profileImageUrl}
-                                            alt="Admin Avatar"
-                                            style={avatarImageStyle}
-                                            onError={() => setImageError(true)}
-                                        />
-                                    ) : (
-                                        <div style={avatarFallbackStyle}>
-                                            <ShieldCheck size={40} />
-                                        </div>
-                                    )}
-                                </>
+                                <div key="avatar-fallback" style={avatarFallbackStyle}>
+                                    <span style={{ fontSize: '40px', fontWeight: '800' }}>
+                                        {name ? name.charAt(0).toUpperCase() : 'S'}
+                                    </span>
+                                </div>
                             )}
                             <button
                                 onClick={() => !avatarLoading && fileInputRef.current.click()}
@@ -259,7 +258,7 @@ export default function SuperAdminProfile() {
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <Save size={16} />
-                                        <span>Sync Profile</span>
+                                        <span>Update Profile</span>
                                     </div>
                                 )}
                             </button>
