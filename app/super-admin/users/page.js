@@ -213,14 +213,16 @@ export default function UserManagement() {
     };
 
     const handleUserAvatarRemove = async (userId) => {
-        if (!confirm('Remove this merchant\'s profile image?')) return;
+        if (!confirm('Remove this merchant\'s profile image?')) return false;
         setAvatarLoadingId(userId);
         try {
             await api.delete(`/super-admin/users/${userId}/profile-image`, getSuperAdminHeaders());
             showToast('Merchant profile image removed', 'success');
             fetchUsers();
+            return true;
         } catch (err) {
             showToast('Failed to remove image', 'error');
+            return false;
         } finally {
             setAvatarLoadingId(null);
         }
@@ -541,9 +543,11 @@ export default function UserManagement() {
                             {avatarModal.profile_image_url && (
                                 <button
                                     onClick={async () => {
-                                        await handleUserAvatarRemove(avatarModal.id);
-                                        setAvatarModal(prev => prev ? { ...prev, profile_image_url: null } : null);
-                                        setAvatarPreview(null);
+                                        const success = await handleUserAvatarRemove(avatarModal.id);
+                                        if (success) {
+                                            setAvatarModal(prev => prev ? { ...prev, profile_image_url: null } : null);
+                                            setAvatarPreview(null);
+                                        }
                                     }}
                                     disabled={avatarLoadingId === avatarModal.id}
                                     style={avatarModalRemoveBtn}
