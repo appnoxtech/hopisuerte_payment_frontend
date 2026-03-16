@@ -124,10 +124,10 @@ export default function SuperAdminProfile() {
             setProfileImageUrl(null);
             setPreviewUrl(null);
             setImageError(false);
-            showToast('Avatar removed from core', 'success');
+            showToast('Profile picture removed', 'success');
             await refreshUser();
         } catch (err) {
-            showToast('Removal protocol failed', 'error');
+            showToast('Profile picture removal failed', 'error');
         } finally {
             setAvatarLoading(false);
         }

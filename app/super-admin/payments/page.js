@@ -97,7 +97,7 @@ export default function GlobalPayments() {
         <div style={containerStyle}>
             <header style={headerWrapperStyle}>
                 <div>
-                    <h1 style={titleStyle}>Global Transactions</h1>
+                    <h1 style={titleStyle}>Total Transactions</h1>
                     <p style={subtitleStyle}>Complete real-time ledger of all merchant activities</p>
                 </div>
 
@@ -181,7 +181,7 @@ export default function GlobalPayments() {
                                 <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Actions</th>
                             </tr>
                         </thead>
-                         <tbody>
+                        <tbody>
                             {groupedMerchants.length === 0 ? (
                                 <tr>
                                     <td colSpan="4" style={emptyStateStyle}>No active merchant nodes identified.</td>
@@ -207,7 +207,7 @@ export default function GlobalPayments() {
                                         <td style={tdCenterStyle}>
                                             <div style={earningsItemStyle}>
                                                 <span style={currencySymbolStyle}>
-                                                     {displayCurrency === 'EUR' ? '€' : (displayCurrency === 'XCG' ? 'Cg' : '$')}
+                                                    {displayCurrency === 'EUR' ? '€' : (displayCurrency === 'XCG' ? 'Cg' : '$')}
                                                 </span>
                                                 {(merchant.totalByCurrency[displayCurrency] || 0).toLocaleString()}
                                             </div>

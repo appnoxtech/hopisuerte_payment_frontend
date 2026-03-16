@@ -80,11 +80,6 @@ export default function AdminLayout({ children }) {
             name: 'Reports',
             href: '/admin/reports',
             icon: BarChart3
-        },
-        {
-            name: 'Profile Settings',
-            href: '/admin/profile',
-            icon: Settings
         }
     ];
 

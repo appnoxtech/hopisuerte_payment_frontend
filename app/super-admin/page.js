@@ -85,7 +85,7 @@ export default function SuperAdminDashboard() {
             <section style={statGridStyle}>
                 <StatCard title="Total Merchants" value={stats?.total_users || 0} icon={Users} color="#0070E0" />
                 <StatCard
-                    title="Gross Volume"
+                    title="Total Amount"
                     value={
                         displayCurrency === 'USD' ? (stats?.total_volume_usd || 0).toLocaleString() :
                             (displayCurrency === 'EUR' ? (stats?.total_volume_eur || 0).toLocaleString() :
@@ -132,7 +132,7 @@ export default function SuperAdminDashboard() {
                         <Link href="/super-admin/payments" style={nodeItemStyle}>
                             <div style={{ ...nodeIconBox, background: '#ECFDF5', color: '#10B981' }}><CreditCard size={20} /></div>
                             <div style={{ flex: 1 }}>
-                                <div style={nodeNameStyle}>Global Transactions</div>
+                                <div style={nodeNameStyle}>Total Transactions</div>
                                 <div style={nodeDescStyle}>Complete real-time payment ledger</div>
                             </div>
                             <ArrowUpRight size={16} color="#A0AEC0" />

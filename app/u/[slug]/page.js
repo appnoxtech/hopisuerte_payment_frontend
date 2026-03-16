@@ -258,9 +258,15 @@ export default function UserPaymentPage() {
                                                     color: selectedProduct?.id === product.id ? '#001c64' : '#4A5568',
                                                     marginBottom: 6,
                                                     fontSize: 15,
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '12px'
                                                 }}
                                             >
-                                                {product.name}
+                                                {product.image_url && (
+                                                    <img src={product.image_url} alt={product.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'cover' }} />
+                                                )}
+                                                <div>{product.name}</div>
                                             </div>
 
                                             {product.description && (

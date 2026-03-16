@@ -34,17 +34,19 @@ export default function SuperAdminProducts() {
     const [expandedProductId, setExpandedProductId] = useState(null);
     const [copiedId, setCopiedId] = useState(null);
 
-    const userOptions = users.map(u => ({ 
-        label: `${u.name} (${u.email})`, 
+    const userOptions = users.map(u => ({
+        label: `${u.name} (${u.email})`,
         value: u.id,
-        avatarUrl: u.profile_image_url 
+        avatarUrl: u.profile_image_url
     }));
 
     const [formData, setFormData] = useState({
         user_id: '',
         name: '',
         description: '',
-        active: true
+        active: true,
+        image_url: null,
+        image_file: null // to hold the new file temporarily
     });
 
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -108,7 +110,9 @@ export default function SuperAdminProducts() {
                 user_id: product.user_id,
                 name: product.name,
                 description: product.description || '',
-                active: !!product.active
+                active: !!product.active,
+                image_url: product.image_url || null,
+                image_file: null
             });
         } else {
             setEditingProduct(null);
@@ -116,7 +120,9 @@ export default function SuperAdminProducts() {
                 user_id: users.length > 0 ? users[0].id : '',
                 name: '',
                 description: '',
-                active: true
+                active: true,
+                image_url: null,
+                image_file: null
             });
         }
         setIsModalOpen(true);
@@ -125,17 +131,62 @@ export default function SuperAdminProducts() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            let productId = null;
+
             if (editingProduct) {
-                await api.put(`/super-admin/products/${editingProduct.id}`, formData);
-                showToast('Product edited successfully.', 'success');
+                await api.put(`/super-admin/products/${editingProduct.id}`, {
+                    user_id: formData.user_id,
+                    name: formData.name,
+                    description: formData.description,
+                    active: formData.active
+                });
+                productId = editingProduct.id;
             } else {
-                await api.post('/super-admin/products', formData);
-                showToast('New product added successfully.', 'success');
+                const res = await api.post('/super-admin/products', {
+                    user_id: formData.user_id,
+                    name: formData.name,
+                    description: formData.description,
+                    active: formData.active
+                });
+                productId = res.data.id;
             }
+
+            // Handle Image Upload if a new file was selected
+            if (formData.image_file && productId) {
+                const imgData = new FormData();
+                imgData.append('image', formData.image_file);
+
+                // Get token correctly
+                const token = localStorage.getItem('super_admin_token') || localStorage.getItem('token');
+
+                await api.post(`/super-admin/products/${productId}/image`, imgData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+            }
+
+            showToast(editingProduct ? 'Product edited successfully.' : 'New product added successfully.', 'success');
             fetchProducts();
             setIsModalOpen(false);
         } catch (err) {
             showToast(err.response?.data?.message || 'Configuration failed', 'error');
+        }
+    };
+
+    const handleRemoveImage = async (productId) => {
+        if (!confirm('Are you sure you want to remove the product image?')) return;
+        try {
+            const token = localStorage.getItem('super_admin_token') || localStorage.getItem('token');
+            await api.delete(`/super-admin/products/${productId}/image`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            showToast('Image removed successfully.', 'success');
+            setFormData({ ...formData, image_url: null, image_file: null });
+            fetchProducts();
+        } catch (err) {
+            showToast('Failed to remove image', 'error');
         }
     };
 
@@ -223,7 +274,7 @@ export default function SuperAdminProducts() {
                     <tbody>
                         {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan="5" style={emptyStateStyle}>Zero products found in Nexus ledger</td>
+                                <td colSpan="5" style={emptyStateStyle}>No products found</td>
                             </tr>
                         ) : (
                             filtered.map((product) => {
@@ -233,7 +284,13 @@ export default function SuperAdminProducts() {
                                     <tr key={product.id} style={trStyle}>
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                                <div style={iconBoxStyle}><Box size={14} color="#0070E0" /></div>
+                                                <div style={iconBoxStyle}>
+                                                    {product.image_url ? (
+                                                        <img src={product.image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+                                                    ) : (
+                                                        <Box size={14} color="#0070E0" />
+                                                    )}
+                                                </div>
                                                 <div>
                                                     <button onClick={() => fetchProductPayments(product)} style={nameLinkStyle}>
                                                         {product.name}
@@ -343,6 +400,16 @@ export default function SuperAdminProducts() {
                                 <label style={labelStyle}>Product Description</label>
                                 <textarea placeholder="Add description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, height: '80px', resize: 'none' }} />
                             </div>
+                            <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Product Image</label>
+                                {formData.image_url && !formData.image_file && (
+                                    <div style={{ padding: '8px', border: '1px solid #E3E8EF', borderRadius: '12px', marginBottom: '8px', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <img src={formData.image_url} alt="Product" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px' }} />
+                                        <button type="button" onClick={() => handleRemoveImage(editingProduct.id)} style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}>Remove</button>
+                                    </div>
+                                )}
+                                <input type="file" accept="image/*" onChange={(e) => setFormData({ ...formData, image_file: e.target.files[0] })} style={modalInputStyle} />
+                            </div>
                             <div style={checkboxWrapper}>
                                 <input type="checkbox" id="active" checked={formData.active} onChange={(e) => setFormData({ ...formData, active: e.target.checked })} style={checkboxStyle} />
                                 <label htmlFor="active" style={checkboxLabel}>Mark as active</label>
@@ -384,7 +451,7 @@ export default function SuperAdminProducts() {
                                         selectedProductPayments.map((p) => (
                                             <tr key={p.id} style={trStyle}>
                                                 <td style={{ ...tdStyle, fontSize: 11, color: '#a1a1aa' }}>{formatLocalTime(p.created_at)}</td>
-                                                 <td style={tdStyle}>
+                                                <td style={tdStyle}>
                                                     <div style={{ color: '#1A1F36', fontWeight: '700', fontSize: 14 }}>{p.customer_name}</div>
                                                     <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_email}</div>
                                                 </td>
@@ -395,7 +462,7 @@ export default function SuperAdminProducts() {
                                                     <span style={{ color: '#1A1F36', fontSize: 15 }}>{Number(p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                                 </td>
                                                 <td style={tdCenterStyle}>
-                                                    <div style={{ 
+                                                    <div style={{
                                                         display: 'inline-flex',
                                                         alignItems: 'center',
                                                         gap: '6px',
@@ -406,15 +473,15 @@ export default function SuperAdminProducts() {
                                                         fontWeight: '900',
                                                         textTransform: 'uppercase',
                                                         letterSpacing: '0.05em',
-                                                         background: p.status === 'success' ? '#ECFDF5' : (p.status === 'pending' ? '#FFFBEB' : '#FEF2F2'),
+                                                        background: p.status === 'success' ? '#ECFDF5' : (p.status === 'pending' ? '#FFFBEB' : '#FEF2F2'),
                                                         color: p.status === 'success' ? '#10B981' : (p.status === 'pending' ? '#F59E0B' : '#EF4444'),
                                                         borderColor: p.status === 'success' ? '#D1FAE5' : (p.status === 'pending' ? '#FEF3C7' : '#FEE2E2')
                                                     }}>
-                                                        <div style={{ 
-                                                            width: '6px', 
-                                                            height: '6px', 
-                                                            borderRadius: '50%', 
-                                                            background: p.status === 'success' ? '#10B981' : (p.status === 'pending' ? '#F59E0B' : '#EF4444') 
+                                                        <div style={{
+                                                            width: '6px',
+                                                            height: '6px',
+                                                            borderRadius: '50%',
+                                                            background: p.status === 'success' ? '#10B981' : (p.status === 'pending' ? '#F59E0B' : '#EF4444')
                                                         }} />
                                                         {p.status}
                                                     </div>

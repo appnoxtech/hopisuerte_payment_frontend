@@ -323,6 +323,11 @@ function UniqueProductPaymentContent() {
                 {/* Card */}
                 <div style={cardStyle}>
                     <div style={{ marginBottom: 28, textAlign: 'center' }}>
+                        {product?.image_url && (
+                            <div style={{ marginBottom: 20 }}>
+                                <img src={product.image_url} alt={product.name} style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '16px', margin: '0 auto', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
+                            </div>
+                        )}
                         <h1 className="gradient-text" style={{ fontSize: '26px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" }}>
                             Complete Your Payment
                         </h1>

@@ -89,7 +89,16 @@ export default function ProductManagement() {
                                     <ShieldCheck size={18} color="#001c64" style={{ opacity: 0.1 }} />
                                 </div>
 
-                                <h3 style={productTitleStyle}>{product.name}</h3>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
+                                    {product.image_url ? (
+                                        <img src={product.image_url} alt={product.name} style={{ width: '48px', height: '48px', borderRadius: '12px', objectFit: 'cover', border: '1px solid #E3E8EF' }} />
+                                    ) : (
+                                        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#F0F7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E3E8EF' }}>
+                                            <Package size={24} color="#0070E0" />
+                                        </div>
+                                    )}
+                                    <h3 style={{ ...productTitleStyle, marginBottom: 0 }}>{product.name}</h3>
+                                </div>
                                 <p style={productDescStyle}>{product.description || "Authorized gateway link."}</p>
 
                                 <button

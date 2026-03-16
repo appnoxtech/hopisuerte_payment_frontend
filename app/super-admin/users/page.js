@@ -19,7 +19,8 @@ import {
     Image as ImageIcon,
     Loader2,
     Upload,
-    ImageOff
+    ImageOff,
+    Edit2
 } from 'lucide-react';
 import { useRef } from 'react';
 import CustomDropdown from '@/components/CustomDropdown';
@@ -40,9 +41,11 @@ export default function UserManagement() {
     const [displayCurrency, setDisplayCurrency] = useState('USD');
 
     const [showModal, setShowModal] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        email: ''
+        email: '',
+        slug: ''
     });
     const [formLoading, setFormLoading] = useState(false);
     const fileInputRef = useRef(null);
@@ -78,18 +81,43 @@ export default function UserManagement() {
         };
     }, [showModal]);
 
-    const handleCreateUser = async (e) => {
+    const handleOpenModal = (user = null) => {
+        if (user) {
+            setEditingUser(user);
+            setFormData({
+                name: user.name,
+                email: user.email,
+                slug: user.slug
+            });
+        } else {
+            setEditingUser(null);
+            setFormData({ name: '', email: '', slug: '' });
+        }
+        setShowModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setEditingUser(null);
+        setFormData({ name: '', email: '', slug: '' });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setFormLoading(true);
 
         try {
-            const response = await api.post('/super-admin/register-merchant', formData, getSuperAdminHeaders());
-            showToast(response.data.message || 'Merchant provisioned successfully', 'success');
-            setFormData({ name: '', email: '' });
+            if (editingUser) {
+                const response = await api.put(`/super-admin/users/${editingUser.id}`, formData, getSuperAdminHeaders());
+                showToast(response.data.message || 'Merchant updated successfully', 'success');
+            } else {
+                const response = await api.post('/super-admin/register-merchant', formData, getSuperAdminHeaders());
+                showToast(response.data.message || 'Merchant provisioned successfully', 'success');
+            }
             fetchUsers();
-            setShowModal(false);
+            handleCloseModal();
         } catch (err) {
-            showToast(err.response?.data?.message || 'Provisioning failed', 'error');
+            showToast(err.response?.data?.message || 'Operation failed', 'error');
         } finally {
             setFormLoading(false);
         }
@@ -220,7 +248,7 @@ export default function UserManagement() {
                             <span style={miniStatLabelStyle}>Active</span>
                         </div>
                     </div>
-                    <button onClick={() => setShowModal(true)} style={addBtnStyle}>
+                    <button onClick={() => handleOpenModal()} style={addBtnStyle}>
                         <UserPlus size={16} />
                         <span>Create Merchant</span>
                     </button>
@@ -340,6 +368,13 @@ export default function UserManagement() {
                                     <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
                                             <button
+                                                onClick={() => handleOpenModal(user)}
+                                                style={editPhotoBtnStyle}
+                                                title="Edit Merchant Details"
+                                            >
+                                                <Edit2 size={14} />
+                                            </button>
+                                            <button
                                                 onClick={() => openAvatarModal(user)}
                                                 style={editPhotoBtnStyle}
                                                 title="Edit Profile Picture"
@@ -371,18 +406,17 @@ export default function UserManagement() {
                 style={{ display: 'none' }} 
             />
 
-            {/* Registration Modal */}
             {showModal && (
                 <div style={modalOverlayStyle}>
                     <div style={modalCardStyle}>
                         <div style={modalHeaderStyle}>
                             <div>
-                                <h2 style={modalTitleStyle}>Add Merchant</h2>
+                                <h2 style={modalTitleStyle}>{editingUser ? 'Edit Merchant' : 'Add Merchant'}</h2>
                             </div>
-                            <button onClick={() => setShowModal(false)} style={modalCloseBtnStyle}><X size={18} /></button>
+                            <button onClick={handleCloseModal} style={modalCloseBtnStyle}><X size={18} /></button>
                         </div>
 
-                        <form onSubmit={handleCreateUser} style={modalFormStyle}>
+                        <form onSubmit={handleSubmit} style={modalFormStyle}>
                             <div style={inputGroupStyle}>
                                 <label style={labelStyle}>Full Name</label>
                                 <div style={inputWrapperStyle}>
@@ -410,11 +444,30 @@ export default function UserManagement() {
                                     />
                                 </div>
                             </div>
+                            
+                            {editingUser && (
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Merchant Slug (Public URL)</label>
+                                    <div style={inputWrapperStyle}>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={formData.slug}
+                                            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                                            placeholder="merchant-slug"
+                                            style={modalInputStyle}
+                                        />
+                                    </div>
+                                    <p style={{fontSize: 12, color: '#6B7C93', marginTop: 2}}>
+                                        Changing the slug will regenerate all product URLs for this merchant safely.
+                                    </p>
+                                </div>
+                            )}
 
                             <div style={modalFooterStyle}>
-                                <button type="button" onClick={() => setShowModal(false)} style={cancelBtnStyle}>Cancel</button>
+                                <button type="button" onClick={handleCloseModal} style={cancelBtnStyle}>Cancel</button>
                                 <button type="submit" disabled={formLoading} style={submitBtnStyle}>
-                                    {formLoading ? 'Creating...' : 'Create'}
+                                    {formLoading ? 'Saving...' : (editingUser ? 'Save Changes' : 'Create')}
                                 </button>
                             </div>
                         </form>
