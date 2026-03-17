@@ -183,9 +183,14 @@ export default function ProductOrderPage() {
                                             background: '#EFF6FF',
                                             color: '#0070E0',
                                             border: '1px solid currentColor',
-                                            opacity: 0.8
+                                            opacity: 0.8,
+                                            overflow: 'hidden'
                                         }}>
-                                            {product.name?.[0]?.toUpperCase()}
+                                            {product.image_url ? (
+                                                <img src={product.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ) : (
+                                                product.name?.[0]?.toUpperCase()
+                                            )}
                                         </div>
 
                                         <div style={productInfoStyle}>
@@ -288,9 +293,14 @@ export default function ProductOrderPage() {
                                             color: isFirst ? '#0070E0' : '#64748B',
                                             border: '1px solid currentColor',
                                             fontSize: '14px',
-                                            opacity: 0.7
+                                            opacity: 0.7,
+                                            overflow: 'hidden'
                                         }}>
-                                            {product.name?.[0]?.toUpperCase()}
+                                            {product.image_url ? (
+                                                <img src={product.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            ) : (
+                                                product.name?.[0]?.toUpperCase()
+                                            )}
                                         </div>
 
                                         <div style={productInfoStyle}>
