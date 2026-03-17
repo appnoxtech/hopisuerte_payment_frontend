@@ -455,7 +455,22 @@ export default function SuperAdminProducts() {
                                                     <div style={{ color: '#1A1F36', fontWeight: '700', fontSize: 14 }}>{p.customer_name}</div>
                                                     <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_email}</div>
                                                     <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_phone}</div>
-                                                </td>
+                                                    {p.notes && (
+                                                        <div style={{ 
+                                                            fontSize: '11px', 
+                                                            color: '#0070E0', 
+                                                            marginTop: '6px', 
+                                                            background: '#F0F7FF', 
+                                                            padding: '4px 8px', 
+                                                            borderRadius: '6px', 
+                                                            display: 'inline-block',
+                                                            border: '1px solid rgba(0, 112, 224, 0.1)',
+                                                            fontWeight: '600'
+                                                        }}>
+                                                            Note: {p.notes}
+                                                        </div>
+                                                    )}
+                                                 </td>
                                                 <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700' }}>
                                                     <span style={{ color: '#6B7C93', marginRight: 4, fontSize: 12 }}>
                                                         {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}

@@ -215,6 +215,21 @@ export default function AdminDashboard() {
                                                     <div style={primaryTextStyle}>{p.customer_name}</div>
                                                     <div style={secondaryTextStyle}>{p.customer_email}</div>
                                                     <div style={secondaryTextStyle}>{p.customer_phone}</div>
+                                                    {p.notes && (
+                                                        <div style={{ 
+                                                            fontSize: '11px', 
+                                                            color: '#0070E0', 
+                                                            marginTop: '6px', 
+                                                            background: '#F0F7FF', 
+                                                            padding: '4px 8px', 
+                                                            borderRadius: '6px', 
+                                                            display: 'inline-block',
+                                                            border: '1px solid rgba(0, 112, 224, 0.1)',
+                                                            fontWeight: '600'
+                                                        }}>
+                                                            Note: {p.notes}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>

@@ -247,6 +247,21 @@ export default function GlobalPayments() {
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={{ fontSize: '14px', color: '#1a1f36', fontWeight: '600' }}>{p.product?.user?.name || 'Direct'}</div>
                                             <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px' }}>Customer: {p.customer_name} ({p.customer_phone})</div>
+                                            {p.notes && (
+                                                <div style={{ 
+                                                    fontSize: '11px', 
+                                                    color: '#0070E0', 
+                                                    marginTop: '6px', 
+                                                    background: '#F0F7FF', 
+                                                    padding: '4px 8px', 
+                                                    borderRadius: '6px', 
+                                                    display: 'inline-block',
+                                                    border: '1px solid rgba(0, 112, 224, 0.1)',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    Note: {p.notes}
+                                                </div>
+                                            )}
                                         </td>
                                         <td style={tdCenterStyle}>
                                             <div style={amountGroupStyle}>
