@@ -167,6 +167,7 @@ export default function ReportsPage() {
                                         {p.status === 'success' ? <CheckCircle2 size={16} color="#10B981" /> : (p.status === 'failed' ? <XCircle size={16} color="#EF4444" /> : <Clock size={16} color="#F59E0B" />)}
                                         <div style={{ overflow: 'hidden' }}>
                                             <div style={primaryTextStyle}>{p.customer_name}</div>
+                                            <div style={secondaryTextStyle}>{p.customer_phone}</div>
                                             <div style={secondaryTextStyle}>{formatLocalTime(p.created_at)}</div>
                                         </div>
                                     </div>

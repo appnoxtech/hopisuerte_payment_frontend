@@ -13,8 +13,14 @@ import {
     ChevronDown,
     FileText,
     Check,
-    Activity
+    Activity,
+    History,
+    CheckCircle2,
+    XCircle,
+    Clock,
+    Loader2
 } from 'lucide-react';
+import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
 
 import { useToast } from '@/context/ToastContext';
@@ -26,6 +32,8 @@ export default function SuperAdminReportsPage() {
     const [merchantId, setMerchantId] = useState('');
     const [merchants, setMerchants] = useState([]);
     const [downloadingType, setDownloadingType] = useState(null);
+    const [recentPayments, setRecentPayments] = useState([]);
+    const [fetchingRecent, setFetchingRecent] = useState(true);
 
     const years = Array.from({ length: 5 }, (_, i) => {
         const y = (new Date().getFullYear() - i).toString();
@@ -57,6 +65,21 @@ export default function SuperAdminReportsPage() {
             }
         };
         fetchMerchants();
+
+        const fetchRecent = async () => {
+             try {
+                 const token = typeof window !== 'undefined' ? localStorage.getItem('super_admin_token') : '';
+                 const response = await api.get('/super-admin/payments', {
+                     headers: { Authorization: `Bearer ${token}` }
+                 });
+                 setRecentPayments(response.data.slice(0, 10));
+             } catch(e) {
+                 console.error(e);
+             } finally {
+                 setFetchingRecent(false);
+             }
+        };
+        fetchRecent();
     }, [showToast]);
 
     const handleDownload = async (format = 'csv') => {
@@ -194,24 +217,37 @@ export default function SuperAdminReportsPage() {
                     </div>
                 </div>
 
-                {/* Flux & Conversion (Placeholder) */}
-                {/* <div style={cardStyle}>
+                <div style={cardStyle}>
                     <div style={cardHeaderStyle}>
-                        <div style={iconWrapStyle}>
-                            <Zap size={18} color="#6366f1" />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <h3 style={cardTitleStyle}>Flux & Conversion</h3>
-                            <p style={cardDescStyle}>Identify bottlenecks and top-performing merchants across all regions.</p>
+                        <div style={iconWrapStyle}><History size={18} color="#6366f1" /></div>
+                        <div>
+                            <h3 style={cardTitleStyle}>Recent Transactions</h3>
+                            <p style={cardDescStyle}>Snapshot of the latest globally synchronized transactions.</p>
                         </div>
                     </div>
 
-                    <div style={placeholderContent}>
-                        <Activity size={32} color="rgba(255,255,255,0.03)" strokeWidth={1} />
-                        <div style={placeholderBadgeStyle}>Visual Nexus Implementation Pending</div>
-                        <p style={{ fontSize: 11, color: '#3f3f46', textAlign: 'center', maxWidth: '200px' }}>Real-time graph analytics for capital velocity are currently under sync.</p>
+                    <div style={activityListStyle}>
+                        {fetchingRecent ? (
+                            <div style={loadingWrapStyle}><Loader2 size={24} className="spin" color="#3f3f46" /></div>
+                        ) : recentPayments.length === 0 ? (
+                            <div style={emptyTextStyle}>No recent activity found.</div>
+                        ) : (
+                            recentPayments.map((p) => (
+                                <div key={p.id} style={activityItemStyle}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                                        {p.status === 'success' ? <CheckCircle2 size={16} color="#10B981" /> : (p.status === 'failed' ? <XCircle size={16} color="#EF4444" /> : <Clock size={16} color="#F59E0B" />)}
+                                        <div style={{ overflow: 'hidden' }}>
+                                            <div style={primaryTextStyle}>{p.customer_name}</div>
+                                            <div style={secondaryTextStyle}>{p.customer_phone}</div>
+                                            <div style={secondaryTextStyle}>{formatLocalTime(p.created_at)}</div>
+                                        </div>
+                                    </div>
+                                    <div style={amountValueStyle}><span style={{ fontSize: 11, fontWeight: '700', color: '#6B7C93', marginRight: 4 }}>{p.currency}</span>{p.amount} </div>
+                                </div>
+                            ))
+                        )}
                     </div>
-                </div> */}
+                </div>
             </div>
 
             {/* <div style={infoBoxStyle}>
@@ -320,6 +356,7 @@ const infoBoxStyle = {
     color: '#52525b'
 };
 
+
 const spinnerStyle = {
     width: '16px',
     height: '16px',
@@ -328,3 +365,21 @@ const spinnerStyle = {
     borderRadius: '50%',
     animation: 'spin 1s linear infinite'
 };
+
+const activityListStyle = { display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '500px', overflowY: 'auto', paddingRight: '8px' };
+const activityItemStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px',
+    background: '#F8FAFC',
+    borderRadius: '16px',
+    border: '1px solid #E3E8EF',
+    transition: 'all 0.2s'
+};
+
+const primaryTextStyle = { fontSize: '15px', fontWeight: '700', color: '#1A1F36' };
+const secondaryTextStyle = { fontSize: '13px', color: '#6B7C93', fontWeight: '500' };
+const amountValueStyle = { fontSize: '16px', fontWeight: '700', color: '#1A1F36' };
+const loadingWrapStyle = { padding: '40px', display: 'flex', justifyContent: 'center' };
+const emptyTextStyle = { padding: '40px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };

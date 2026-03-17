@@ -273,6 +273,11 @@ function UniqueProductPaymentContent() {
             return;
         }
 
+        if (!customer.phone) {
+            alert("Phone number is required");
+            return;
+        }
+
         setSubmitting(true);
 
         try {
@@ -443,7 +448,8 @@ function UniqueProductPaymentContent() {
                                         </div>
                                         <input
                                             style={{ ...inputStyle, flex: 1 }}
-                                            placeholder="Phone (Optional)"
+                                            placeholder="Phone Number"
+                                            required
                                             value={customer.phone}
                                             onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                                         />

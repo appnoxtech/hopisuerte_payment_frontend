@@ -214,6 +214,7 @@ export default function AdminDashboard() {
                                                 <div style={{ overflow: 'hidden' }}>
                                                     <div style={primaryTextStyle}>{p.customer_name}</div>
                                                     <div style={secondaryTextStyle}>{p.customer_email}</div>
+                                                    <div style={secondaryTextStyle}>{p.customer_phone}</div>
                                                 </div>
                                             </div>
                                         </td>

@@ -13,7 +13,8 @@ import {
     LogOut,
     ShieldAlert,
     BarChart3,
-    User
+    User,
+    ListOrdered
 } from 'lucide-react';
 import NextLink from 'next/link';
 
@@ -68,6 +69,7 @@ export default function SuperAdminLayout({ children }) {
         { name: 'Dashboard', href: '/super-admin', icon: LayoutDashboard },
         { name: 'Merchants', href: '/super-admin/users', icon: Users },
         { name: 'Products', href: '/super-admin/products', icon: ShoppingBag },
+        { name: 'Product Order', href: '/super-admin/products/order', icon: ListOrdered },
         { name: 'Transactions', href: '/super-admin/payments', icon: CreditCard },
         { name: 'Reports', href: '/super-admin/reports', icon: BarChart3 },
         { name: 'Profile Settings', href: '/super-admin/profile', icon: User }

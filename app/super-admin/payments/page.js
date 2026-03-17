@@ -246,6 +246,7 @@ export default function GlobalPayments() {
                                     <tr key={p.id} style={trStyle}>
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={{ fontSize: '14px', color: '#1a1f36', fontWeight: '600' }}>{p.product?.user?.name || 'Direct'}</div>
+                                            <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px' }}>Customer: {p.customer_name} ({p.customer_phone})</div>
                                         </td>
                                         <td style={tdCenterStyle}>
                                             <div style={amountGroupStyle}>

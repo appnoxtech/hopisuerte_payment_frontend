@@ -60,6 +60,10 @@ export default function UserPaymentPage() {
             alert('Please enter a valid amount.');
             return;
         }
+        if (!customer.phone) {
+            alert('Phone number is required');
+            return;
+        }
         setSubmitting(true);
         try {
             const res = await api.post('/payments/intent', {
@@ -389,6 +393,7 @@ export default function UserPaymentPage() {
                                     <input
                                         style={inputStyle}
                                         type="tel"
+                                        required
                                         placeholder="Phone Number"
                                         value={customer.phone}
                                         onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}

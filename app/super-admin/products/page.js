@@ -454,6 +454,7 @@ export default function SuperAdminProducts() {
                                                 <td style={tdStyle}>
                                                     <div style={{ color: '#1A1F36', fontWeight: '700', fontSize: 14 }}>{p.customer_name}</div>
                                                     <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_email}</div>
+                                                    <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_phone}</div>
                                                 </td>
                                                 <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700' }}>
                                                     <span style={{ color: '#6B7C93', marginRight: 4, fontSize: 12 }}>
