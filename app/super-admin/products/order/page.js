@@ -20,16 +20,19 @@ export default function ProductOrderPage() {
         try {
             setLoading(true);
             const res = await api.get('/super-admin/products');
-            setProducts(res.data);
-
+            // Only show active products for reordering as requested
+            const activeProducts = res.data.filter(p => p.active);
+            
+            setProducts(activeProducts);
+            
             // Re-calculate if changes are pending
             // They are pending if any sort_order/is_pinned != pending equivalent
-            const pending = res.data.some(p =>
+            const pending = activeProducts.some(p => 
                 p.sort_order !== p.pending_sort_order
             );
             setHasPendingChanges(pending);
 
-            const liveCopy = [...res.data].sort((a, b) => a.sort_order - b.sort_order);
+            const liveCopy = [...activeProducts].sort((a, b) => a.sort_order - b.sort_order);
             setLiveProducts(liveCopy);
 
         } catch (error) {
