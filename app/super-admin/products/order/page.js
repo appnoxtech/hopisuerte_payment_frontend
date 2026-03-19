@@ -22,12 +22,12 @@ export default function ProductOrderPage() {
             const res = await api.get('/super-admin/products');
             // Only show active products for reordering as requested
             const activeProducts = res.data.filter(p => p.active);
-            
+
             setProducts(activeProducts);
-            
+
             // Re-calculate if changes are pending
             // They are pending if any sort_order/is_pinned != pending equivalent
-            const pending = activeProducts.some(p => 
+            const pending = activeProducts.some(p =>
                 p.sort_order !== p.pending_sort_order
             );
             setHasPendingChanges(pending);
@@ -225,10 +225,10 @@ export default function ProductOrderPage() {
                                                 <button
                                                     onClick={handlePublish}
                                                     style={quickPublishBtnStyle}
-                                                    title="Deploy all pending changes immediately"
+                                                    title="Save all pending changes immediately"
                                                 >
                                                     <Send size={14} />
-                                                    <span>Publish Now</span>
+                                                    <span>Save Now</span>
                                                 </button>
                                             )}
                                         </div>

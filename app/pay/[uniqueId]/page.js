@@ -10,7 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY || 'pk_test_placeholder');
+// Dynamic Stripe initialized via component state on intent creation
 
 import CustomDropdown from '@/components/CustomDropdown';
 
@@ -241,9 +241,11 @@ function UniqueProductPaymentContent() {
     ];
 
     const [clientSecret, setClientSecret] = useState(null);
+    const [stripePromise, setStripePromise] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [feePercentage, setFeePercentage] = useState(10);
 
     useEffect(() => {
         if (!uniqueId) return;
@@ -255,6 +257,9 @@ function UniqueProductPaymentContent() {
                 if (data.prefilled_currency) {
                     setCurrency(data.prefilled_currency);
                     setIsCurrencyLocked(true);
+                }
+                if (data.fee_percentage) {
+                    setFeePercentage(data.fee_percentage);
                 }
                 setLoading(false);
             })
@@ -292,6 +297,12 @@ function UniqueProductPaymentContent() {
             });
 
             setClientSecret(res.data.clientSecret);
+            const accountId = res.data.stripe_account || 1;
+            const pk = accountId === 2 
+                ? process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_2_KEY 
+                : process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_1_KEY;
+
+            setStripePromise(loadStripe(pk));
 
         } catch {
             alert("Payment initialization failed");
@@ -409,6 +420,9 @@ function UniqueProductPaymentContent() {
                                             />
                                         </div>
                                     </div>
+                                    <div style={{ marginTop: '8px', fontSize: '13px', color: '#0070E0', fontWeight: '500' }}>
+                                        A {feePercentage}% exchange and processing fee will be added to your total amount.
+                                    </div>
                                 </div>
                             )}
 
@@ -466,6 +480,25 @@ function UniqueProductPaymentContent() {
                                 </div>
                             </div>
 
+                            {/* Payment Summary Breakdown */}
+                            {amount && !isNaN(amount) && parseFloat(amount) > 0 && (
+                                <div style={{ marginBottom: 24, padding: '16px 20px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B', fontWeight: '700' }}>Payment Summary</h4>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: 8, color: '#475569' }}>
+                                        <span>Entered Amount:</span>
+                                        <span style={{ fontWeight: '500' }}>{currency} {parseFloat(amount).toFixed(2)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: 16, color: '#475569' }}>
+                                        <span>Processing Fee ({feePercentage}%):</span>
+                                        <span style={{ fontWeight: '500' }}>{currency} {(parseFloat(amount) * (feePercentage / 100)).toFixed(2)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', paddingTop: 16, borderTop: '1px solid #CBD5E1', color: '#0F172A', fontWeight: '800' }}>
+                                        <span>Total Payable Amount:</span>
+                                        <span>{currency} {(parseFloat(amount) * (1 + feePercentage / 100)).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Button */}
                             <button
                                 type="submit"
@@ -474,7 +507,7 @@ function UniqueProductPaymentContent() {
                             >
                                 {submitting
                                     ? "Processing..."
-                                    : `Pay ${amount ? Number(amount).toFixed(2) : '0.00'} ${currency}`
+                                    : `Pay ${amount ? (parseFloat(amount) * 1.1).toFixed(2) : '0.00'} ${currency}`
                                 }
                             </button>
 

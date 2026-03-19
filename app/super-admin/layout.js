@@ -14,7 +14,8 @@ import {
     ShieldAlert,
     BarChart3,
     User,
-    ListOrdered
+    ListOrdered,
+    Settings
 } from 'lucide-react';
 import NextLink from 'next/link';
 
@@ -72,6 +73,8 @@ export default function SuperAdminLayout({ children }) {
         { name: 'Product Order', href: '/super-admin/products/order', icon: ListOrdered },
         { name: 'Transactions', href: '/super-admin/payments', icon: CreditCard },
         { name: 'Reports', href: '/super-admin/reports', icon: BarChart3 },
+        { name: 'Admin Users', href: '/super-admin/admins', icon: ShieldAlert },
+        { name: 'System Settings', href: '/super-admin/settings', icon: Settings },
         { name: 'Profile Settings', href: '/super-admin/profile', icon: User }
     ];
 

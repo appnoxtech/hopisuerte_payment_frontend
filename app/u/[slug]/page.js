@@ -32,9 +32,11 @@ export default function UserPaymentPage() {
     ];
 
     const [clientSecret, setClientSecret] = useState(null);
+    const [stripePromise, setStripePromise] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [feePercentage, setFeePercentage] = useState(10); // Default to 10%
 
     useEffect(() => {
         if (!slug) return;
@@ -42,6 +44,9 @@ export default function UserPaymentPage() {
             .then(res => {
                 setUser(res.data.user);
                 setProducts(res.data.products);
+                if (res.data.fee_percentage !== undefined && res.data.fee_percentage !== null) {
+                    setFeePercentage(res.data.fee_percentage);
+                }
                 if (res.data.products.length > 0) {
                     setSelectedProduct(res.data.products[0]);
                 }
@@ -76,6 +81,13 @@ export default function UserPaymentPage() {
                 notes: customer.notes
             });
             setClientSecret(res.data.clientSecret);
+            const accountId = res.data.stripe_account || 1;
+            const pk = accountId === 2 
+                ? process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_2_KEY 
+                : process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_1_KEY;
+            
+            console.log(`Initializing Stripe for Account ${accountId}`);
+            setStripePromise(loadStripe(pk));
         } catch {
             alert("Failed to start payment process.");
         } finally {
@@ -108,6 +120,8 @@ export default function UserPaymentPage() {
             </div>
         );
     }
+
+    // Dynamic Stripe initialized via intent response
 
     return (
         <main
@@ -339,6 +353,10 @@ export default function UserPaymentPage() {
                                             placeholder="USD"
                                         />
                                     </div>
+
+                                </div>
+                                <div style={{ marginTop: '8px', fontSize: '12px', color: '#0070E0', fontWeight: 'bold' }}>
+                                    A {feePercentage}% exchange and processing fee will be added to your total amount.
                                 </div>
                             </div>
                              {/* customer form */}
@@ -407,6 +425,26 @@ export default function UserPaymentPage() {
                                     />
                                 </div>
                             </div>
+
+                            {/* Payment Summary Breakdown */}
+                            {amount && !isNaN(amount) && parseFloat(amount) > 0 && (
+                                <div style={{ marginBottom: 40, padding: '24px', background: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+                                    <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', color: '#1E293B', fontWeight: '800' }}>Payment Summary</h4>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: 12, color: '#475569' }}>
+                                        <span>Entered Amount:</span>
+                                        <span style={{ fontWeight: '500' }}>{currency} {parseFloat(amount).toFixed(2)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: 16, color: '#475569' }}>
+                                        <span>Processing Fee ({feePercentage}%):</span>
+                                        <span style={{ fontWeight: '500' }}>{currency} {(parseFloat(amount) * (feePercentage / 100)).toFixed(2)}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', paddingTop: 16, borderTop: '1px solid #CBD5E1', color: '#0F172A', fontWeight: '800' }}>
+                                        <span>Total Payable Amount:</span>
+                                        <span>{currency} {(parseFloat(amount) * (1 + feePercentage / 100)).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            )}
+
                              {/* submit */}
                             <button
                                 type="submit"
@@ -426,7 +464,7 @@ export default function UserPaymentPage() {
                                     opacity: !selectedProduct || !amount || submitting ? 0.5 : 1
                                 }}
                             >
-                                {submitting ? 'Processing...' : `Pay ${amount || '0.00'} ${currency}`}
+                                {submitting ? 'Processing...' : `Pay ${amount ? (parseFloat(amount) * 1.1).toFixed(2) : '0.00'} ${currency}`}
                             </button>
 
                         </form>

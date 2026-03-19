@@ -242,7 +242,8 @@ export default function SuperAdminReportsPage() {
                                             <div style={secondaryTextStyle}>{formatLocalTime(p.created_at)}</div>
                                         </div>
                                     </div>
-                                    <div style={amountValueStyle}><span style={{ fontSize: 11, fontWeight: '700', color: '#6B7C93', marginRight: 4 }}>{p.currency}</span>{p.amount} </div>
+
+                                    <div style={{ ...amountValueStyle, color: '#0070E0' }}><span style={{ fontSize: 11, fontWeight: '700', color: '#0070E0', marginRight: 4 }}>{p.currency}</span>{Number(p.total_paid_amount ?? p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })} </div>
                                 </div>
                             ))
                         )}

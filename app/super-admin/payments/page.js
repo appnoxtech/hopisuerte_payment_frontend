@@ -10,7 +10,8 @@ import {
     DollarSign,
     CreditCard,
     ArrowUpRight,
-    ArrowLeft
+    ArrowLeft,
+    MessageCircle
 } from 'lucide-react';
 import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
@@ -69,7 +70,7 @@ export default function GlobalPayments() {
                 };
             }
 
-            const amount = Number(p.amount) || 0;
+            const amount = Number(p.total_paid_amount ?? p.amount) || 0;
             const currency = p.currency || 'USD';
 
             groups[merchantId].totalByCurrency[currency] = (Number(groups[merchantId].totalByCurrency[currency]) || 0) + amount;
@@ -231,22 +232,39 @@ export default function GlobalPayments() {
                         <thead>
                             <tr style={tableHeaderStyle}>
                                 <th style={{ ...thStyle, paddingLeft: '24px' }}>Merchant</th>
-                                {/* <th style={thStyle}>Asset</th> */}
-                                <th style={thCenterStyle}>Amount</th>
+                                <th style={thCenterStyle}>Currency</th>
+                                <th style={thCenterStyle}>Entered</th>
+                                <th style={thCenterStyle}>Fee</th>
+                                <th style={thCenterStyle}>Total Paid</th>
+                                <th style={thCenterStyle}>Gateway</th>
                                 <th style={thCenterStyle}>Status</th>
                                 <th style={{ ...thStyle, textAlign: 'right', paddingRight: '24px' }}>Timestamp</th>
                             </tr>
-                        </thead>                         <tbody>
+                        </thead>
+                        <tbody>
                             {(activeMerchant ? activeMerchant.payments : payments).length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" style={emptyStateStyle}>Zero transactions in current cache.</td>
+                                    <td colSpan="7" style={emptyStateStyle}>Zero transactions in current cache.</td>
                                 </tr>
                             ) : (
                                 (activeMerchant ? activeMerchant.payments : payments).map((p) => (
                                     <tr key={p.id} style={trStyle}>
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={{ fontSize: '14px', color: '#1a1f36', fontWeight: '600' }}>{p.product?.user?.name || 'Direct'}</div>
-                                            <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px' }}>Customer: {p.customer_name} ({p.customer_phone})</div>
+                                            <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                Customer: {p.customer_name} ({p.customer_phone})
+                                                {p.customer_phone && (
+                                                    <a 
+                                                        href={`https://wa.me/${p.customer_phone.replace(/\D/g, '')}`} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        style={{ color: '#25D366', display: 'flex', alignItems: 'center' }}
+                                                        title="Message on WhatsApp"
+                                                    >
+                                                        <MessageCircle size={14} />
+                                                    </a>
+                                                )}
+                                            </div>
                                             {p.notes && (
                                                 <div style={{ 
                                                     fontSize: '11px', 
@@ -265,10 +283,41 @@ export default function GlobalPayments() {
                                         </td>
                                         <td style={tdCenterStyle}>
                                             <div style={amountGroupStyle}>
-                                                <span style={currencySymbolStyle}>
+                                                <span style={amountTextStyle}>{p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : '$')}{p.currency}</span>
+                                            </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={amountGroupStyle}>
+                                                <span style={amountTextStyle}>{((p.entered_amount ?? p.amount) || 0).toLocaleString()}</span>
+                                            </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={amountGroupStyle}>
+                                                <span style={amountTextStyle}>{(p.fee_amount || 0).toLocaleString()}</span>
+                                                {p.fee_percentage && <span style={{ fontSize: '10px', color: '#6B7C93', marginLeft: '4px' }}>({p.fee_percentage}%)</span>}
+                                            </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={amountGroupStyle}>
+                                                <span style={{ ...currencySymbolStyle, color: '#0070E0' }}>
                                                     {p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : '$')}
                                                 </span>
-                                                <span style={amountTextStyle}>{(p.amount || 0).toLocaleString()}</span>
+                                                <span style={{ ...amountTextStyle, color: '#0070E0' }}>{((p.total_paid_amount ?? p.amount) || 0).toLocaleString()}</span>
+                                            </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <div style={{
+                                                fontSize: '11px',
+                                                fontWeight: '700',
+                                                color: p.stripe_account === 2 ? '#8B5CF6' : '#6B7C93',
+                                                background: p.stripe_account === 2 ? '#F5F3FF' : '#F1F5F9',
+                                                padding: '4px 8px',
+                                                borderRadius: '6px',
+                                                display: 'inline-block',
+                                                border: '1px solid',
+                                                borderColor: p.stripe_account === 2 ? '#DDD6FE' : '#E3E8EF'
+                                            }}>
+                                                Stripe {p.stripe_account || 1}
                                             </div>
                                         </td>
                                         <td style={tdCenterStyle}>
@@ -321,10 +370,27 @@ const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', borde
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
 
-const thStyle = { padding: '16px 24px', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left', borderBottom: '1px solid #E3E8EF' };
+const thStyle = { 
+    paddingTop: '16px', 
+    paddingBottom: '16px', 
+    paddingLeft: '16px', 
+    paddingRight: '16px', 
+    fontSize: '12px', 
+    fontWeight: '700', 
+    color: '#6B7C93', 
+    textTransform: 'uppercase', 
+    letterSpacing: '0.05em', 
+    textAlign: 'left', 
+    borderBottom: '1px solid #E3E8EF' 
+};
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
-const tdStyle = { padding: '20px 24px' };
+const tdStyle = { 
+    paddingTop: '20px', 
+    paddingBottom: '20px', 
+    paddingLeft: '16px', 
+    paddingRight: '16px' 
+};
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
 const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '16px' };

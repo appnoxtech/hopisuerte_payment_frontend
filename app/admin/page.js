@@ -14,7 +14,8 @@ import {
     ArrowDown,
     ArrowUp,
     FileText,
-    History
+    History,
+    MessageCircle
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -71,7 +72,7 @@ export default function AdminDashboard() {
     const totals = successfulPayments.reduce((acc, p) => {
         const cur = (p.currency || 'USD').toUpperCase();
         if (acc.hasOwnProperty(cur)) {
-            acc[cur] += Number(p.amount);
+            acc[cur] += Number(p.total_paid_amount ?? p.amount);
         }
         return acc;
     }, { USD: 0, EUR: 0, XCG: 0 });
@@ -185,7 +186,10 @@ export default function AdminDashboard() {
                             <tr style={tableHeaderStyle}>
                                 <th style={{ ...thStyle, paddingLeft: '16px' }}>Customer</th>
                                 <th style={thStyle}>Product</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>Amount</th>
+                                <th style={{ ...thStyle, textAlign: 'center' }}>Currency</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>Entered</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>Fee</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>Total Paid</th>
                                 <th style={thCenterStyle}>Status</th>
                                 <th
                                     onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
@@ -214,7 +218,20 @@ export default function AdminDashboard() {
                                                 <div style={{ overflow: 'hidden' }}>
                                                     <div style={primaryTextStyle}>{p.customer_name}</div>
                                                     <div style={secondaryTextStyle}>{p.customer_email}</div>
-                                                    <div style={secondaryTextStyle}>{p.customer_phone}</div>
+                                                    <div style={{ ...secondaryTextStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        {p.customer_phone}
+                                                        {p.customer_phone && (
+                                                            <a 
+                                                                href={`https://wa.me/${p.customer_phone.replace(/\D/g, '')}`} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                style={{ color: '#25D366', display: 'flex', alignItems: 'center' }}
+                                                                title="Message on WhatsApp"
+                                                            >
+                                                                <MessageCircle size={14} />
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                     {p.notes && (
                                                         <div style={{ 
                                                             fontSize: '11px', 
@@ -236,10 +253,24 @@ export default function AdminDashboard() {
                                         <td style={tdStyle}>
                                             <span style={productBadgeStyle}>{p.product?.name || 'Quick Link'}</span>
                                         </td>
+                                        <td style={{ ...tdStyle, textAlign: 'center' }}>
+                                            <span style={currencyStyle}>{p.currency}</span>
+                                        </td>
                                         <td style={{ ...tdStyle, textAlign: 'right' }}>
                                             <div style={amountWrapperStyle}>
-                                                <span style={currencyStyle}>{p.currency}</span>
-                                                <span style={amountStyle}>{Number(p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                <span style={amountStyle}>{Number(p.entered_amount ?? p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                            </div>
+                                        </td>
+                                        <td style={{ ...tdStyle, textAlign: 'right' }}>
+                                            <div style={amountWrapperStyle}>
+                                                <span style={amountStyle}>{Number(p.fee_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                {p.fee_percentage && <span style={{ fontSize: '10px', color: '#6B7C93', marginLeft: '4px' }}>({p.fee_percentage}%)</span>}
+                                            </div>
+                                        </td>
+                                        <td style={{ ...tdStyle, textAlign: 'right' }}>
+                                            <div style={amountWrapperStyle}>
+                                                <span style={{ ...currencyStyle, color: '#0070E0' }}>{p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : '$')}</span>
+                                                <span style={{ ...amountStyle, color: '#0070E0' }}>{Number(p.total_paid_amount ?? p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                             </div>
                                         </td>
                                         <td style={tdCenterStyle}>

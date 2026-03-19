@@ -320,3 +320,14 @@ h6 {
     transform: translateX(20px) scale(0.95);
   }
 }
+/* Hide spin-buttons for input type="number" */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+.no-spinner {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

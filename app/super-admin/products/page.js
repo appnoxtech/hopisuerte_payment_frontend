@@ -45,6 +45,7 @@ export default function SuperAdminProducts() {
         name: '',
         description: '',
         active: true,
+        stripe_account: 1,
         image_url: null,
         image_file: null // to hold the new file temporarily
     });
@@ -111,6 +112,7 @@ export default function SuperAdminProducts() {
                 name: product.name,
                 description: product.description || '',
                 active: !!product.active,
+                stripe_account: product.stripe_account || 1,
                 image_url: product.image_url || null,
                 image_file: null
             });
@@ -121,6 +123,7 @@ export default function SuperAdminProducts() {
                 name: '',
                 description: '',
                 active: true,
+                stripe_account: 1,
                 image_url: null,
                 image_file: null
             });
@@ -138,7 +141,8 @@ export default function SuperAdminProducts() {
                     user_id: formData.user_id,
                     name: formData.name,
                     description: formData.description,
-                    active: formData.active
+                    active: formData.active,
+                    stripe_account: formData.stripe_account
                 });
                 productId = editingProduct.id;
             } else {
@@ -146,7 +150,8 @@ export default function SuperAdminProducts() {
                     user_id: formData.user_id,
                     name: formData.name,
                     description: formData.description,
-                    active: formData.active
+                    active: formData.active,
+                    stripe_account: formData.stripe_account
                 });
                 productId = res.data.id;
             }
@@ -377,11 +382,11 @@ export default function SuperAdminProducts() {
                         <div style={modalHeaderStyle}>
                             <div>
                                 <h2 style={modalTitleStyle}>{editingProduct ? "Edit Product" : "New Product"}</h2>
-
                             </div>
                             <button onClick={() => setIsModalOpen(false)} style={modalCloseBtnStyle}><X size={18} /></button>
                         </div>
-                        <form onSubmit={handleSubmit} style={modalFormStyle}>
+                        <div style={modalBodyStyle}>
+                            <form onSubmit={handleSubmit} style={modalFormStyle}>
                             <div style={inputGroupStyle}>
                                 <label style={labelStyle}>Merchant</label>
                                 <CustomDropdown
@@ -401,6 +406,18 @@ export default function SuperAdminProducts() {
                                 <textarea placeholder="Add description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, height: '80px', resize: 'none' }} />
                             </div>
                             <div style={inputGroupStyle}>
+                                <label style={labelStyle}>Payment Routing (Stripe Account)</label>
+                                <CustomDropdown
+                                    options={[
+                                        { label: 'Stripe Account 1 (Primary)', value: 1 },
+                                        { label: 'Stripe Account 2 (Failover)', value: 2 },
+                                    ]}
+                                    value={formData.stripe_account}
+                                    onChange={(val) => setFormData({ ...formData, stripe_account: val })}
+                                    placeholder="Select Account"
+                                />
+                            </div>
+                            <div style={inputGroupStyle}>
                                 <label style={labelStyle}>Product Image</label>
                                 {formData.image_url && !formData.image_file && (
                                     <div style={{ padding: '8px', border: '1px solid #E3E8EF', borderRadius: '12px', marginBottom: '8px', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -418,7 +435,8 @@ export default function SuperAdminProducts() {
                                 <button type="button" onClick={() => setIsModalOpen(false)} style={cancelBtnStyle}>Cancel</button>
                                 <button type="submit" style={saveBtnStyle}>{editingProduct ? "Save Changes" : "Add Product"}</button>
                             </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
@@ -426,7 +444,7 @@ export default function SuperAdminProducts() {
             {/* Audit History Modal */}
             {isPaymentModalOpen && (
                 <div style={modalOverlayStyle}>
-                    <div style={{ ...modalCardStyle, width: '900px' }}>
+                    <div style={{ ...modalCardStyle, maxWidth: '1000px', width: '95%' }}>
                         <div style={modalHeaderStyle}>
                             <div>
                                 <h3 style={{ fontSize: 13, color: '#6B7C93', fontWeight: '700', textTransform: 'uppercase', marginBottom: 4 }}>Audit Trail</h3>
@@ -440,13 +458,16 @@ export default function SuperAdminProducts() {
                                     <tr style={tableHeaderStyle}>
                                         <th style={thStyle}>Timestamp</th>
                                         <th style={thStyle}>Merchant</th>
-                                        <th style={{ ...thStyle, textAlign: 'right' }}>Transactions</th>
+                                        <th style={{ ...thStyle, textAlign: 'right' }}>Entered</th>
+                                        <th style={{ ...thStyle, textAlign: 'right' }}>Fee</th>
+                                        <th style={{ ...thStyle, textAlign: 'right' }}>Total Paid</th>
+                                        <th style={thCenterStyle}>Gateway</th>
                                         <th style={thCenterStyle}>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {selectedProductPayments.length === 0 ? (
-                                        <tr><td colSpan="4" style={emptyStateStyle}>No capital movement detected</td></tr>
+                                        <tr><td colSpan="7" style={emptyStateStyle}>No capital movement detected</td></tr>
                                     ) : (
                                         selectedProductPayments.map((p) => (
                                             <tr key={p.id} style={trStyle}>
@@ -475,7 +496,35 @@ export default function SuperAdminProducts() {
                                                     <span style={{ color: '#6B7C93', marginRight: 4, fontSize: 12 }}>
                                                         {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}
                                                     </span>
-                                                    <span style={{ color: '#1A1F36', fontSize: 15 }}>{Number(p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                    <span style={{ color: '#1A1F36', fontSize: 15 }}>{Number(p.entered_amount ?? p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                </td>
+                                                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700' }}>
+                                                    <span style={{ color: '#6B7C93', marginRight: 4, fontSize: 12 }}>
+                                                        {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}
+                                                    </span>
+                                                    <span style={{ color: '#1A1F36', fontSize: 15 }}>{Number(p.fee_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                    {p.fee_percentage && <div style={{ fontSize: '10px', color: '#6B7C93', fontWeight: '600' }}>({p.fee_percentage}%)</div>}
+                                                </td>
+                                                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700' }}>
+                                                    <span style={{ color: '#0070E0', marginRight: 4, fontSize: 12 }}>
+                                                        {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}
+                                                    </span>
+                                                    <span style={{ color: '#0070E0', fontSize: 15 }}>{Number(p.total_paid_amount ?? p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                                </td>
+                                                <td style={tdCenterStyle}>
+                                                    <div style={{
+                                                        fontSize: '10px',
+                                                        fontWeight: '700',
+                                                        color: p.stripe_account === 2 ? '#8B5CF6' : '#6B7C93',
+                                                        background: p.stripe_account === 2 ? '#F5F3FF' : '#F1F5F9',
+                                                        padding: '2px 6px',
+                                                        borderRadius: '4px',
+                                                        display: 'inline-block',
+                                                        border: '1px solid',
+                                                        borderColor: p.stripe_account === 2 ? '#DDD6FE' : '#E3E8EF'
+                                                    }}>
+                                                        Acc {p.stripe_account || 1}
+                                                    </div>
                                                 </td>
                                                 <td style={tdCenterStyle}>
                                                     <div style={{
@@ -563,7 +612,7 @@ const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', borde
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const tableHeaderStyle = { background: '#F8FAFC', borderBottom: '1px solid #E3E8EF' };
 
-const thStyle = { padding: '16px 24px', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left' };
+const thStyle = { padding: '16px 24px', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left', whiteSpace: 'nowrap' };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
 const tdStyle = { padding: '20px 24px' };
@@ -640,9 +689,10 @@ const actionBtnStyle = {
 
 const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
-const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 28, 100, 0.15)", backdropFilter: 'blur(8px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalCardStyle = { background: "#FFFFFF", width: "500px", borderRadius: "24px", padding: '40px', border: '1px solid #E3E8EF', boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.1)' };
-const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' };
+const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 28, 100, 0.15)", backdropFilter: 'blur(8px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000, padding: '20px' };
+const modalCardStyle = { background: "#FFFFFF", width: "100%", maxWidth: "500px", borderRadius: "24px", display: 'flex', flexDirection: 'column', border: '1px solid #E3E8EF', boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.1)', maxHeight: '90vh', overflow: 'hidden' };
+const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '32px 40px 16px 40px', borderBottom: '1px solid #F1F5F9' };
+const modalBodyStyle = { padding: '24px 40px 40px 40px', overflowY: 'auto', flex: 1 };
 const modalTitleStyle = { fontSize: '24px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
 const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#6B7C93', cursor: 'pointer', padding: '4px' };
 const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '20px' };
@@ -678,4 +728,4 @@ const cancelBtnStyle = {
     fontWeight: '600'
 };
 
-const historyTableWrapStyle = { overflowX: 'auto', maxHeight: '50vh', marginTop: 8 };
+const historyTableWrapStyle = { overflowX: 'auto', maxHeight: '60vh', marginTop: 8, background: '#FFF' };
