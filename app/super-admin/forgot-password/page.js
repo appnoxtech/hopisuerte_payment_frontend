@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/utils/api';
 import { validateEmail } from '@/utils/validation';
+import { useToast } from '@/context/ToastContext';
 
-export default function SuperAdminForgotPassword() {
+export default function AdminForgotPassword() {
+    const { showToast } = useToast();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
@@ -33,15 +35,14 @@ export default function SuperAdminForgotPassword() {
         setLoading(true);
 
         try {
-            // Note: using the same /password/forgot endpoint – adjust if super-admin has separate route
             await api.post('/password/forgot', { email });
+            showToast('A password reset link has been sent to your email.');
             setMessage('A password reset link has been sent to your email.');
             setEmail('');
         } catch (err) {
-            setError(
-                err.response?.data?.message ||
-                'Failed to send reset email. Please check the email address.'
-            );
+            const msg = err.response?.data?.message || 'Failed to send reset email. Please check the email address.';
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }
@@ -209,21 +210,6 @@ const glowStyle = {
     background: 'radial-gradient(circle, rgba(0, 112, 224, 0.05) 0%, transparent 70%)',
     borderRadius: '50%',
     zIndex: 0
-};
-
-const containerStyle = {
-    width: '100%',
-    maxWidth: 440,
-    zIndex: 2,
-    marginTop: -40
-};
-
-const cardStyle = {
-    background: '#FFFFFF',
-    border: '1px solid #E3E8EF',
-    borderRadius: 24,
-    padding: '48px 40px',
-    boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.2)'
 };
 
 const titleStyle = {

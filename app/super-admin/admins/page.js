@@ -18,7 +18,9 @@ import {
     Search,
     Clock,
     UserCircle,
-    CheckCircle2
+    CheckCircle2,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 
 export default function SuperAdminRoleManagement() {
@@ -39,6 +41,7 @@ export default function SuperAdminRoleManagement() {
         password: '',
         status: 'active'
     });
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -86,6 +89,7 @@ export default function SuperAdminRoleManagement() {
             });
         }
         setIsModalOpen(true);
+        setIsPasswordVisible(false); // Reset visibility on open
     };
 
     const handleSubmit = async (e) => {
@@ -300,7 +304,7 @@ export default function SuperAdminRoleManagement() {
                 <div style={modalOverlayStyle}>
                     <div style={modalCardStyle}>
                         <div style={modalHeaderStyle}>
-                            <h2 style={modalTitleStyle}>{editingAdmin ? "Modify Access" : "Add Details"}</h2>
+                            <h2 style={modalTitleStyle}>{editingAdmin ? "Edit Details" : "Add Details"}</h2>
                             <button onClick={() => setIsModalOpen(false)} style={closeBtnStyle}><X size={20} /></button>
                         </div>
 
@@ -318,13 +322,22 @@ export default function SuperAdminRoleManagement() {
                             {editingAdmin && (
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle}>New Password (Optional)</label>
-                                    <input
-                                        type="password"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                        style={inputStyle}
-                                        placeholder="••••••••"
-                                    />
+                                    <div style={passwordInputWrapperStyle}>
+                                        <input
+                                            type={isPasswordVisible ? "text" : "password"}
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                            style={{ ...inputStyle, paddingRight: '48px' }}
+                                            placeholder="••••••••"
+                                        />
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setIsPasswordVisible(!isPasswordVisible)} 
+                                            style={passwordToggleBtnStyle}
+                                        >
+                                            {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
                                     <div style={passHintStyle}>Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character.</div>
                                 </div>
                             )}
@@ -339,7 +352,7 @@ export default function SuperAdminRoleManagement() {
 
                             <div style={submitRowStyle}>
                                 <button type="button" onClick={() => setIsModalOpen(false)} style={cancelBtnStyle}>Cancel</button>
-                                <button type="submit" style={submitBtnStyle}>{editingAdmin ? "Update Configuration" : "Add"}</button>
+                                <button type="submit" style={submitBtnStyle}>{editingAdmin ? "Save" : "Add"}</button>
                             </div>
                         </form>
                     </div>
@@ -427,6 +440,8 @@ const labelStyle = { fontSize: '13px', fontWeight: '700', color: '#4A5568' };
 const inputStyle = { width: '100%', padding: '14px 16px', background: '#F8FAFC', border: '1px solid #E3E8EF', borderRadius: '12px', fontSize: '15px', color: '#1A1F36', outline: 'none', transition: 'all 0.2s' };
 const selectStyle = { ...inputStyle, appearance: 'none' };
 const passHintStyle = { fontSize: '11px', color: '#A0AEC0', fontWeight: '500', marginTop: '2px' };
+const passwordInputWrapperStyle = { position: 'relative', width: '100%' };
+const passwordToggleBtnStyle = { position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#6B7C93', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'color 0.2s', padding: '4px' };
 
 const submitRowStyle = { display: 'flex', gap: '12px', marginTop: '12px' };
 const cancelBtnStyle = { flex: 1, padding: '14px', background: '#FFFFFF', border: '1px solid #E3E8EF', borderRadius: '12px', color: '#4A5568', fontSize: '14px', fontWeight: '700', cursor: 'pointer' };

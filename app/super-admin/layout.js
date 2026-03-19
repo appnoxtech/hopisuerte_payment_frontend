@@ -15,7 +15,9 @@ import {
     BarChart3,
     User,
     ListOrdered,
-    Settings
+    Settings,
+    Menu,
+    X
 } from 'lucide-react';
 import NextLink from 'next/link';
 
@@ -27,8 +29,26 @@ export default function SuperAdminLayout({ children }) {
     const { showToast } = useToast();
     const router = useRouter();
     const pathname = usePathname();
+    const [isMobile, setIsMobile] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const publicPaths = ['/super-admin/login', '/super-admin/forgot-password'];
+    // Responsive detection
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 1024);
+            if (window.innerWidth >= 1024) setIsSidebarOpen(false);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Close sidebar on path change (mobile)
+    useEffect(() => {
+        if (isMobile) setIsSidebarOpen(false);
+    }, [pathname, isMobile]);
+
+    const publicPaths = ['/super-admin/login', '/super-admin/forgot-password', '/super-admin/reset-password'];
 
     const handleLogout = async () => {
         try {
@@ -85,8 +105,20 @@ export default function SuperAdminLayout({ children }) {
             {/* Background Effects */}
             <div style={overlayGlowStyle} />
 
+            {/* Mobile Overlay */}
+            {isMobile && isSidebarOpen && (
+                <div 
+                    onClick={() => setIsSidebarOpen(false)}
+                    style={mobileOverlayStyle} 
+                />
+            )}
+
             {/* Sidebar */}
-            <aside style={sidebarStyle}>
+            <aside style={{
+                ...sidebarStyle,
+                transform: isMobile ? (isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)') : 'translateX(0)',
+                visibility: isMobile && !isSidebarOpen ? 'hidden' : 'visible'
+            }}>
                 <div style={sidebarHeaderStyle}>
                     <div style={logoWrapperStyle}>
                         <Image
@@ -98,6 +130,14 @@ export default function SuperAdminLayout({ children }) {
                             style={{ objectFit: 'contain' }}
                         />
                     </div>
+                    {isMobile && (
+                        <button 
+                            onClick={() => setIsSidebarOpen(false)}
+                            style={closeSidebarBtnStyle}
+                        >
+                            <X size={20} />
+                        </button>
+                    )}
                 </div>
 
                 <div style={navDividerStyle} />
@@ -146,19 +186,39 @@ export default function SuperAdminLayout({ children }) {
             </aside>
 
             {/* Main Content Area */}
-            <div style={mainContentAreaStyle}>
-                <header style={topHeaderStyle}>
-                    <div style={headerLeftStyle}>
-                        <h2 style={headerTitleStyle}>
-                            {navLinks.find(l => l.href === pathname)?.name || 'Platform Admin'}
-                        </h2>
-                        <div style={breadcrumbStyle}>
-                            <span>Paysigur Terminal</span>
-                            <span style={{ color: '#CBD5E1' }}>/</span>
-                            <span>{navLinks.find(l => l.href === pathname)?.name || 'Home'}</span>
+            <div style={{
+                ...mainContentAreaStyle,
+                paddingLeft: isMobile ? 0 : '260px'
+            }}>
+                <header style={{
+                    ...topHeaderStyle,
+                    padding: isMobile ? '0 16px' : '0 32px'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        {isMobile && (
+                            <button 
+                                onClick={() => setIsSidebarOpen(true)}
+                                style={hamburgerBtnStyle}
+                            >
+                                <Menu size={20} />
+                            </button>
+                        )}
+                        <div style={headerLeftStyle}>
+                            <h2 style={{
+                                ...headerTitleStyle,
+                                fontSize: isMobile ? '18px' : '20px'
+                            }}>
+                                {navLinks.find(l => l.href === pathname)?.name || 'Platform Admin'}
+                            </h2>
+                            {!isMobile && (
+                                <div style={breadcrumbStyle}>
+                                    <span>Paysigur Terminal</span>
+                                    <span style={{ color: '#CBD5E1' }}>/</span>
+                                    <span>{navLinks.find(l => l.href === pathname)?.name || 'Home'}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
-
                 </header>
 
                 <main style={mainViewStyle}>
@@ -200,12 +260,55 @@ const sidebarStyle = {
     flexDirection: 'column',
     position: 'fixed',
     height: '100vh',
-    zIndex: 50,
-    boxShadow: '4px 0 20px rgba(0, 28, 100, 0.05)'
+    zIndex: 100,
+    boxShadow: '4px 0 20px rgba(0, 28, 100, 0.05)',
+    transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s'
+};
+
+const mobileOverlayStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    background: 'rgba(0, 28, 100, 0.3)',
+    backdropFilter: 'blur(4px)',
+    zIndex: 90,
+    animation: 'fadeIn 0.2s ease-out'
+};
+
+const hamburgerBtnStyle = {
+    background: 'none',
+    border: 'none',
+    color: '#001C64',
+    cursor: 'pointer',
+    padding: '8px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'background 0.2s'
+};
+
+const closeSidebarBtnStyle = {
+    background: 'rgba(255,255,255,0.05)',
+    border: 'none',
+    color: '#fff',
+    cursor: 'pointer',
+    padding: '8px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 'auto'
 };
 
 const sidebarHeaderStyle = {
     padding: '20px 24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative'
 };
 
 const logoWrapperStyle = {
@@ -222,11 +325,12 @@ const navDividerStyle = {
 };
 
 const navContainerStyle = {
-    padding: '0 12px',
+    padding: '0 12px 20px',
     display: 'flex',
     flexDirection: 'column',
     gap: '4px',
-    flex: 1
+    flex: 1,
+    overflowY: 'auto'
 };
 
 const navItemStyle = {
@@ -320,11 +424,12 @@ const logoutBtnStyle = {
 };
 
 const mainContentAreaStyle = {
-    paddingLeft: '260px',
+    // paddingLeft: '260px',
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100vh'
+    minHeight: '100vh',
+    transition: 'padding-left 0.3s ease'
 };
 
 const topHeaderStyle = {

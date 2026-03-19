@@ -298,8 +298,8 @@ function UniqueProductPaymentContent() {
 
             setClientSecret(res.data.clientSecret);
             const accountId = res.data.stripe_account || 1;
-            const pk = accountId === 2 
-                ? process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_2_KEY 
+            const pk = accountId === 2
+                ? process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_2_KEY
                 : process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_1_KEY;
 
             setStripePromise(loadStripe(pk));
@@ -489,7 +489,7 @@ function UniqueProductPaymentContent() {
                                         <span style={{ fontWeight: '500' }}>{currency} {parseFloat(amount).toFixed(2)}</span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: 16, color: '#475569' }}>
-                                        <span>Processing Fee ({feePercentage}%):</span>
+                                        <span>Processing Fee:</span>
                                         <span style={{ fontWeight: '500' }}>{currency} {(parseFloat(amount) * (feePercentage / 100)).toFixed(2)}</span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', paddingTop: 16, borderTop: '1px solid #CBD5E1', color: '#0F172A', fontWeight: '800' }}>

@@ -20,8 +20,9 @@ export const UserProvider = ({ children }) => {
     const fetchUser = useCallback(async () => {
         const isSuperAdminPath = pathname.startsWith('/super-admin');
         const isAdminPanelPath = pathname.startsWith('/admin');
+        const isResetPasswordPath = pathname === '/super-admin/reset-password' || pathname === '/admin/reset-password';
         
-        if (!isSuperAdminPath && !isAdminPanelPath) {
+        if ((!isSuperAdminPath && !isAdminPanelPath) || isResetPasswordPath) {
             setLoading(false);
             return;
         }
