@@ -292,9 +292,9 @@ export default function GlobalPayments() {
                                             </div>
                                         </td>
                                         <td style={tdCenterStyle}>
-                                            <div style={amountGroupStyle}>
+                                            <div style={{ ...amountGroupStyle, flexDirection: 'column', gap: '2px' }}>
                                                 <span style={amountTextStyle}>{(p.fee_amount || 0).toLocaleString()}</span>
-                                                {p.fee_percentage && <span style={{ fontSize: '10px', color: '#6B7C93', marginLeft: '4px' }}>({p.fee_percentage}%)</span>}
+                                                {p.fee_percentage && <span style={{ fontSize: '10px', color: '#6B7C93' }}>({p.fee_percentage}%)</span>}
                                             </div>
                                         </td>
                                         <td style={tdCenterStyle}>

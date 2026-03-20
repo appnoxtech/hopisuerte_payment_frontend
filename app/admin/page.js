@@ -188,7 +188,7 @@ export default function AdminDashboard() {
                                 <th style={thStyle}>Product</th>
                                 <th style={{ ...thStyle, textAlign: 'center' }}>Currency</th>
                                 <th style={{ ...thStyle, textAlign: 'right' }}>Entered</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>Fee</th>
+                                <th style={{ ...thStyle, textAlign: 'center' }}>Fee</th>
                                 <th style={{ ...thStyle, textAlign: 'right' }}>Total Paid</th>
                                 <th style={thCenterStyle}>Status</th>
                                 <th
@@ -261,8 +261,8 @@ export default function AdminDashboard() {
                                                 <span style={amountStyle}>{Number(p.entered_amount ?? p.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                             </div>
                                         </td>
-                                        <td style={{ ...tdStyle, textAlign: 'right' }}>
-                                            <div style={amountWrapperStyle}>
+                                        <td style={{ ...tdStyle, textAlign: 'center' }}>
+                                            <div style={{ ...amountWrapperStyle, justifyContent: 'center' }}>
                                                 <span style={amountStyle}>{Number(p.fee_amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                                 {p.fee_percentage && <span style={{ fontSize: '10px', color: '#6B7C93', marginLeft: '4px' }}>({p.fee_percentage}%)</span>}
                                             </div>

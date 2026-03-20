@@ -126,24 +126,24 @@ export default function UserManagement() {
 
             // Handle Profile Image
             if (formData.remove_image && userId) {
-                 await api.delete(`/super-admin/users/${userId}/profile-image`, getSuperAdminHeaders());
+                await api.delete(`/super-admin/users/${userId}/profile-image`, getSuperAdminHeaders());
             } else if (formData.image_file && userId) {
                 const fd = new FormData();
                 fd.append('image', formData.image_file);
                 await api.post(`/super-admin/users/${userId}/profile-image`, fd, {
                     ...getSuperAdminHeaders(),
-                    headers: { 
+                    headers: {
                         ...getSuperAdminHeaders().headers,
-                        'Content-Type': 'multipart/form-data' 
+                        'Content-Type': 'multipart/form-data'
                     }
                 });
             }
 
-            showToast(editingUser ? 'Merchant updated successfully' : 'Merchant provisioned successfully', 'success');
+            showToast(editingUser ? 'Merchant updated successfully' : 'Merchant added successfully', 'success');
             fetchUsers();
             handleCloseModal();
         } catch (err) {
-            showToast(err.response?.data?.message || 'Operation failed', 'error');
+            showToast(err.response?.data?.message || 'Failed to update merchant', 'error');
         } finally {
             setFormLoading(false);
         }
@@ -293,14 +293,14 @@ export default function UserManagement() {
                             filteredUsers.map(user => (
                                 <tr key={user.id} style={trStyle}>
                                     <td style={{ ...tdStyle, paddingLeft: '24px' }}>
-                                         <div style={userCellWrapperStyle}>
-                                             <div style={tableAvatarStyle}>
+                                        <div style={userCellWrapperStyle}>
+                                            <div style={tableAvatarStyle}>
                                                 {(user.profile_image_url && !imageErrors.has(user.id)) ? (
-                                                    <img 
+                                                    <img
                                                         key={`avatar-${user.id}`}
-                                                        src={user.profile_image_url} 
-                                                        alt="" 
-                                                        style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} 
+                                                        src={user.profile_image_url}
+                                                        alt=""
+                                                        style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }}
                                                         onError={() => {
                                                             setImageErrors(prev => new Set(prev).add(user.id));
                                                         }}
@@ -373,109 +373,116 @@ export default function UserManagement() {
             {showModal && (
                 <div style={modalOverlayStyle}>
                     <div style={modalCardStyle}>
+
+
                         <div style={modalHeaderStyle}>
-                            <div>
-                                <h2 style={modalTitleStyle}>{editingUser ? 'Edit Merchant' : 'Add Merchant'}</h2>
-                            </div>
-                            <button onClick={handleCloseModal} style={modalCloseBtnStyle}><X size={18} /></button>
+                            <h2 style={modalTitleStyle}>{editingUser ? 'Edit Merchant' : 'Add Merchant'}</h2>
+                            <button onClick={handleCloseModal} style={modalCloseBtnStyle}><X size={20} /></button>
                         </div>
 
-                        <form onSubmit={handleSubmit} style={modalFormStyle}>
-                            {/* Merchant Profile Image Section */}
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Profile Image (Optional)</label>
-                                <div style={imageUploadSectionStyle}>
-                                    <div style={imagePreviewCircleStyle}>
-                                        {formData.image_url ? (
-                                            <img src={formData.image_url} alt="Profile Preview" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
-                                        ) : (
-                                            <Camera size={24} color="#6B7C93" />
-                                        )}
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <button 
-                                            type="button" 
-                                            onClick={() => fileInputRef.current?.click()} 
-                                            style={uploadSmallBtnStyle}
-                                        >
-                                            <Upload size={14} />
-                                            <span>{formData.image_url ? 'Change Photo' : 'Upload Photo'}</span>
-                                        </button>
-                                        {formData.image_url && (
-                                            <button 
-                                                type="button" 
-                                                onClick={handleRemoveImagePreview} 
-                                                style={removeSmallBtnStyle}
-                                            >
-                                                <Trash2 size={14} />
-                                                <span>Remove</span>
-                                            </button>
-                                        )}
-                                    </div>
-                                    <input 
-                                        type="file" 
-                                        ref={fileInputRef} 
-                                        onChange={handleImageChange} 
-                                        accept="image/*" 
-                                        style={{ display: 'none' }} 
-                                    />
-                                </div>
-                            </div>
-
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Full Name</label>
-                                <div style={inputWrapperStyle}>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        placeholder="Enter Name"
-                                        style={modalInputStyle}
-                                    />
-                                </div>
-                            </div>
-
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Email Address</label>
-                                <div style={inputWrapperStyle}>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        placeholder="Enter email"
-                                        style={modalInputStyle}
-                                    />
-                                </div>
-                            </div>
-                            
-                            {editingUser && (
+                        <div style={modalBodyStyle}>
+                            <form id="merchant-form" onSubmit={handleSubmit} style={modalFormStyle}>
+                                {/* Merchant Profile Image Section */}
                                 <div style={inputGroupStyle}>
-                                    <label style={labelStyle}>Merchant Slug (Public URL)</label>
+                                    <label style={labelStyle}>Profile Image (Optional)</label>
+                                    <div style={imageUploadSectionStyle}>
+                                        <div style={imagePreviewCircleStyle}>
+                                            {formData.image_url ? (
+                                                <img src={formData.image_url} alt="Profile Preview" style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />
+                                            ) : (
+                                                <Camera size={24} color="#6B7C93" />
+                                            )}
+                                        </div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                style={uploadSmallBtnStyle}
+                                            >
+                                                <Upload size={14} />
+                                                <span>{formData.image_url ? 'Change Photo' : 'Upload Photo'}</span>
+                                            </button>
+                                            {formData.image_url && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleRemoveImagePreview}
+                                                    style={removeSmallBtnStyle}
+                                                >
+                                                    <Trash2 size={14} />
+                                                    <span>Remove</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleImageChange}
+                                            accept="image/*"
+                                            style={{ display: 'none' }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Full Name</label>
                                     <div style={inputWrapperStyle}>
                                         <input
                                             type="text"
                                             required
-                                            value={formData.slug}
-                                            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                                            placeholder="merchant-slug"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            placeholder="Enter Name"
                                             style={modalInputStyle}
                                         />
                                     </div>
-                                    <p style={{fontSize: 12, color: '#6B7C93', marginTop: 2}}>
-                                        Changing the slug will regenerate all product URLs for this merchant safely.
-                                    </p>
                                 </div>
-                            )}
 
-                            <div style={modalFooterStyle}>
-                                <button type="button" onClick={handleCloseModal} style={cancelBtnStyle}>Cancel</button>
-                                <button type="submit" disabled={formLoading} style={submitBtnStyle}>
-                                    {formLoading ? 'Saving...' : (editingUser ? 'Save Changes' : 'Create')}
-                                </button>
-                            </div>
-                        </form>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Email Address</label>
+                                    <div style={inputWrapperStyle}>
+                                        <input
+                                            type="email"
+                                            required
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            placeholder="Enter email"
+                                            style={modalInputStyle}
+                                        />
+                                    </div>
+                                </div>
+
+                                {editingUser && (
+                                    <div style={inputGroupStyle}>
+                                        <label style={labelStyle}>Merchant Slug (Public URL)</label>
+                                        <div style={inputWrapperStyle}>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={formData.slug}
+                                                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                                                placeholder="merchant-slug"
+                                                style={modalInputStyle}
+                                            />
+                                        </div>
+                                        <p style={{ fontSize: 12, color: '#6B7C93', marginTop: 2 }}>
+                                            Changing the slug will regenerate all product URLs for this merchant safely.
+                                        </p>
+                                    </div>
+                                )}
+                            </form>
+                        </div>
+
+                        <div style={modalFooterStyle}>
+                            <button type="button" onClick={handleCloseModal} style={cancelBtnStyle}>Cancel</button>
+                            <button 
+                                type="submit" 
+                                form="merchant-form" 
+                                disabled={formLoading} 
+                                style={submitBtnStyle}
+                            >
+                                {formLoading ? 'Saving...' : (editingUser ? 'Save Changes' : 'Create')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -540,17 +547,17 @@ const tdStyle = { padding: '20px 24px' };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
 const userCellWrapperStyle = { display: 'flex', alignItems: 'center', gap: '16px' };
-const tableAvatarStyle = { 
-    width: '40px', 
-    height: '40px', 
-    borderRadius: '12px', 
-    background: '#F0F7FF', 
-    border: '1px solid #E3E8EF', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    fontWeight: '700', 
-    color: '#0070E0', 
+const tableAvatarStyle = {
+    width: '40px',
+    height: '40px',
+    borderRadius: '12px',
+    background: '#F0F7FF',
+    border: '1px solid #E3E8EF',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '700',
+    color: '#0070E0',
     fontSize: '16px',
     overflow: 'hidden'
 };
@@ -569,56 +576,56 @@ const editPhotoBtnStyle = {
     transition: 'all 0.2s'
 };
 
-const imageUploadSectionStyle = { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '20px', 
-    padding: '16px', 
-    background: '#F8FAFC', 
-    borderRadius: '16px', 
+const imageUploadSectionStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
+    padding: '16px',
+    background: '#F8FAFC',
+    borderRadius: '16px',
     border: '1px solid #E3E8EF',
     marginBottom: '8px'
 };
 
-const imagePreviewCircleStyle = { 
-    width: '64px', 
-    height: '64px', 
-    borderRadius: '16px', 
-    background: '#FFF', 
-    border: '1px solid #E3E8EF', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
+const imagePreviewCircleStyle = {
+    width: '64px',
+    height: '64px',
+    borderRadius: '16px',
+    background: '#FFF',
+    border: '1px solid #E3E8EF',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     overflow: 'hidden',
     boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
 };
 
-const uploadSmallBtnStyle = { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '6px', 
-    padding: '8px 16px', 
-    background: '#0070E0', 
-    color: '#FFF', 
-    border: 'none', 
-    borderRadius: '8px', 
-    fontSize: '13px', 
-    fontWeight: '600', 
+const uploadSmallBtnStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 16px',
+    background: '#0070E0',
+    color: '#FFF',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '600',
     cursor: 'pointer',
     transition: 'all 0.2s'
 };
 
-const removeSmallBtnStyle = { 
-    display: 'flex', 
-    alignItems: 'center', 
-    gap: '6px', 
-    padding: '8px 16px', 
-    background: '#FFF', 
-    color: '#EF4444', 
-    border: '1px solid #FEE2E2', 
-    borderRadius: '8px', 
-    fontSize: '13px', 
-    fontWeight: '600', 
+const removeSmallBtnStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 16px',
+    background: '#FFF',
+    color: '#EF4444',
+    border: '1px solid #FEE2E2',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '600',
     cursor: 'pointer',
     transition: 'all 0.2s'
 };
@@ -638,20 +645,73 @@ const loadingTextStyle = { fontSize: '12px', color: '#6B7C93', fontWeight: '600'
 
 const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
 
-const modalOverlayStyle = { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0, 28, 100, 0.2)", backdropFilter: 'blur(8px)', display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
-const modalCardStyle = { background: "#FFFFFF", width: "450px", borderRadius: "24px", padding: '40px', border: '1px solid #E3E8EF', boxShadow: '0 25px 50px -12px rgba(0, 28, 100, 0.15)' };
-const modalHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' };
-const modalTitleStyle = { fontSize: '24px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
-const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#6B7C93', cursor: 'pointer', padding: '4px' };
-const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '20px' };
+const modalOverlayStyle = { 
+    position: "fixed", 
+    top: 0, 
+    left: 0, 
+    width: "100%", 
+    height: "100%", 
+    background: "rgba(0, 15, 60, 0.4)", 
+    backdropFilter: 'blur(8px)', 
+    display: "flex", 
+    justifyContent: "center", 
+    alignItems: "center", 
+    zIndex: 1000,
+    padding: '20px'
+};
+
+const modalCardStyle = { 
+    background: "#FFFFFF", 
+    width: "100%", 
+    maxWidth: "500px", 
+    maxHeight: 'min(90vh, 700px)',
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: "28px", 
+    border: '1px solid #E3E8EF', 
+    boxShadow: '0 25px 60px -12px rgba(0, 20, 80, 0.2)',
+    overflow: 'hidden',
+    position: 'relative'
+};
+
+const modalHeaderStyle = { 
+    padding: '24px 32px', 
+    borderBottom: '1px solid #F1F5F9',
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    alignItems: 'center',
+    flexShrink: 0
+};
+
+const modalTitleStyle = { fontSize: '22px', fontWeight: '800', color: '#001C64', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" };
+const modalCloseBtnStyle = { background: 'none', border: 'none', color: '#6B7C93', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' };
+
+const modalBodyStyle = {
+    flex: 1,
+    overflowY: 'auto',
+    padding: '32px',
+    scrollbarWidth: 'thin',
+    scrollbarColor: '#E2E8F0 transparent'
+};
+
+const modalFormStyle = { display: 'flex', flexDirection: 'column', gap: '24px' };
 const inputGroupStyle = { display: 'flex', flexDirection: 'column', gap: '8px' };
 const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#4A5568', marginLeft: 4 };
 const inputWrapperStyle = { position: 'relative' };
 const modalInputStyle = { width: "100%", padding: "14px 16px", background: '#F8FAFC', border: '1px solid #E3E8EF', color: '#1A1F36', borderRadius: 12, fontSize: '15px', outline: 'none', transition: 'all 0.2s' };
-const modalFooterStyle = { display: "flex", justifyContent: "flex-end", gap: 12, marginTop: "12px" };
 
-const submitBtnStyle = { padding: "14px 28px", background: "#0070E0", color: '#FFF', border: "none", fontWeight: "700", borderRadius: 12, cursor: "pointer", fontSize: '14px', boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)' };
-const cancelBtnStyle = { padding: "14px 28px", background: '#FFF', color: '#4A5568', border: '1px solid #E3E8EF', borderRadius: 12, cursor: 'pointer', fontSize: '14px', fontWeight: '600' };
+const modalFooterStyle = { 
+    padding: "20px 32px", 
+    display: "flex", 
+    justifyContent: "flex-end", 
+    gap: 12, 
+    borderTop: '1px solid #F1F5F9',
+    background: '#FFFFFF',
+    flexShrink: 0
+};
+
+const submitBtnStyle = { padding: "14px 28px", background: "#0070E0", color: '#FFF', border: "none", fontWeight: "700", borderRadius: 12, cursor: "pointer", fontSize: '14px', boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)', transition: 'all 0.2s' };
+const cancelBtnStyle = { padding: "14px 28px", background: '#FFF', color: '#4A5568', border: '1px solid #E3E8EF', borderRadius: 12, cursor: 'pointer', fontSize: '14px', fontWeight: '600', transition: 'all 0.2s' };
 
 const errorBannerStyle = { padding: '12px', background: '#FEF2F2', border: '1px solid #FEE2E2', borderRadius: '10px', color: '#EF4444', fontSize: '13px', marginBottom: '16px', fontWeight: '600' };
 const successBannerStyle = { padding: '12px', background: '#ECFDF5', border: '1px solid #D1FAE5', borderRadius: '10px', color: '#10B981', fontSize: '13px', marginBottom: '16px', fontWeight: '600' };
