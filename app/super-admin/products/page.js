@@ -44,6 +44,7 @@ export default function SuperAdminProducts() {
         user_id: '',
         name: '',
         description: '',
+        notes: '',
         active: true,
         stripe_account: 1,
         image_url: null,
@@ -111,6 +112,7 @@ export default function SuperAdminProducts() {
                 user_id: product.user_id,
                 name: product.name,
                 description: product.description || '',
+                notes: product.notes || '',
                 active: !!product.active,
                 stripe_account: product.stripe_account || 1,
                 image_url: product.image_url || null,
@@ -122,6 +124,7 @@ export default function SuperAdminProducts() {
                 user_id: users.length > 0 ? users[0].id : '',
                 name: '',
                 description: '',
+                notes: '',
                 active: true,
                 stripe_account: 1,
                 image_url: null,
@@ -141,6 +144,7 @@ export default function SuperAdminProducts() {
                     user_id: formData.user_id,
                     name: formData.name,
                     description: formData.description,
+                    notes: formData.notes,
                     active: formData.active,
                     stripe_account: formData.stripe_account
                 });
@@ -150,6 +154,7 @@ export default function SuperAdminProducts() {
                     user_id: formData.user_id,
                     name: formData.name,
                     description: formData.description,
+                    notes: formData.notes,
                     active: formData.active,
                     stripe_account: formData.stripe_account
                 });
@@ -301,6 +306,11 @@ export default function SuperAdminProducts() {
                                                         {product.name}
                                                     </button>
                                                     <div style={descTextStyle}>{product.description?.substring(0, 40) || 'Generic asset'}...</div>
+                                                    {product.notes && (
+                                                        <div style={{ fontSize: '10px', color: '#0070E0', fontWeight: 'bold', marginTop: '2px', fontStyle: 'italic' }}>
+                                                            Note: {product.notes.substring(0, 30)}...
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>
@@ -387,54 +397,58 @@ export default function SuperAdminProducts() {
                         </div>
                         <div style={modalBodyStyle}>
                             <form onSubmit={handleSubmit} style={modalFormStyle}>
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Merchant</label>
-                                <CustomDropdown
-                                    options={userOptions}
-                                    value={formData.user_id}
-                                    onChange={(val) => setFormData({ ...formData, user_id: val })}
-                                    showSearch={true}
-                                    placeholder="Search merchant..."
-                                />
-                            </div>
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Product Name</label>
-                                <input placeholder="Enter product name" value={formData.name} required onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={modalInputStyle} />
-                            </div>
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Product Description</label>
-                                <textarea placeholder="Add description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, height: '80px', resize: 'none' }} />
-                            </div>
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Payment Routing (Stripe Account)</label>
-                                <CustomDropdown
-                                    options={[
-                                        { label: 'Stripe Account 1 (Primary)', value: 1 },
-                                        { label: 'Stripe Account 2 (Failover)', value: 2 },
-                                    ]}
-                                    value={formData.stripe_account}
-                                    onChange={(val) => setFormData({ ...formData, stripe_account: val })}
-                                    placeholder="Select Account"
-                                />
-                            </div>
-                            <div style={inputGroupStyle}>
-                                <label style={labelStyle}>Product Image</label>
-                                {formData.image_url && !formData.image_file && (
-                                    <div style={{ padding: '8px', border: '1px solid #E3E8EF', borderRadius: '12px', marginBottom: '8px', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                        <img src={formData.image_url} alt="Product" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px' }} />
-                                        <button type="button" onClick={() => handleRemoveImage(editingProduct.id)} style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}>Remove</button>
-                                    </div>
-                                )}
-                                <input type="file" accept="image/*" onChange={(e) => setFormData({ ...formData, image_file: e.target.files[0] })} style={modalInputStyle} />
-                            </div>
-                            <div style={checkboxWrapper}>
-                                <input type="checkbox" id="active" checked={formData.active} onChange={(e) => setFormData({ ...formData, active: e.target.checked })} style={checkboxStyle} />
-                                <label htmlFor="active" style={checkboxLabel}>Mark as active</label>
-                            </div>
-                            <div style={modalFooterStyle}>
-                                <button type="button" onClick={() => setIsModalOpen(false)} style={cancelBtnStyle}>Cancel</button>
-                                <button type="submit" style={saveBtnStyle}>{editingProduct ? "Save Changes" : "Add Product"}</button>
-                            </div>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Merchant</label>
+                                    <CustomDropdown
+                                        options={userOptions}
+                                        value={formData.user_id}
+                                        onChange={(val) => setFormData({ ...formData, user_id: val })}
+                                        showSearch={true}
+                                        placeholder="Search merchant..."
+                                    />
+                                </div>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Product Name</label>
+                                    <input placeholder="Enter product name" value={formData.name} required onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={modalInputStyle} />
+                                </div>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Product Description (Public)</label>
+                                    <textarea placeholder="Add public description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} style={{ ...modalInputStyle, height: '80px', resize: 'none' }} />
+                                </div>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Product Note (Public)</label>
+                                    <textarea placeholder="Add public note (displayed below name)" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} style={{ ...modalInputStyle, height: '80px', resize: 'none' }} />
+                                </div>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Payment Routing (Stripe Account)</label>
+                                    <CustomDropdown
+                                        options={[
+                                            { label: 'Stripe Account 1 (Primary)', value: 1 },
+                                            { label: 'Stripe Account 2 (Failover)', value: 2 },
+                                        ]}
+                                        value={formData.stripe_account}
+                                        onChange={(val) => setFormData({ ...formData, stripe_account: val })}
+                                        placeholder="Select Account"
+                                    />
+                                </div>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Product Image</label>
+                                    {formData.image_url && !formData.image_file && (
+                                        <div style={{ padding: '8px', border: '1px solid #E3E8EF', borderRadius: '12px', marginBottom: '8px', background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <img src={formData.image_url} alt="Product" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px' }} />
+                                            <button type="button" onClick={() => handleRemoveImage(editingProduct.id)} style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}>Remove</button>
+                                        </div>
+                                    )}
+                                    <input type="file" accept="image/*" onChange={(e) => setFormData({ ...formData, image_file: e.target.files[0] })} style={modalInputStyle} />
+                                </div>
+                                <div style={checkboxWrapper}>
+                                    <input type="checkbox" id="active" checked={formData.active} onChange={(e) => setFormData({ ...formData, active: e.target.checked })} style={checkboxStyle} />
+                                    <label htmlFor="active" style={checkboxLabel}>Mark as active</label>
+                                </div>
+                                <div style={modalFooterStyle}>
+                                    <button type="button" onClick={() => setIsModalOpen(false)} style={cancelBtnStyle}>Cancel</button>
+                                    <button type="submit" style={saveBtnStyle}>{editingProduct ? "Save Changes" : "Add Product"}</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -477,13 +491,13 @@ export default function SuperAdminProducts() {
                                                     <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_email}</div>
                                                     <div style={{ fontSize: 12, color: '#6B7C93' }}>{p.customer_phone}</div>
                                                     {p.notes && (
-                                                        <div style={{ 
-                                                            fontSize: '11px', 
-                                                            color: '#0070E0', 
-                                                            marginTop: '6px', 
-                                                            background: '#F0F7FF', 
-                                                            padding: '4px 8px', 
-                                                            borderRadius: '6px', 
+                                                        <div style={{
+                                                            fontSize: '11px',
+                                                            color: '#0070E0',
+                                                            marginTop: '6px',
+                                                            background: '#F0F7FF',
+                                                            padding: '4px 8px',
+                                                            borderRadius: '6px',
                                                             display: 'inline-block',
                                                             border: '1px solid rgba(0, 112, 224, 0.1)',
                                                             fontWeight: '600'
@@ -491,7 +505,7 @@ export default function SuperAdminProducts() {
                                                             Note: {p.notes}
                                                         </div>
                                                     )}
-                                                 </td>
+                                                </td>
                                                 <td style={{ ...tdStyle, textAlign: 'right', fontWeight: '700' }}>
                                                     <span style={{ color: '#6B7C93', marginRight: 4, fontSize: 12 }}>
                                                         {p.currency === 'USD' ? '$' : (p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : p.currency))}

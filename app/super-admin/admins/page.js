@@ -71,15 +71,16 @@ export default function SuperAdminRoleManagement() {
     };
 
     const handleOpenModal = (admin = null) => {
-        if (admin) {
-            setEditingAdmin(admin);
-            setFormData({
-                name: admin.name,
-                email: admin.email,
-                password: '', // blank intentionally for edit
-                status: admin.status
-            });
-        } else {
+        // Edit functionality disabled
+        // if (admin) {
+        //     setEditingAdmin(admin);
+        //     setFormData({
+        //         name: admin.name,
+        //         email: admin.email,
+        //         password: '', // blank intentionally for edit
+        //         status: admin.status
+        //     });
+        // } else {
             setEditingAdmin(null);
             setFormData({
                 name: '',
@@ -87,7 +88,7 @@ export default function SuperAdminRoleManagement() {
                 password: '',
                 status: 'active'
             });
-        }
+        // }
         setIsModalOpen(true);
         setIsPasswordVisible(false); // Reset visibility on open
     };
@@ -95,13 +96,14 @@ export default function SuperAdminRoleManagement() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (editingAdmin) {
-                await api.put(`/super-admin/admins/${editingAdmin.id}`, formData);
-                showToast('Super Admin profile updated', 'success');
-            } else {
+            // Edit functionality disabled
+            // if (editingAdmin) {
+            //     await api.put(`/super-admin/admins/${editingAdmin.id}`, formData);
+            //     showToast('Super Admin profile updated', 'success');
+            // } else {
                 await api.post('/super-admin/admins', formData);
                 showToast('Super Admin created successfully', 'success');
-            }
+            // }
             setIsModalOpen(false);
             fetchAdmins();
             fetchLogs();
@@ -110,28 +112,30 @@ export default function SuperAdminRoleManagement() {
         }
     };
 
-    const handleToggleStatus = async (id) => {
-        try {
-            await api.patch(`/super-admin/admins/${id}/status`);
-            fetchAdmins();
-            fetchLogs();
-            showToast('Super Admin status toggled', 'success');
-        } catch (err) {
-            showToast(err.response?.data?.message || 'Status toggle failed', 'error');
-        }
-    };
+    // Toggle status functionality disabled
+    // const handleToggleStatus = async (id) => {
+    //     try {
+    //         await api.patch(`/super-admin/admins/${id}/status`);
+    //         fetchAdmins();
+    //         fetchLogs();
+    //         showToast('Super Admin status toggled', 'success');
+    //     } catch (err) {
+    //         showToast(err.response?.data?.message || 'Status toggle failed', 'error');
+    //     }
+    // };
 
-    const handleDelete = async (id) => {
-        if (!confirm('Are you absolutely sure you want to permanently delete this Super Admin?')) return;
-        try {
-            await api.delete(`/super-admin/admins/${id}`);
-            fetchAdmins();
-            fetchLogs();
-            showToast('Super Admin deleted successfully', 'success');
-        } catch (err) {
-            showToast(err.response?.data?.message || 'Deletion failed', 'error');
-        }
-    };
+    // Delete functionality disabled
+    // const handleDelete = async (id) => {
+    //     if (!confirm('Are you absolutely sure you want to permanently delete this Super Admin?')) return;
+    //     try {
+    //         await api.delete(`/super-admin/admins/${id}`);
+    //         fetchAdmins();
+    //         fetchLogs();
+    //         showToast('Super Admin deleted successfully', 'success');
+    //     } catch (err) {
+    //         showToast(err.response?.data?.message || 'Deletion failed', 'error');
+    //     }
+    // };
 
     if (loading) {
         return (
@@ -232,13 +236,15 @@ export default function SuperAdminRoleManagement() {
                                     </div>
 
                                     <div style={actionsWrapStyle}>
-                                        {currentUser?.id === 1 && (
+                                        {/* Edit button disabled */}
+                                        {/* {currentUser?.id === 1 && (
                                             <button onClick={() => handleOpenModal(admin)} style={editBtnStyle}>
                                                 <Edit2 size={14} /> Edit
                                             </button>
-                                        )}
+                                        )} */}
 
-                                        {currentUser?.id === 1 && !isMe && !isOriginal && (
+                                        {/* Toggle status, Edit, Delete — all disabled */}
+                                        {/* {currentUser?.id === 1 && !isMe && !isOriginal && (
                                             <>
                                                 <button
                                                     onClick={() => handleToggleStatus(admin.id)}
@@ -250,7 +256,7 @@ export default function SuperAdminRoleManagement() {
                                                     <Trash2 size={14} />
                                                 </button>
                                             </>
-                                        )}
+                                        )} */}
                                     </div>
                                 </div>
                             );
@@ -304,7 +310,7 @@ export default function SuperAdminRoleManagement() {
                 <div style={modalOverlayStyle}>
                     <div style={modalCardStyle}>
                         <div style={modalHeaderStyle}>
-                            <h2 style={modalTitleStyle}>{editingAdmin ? "Edit Details" : "Add Details"}</h2>
+                            <h2 style={modalTitleStyle}>Add Details</h2>
                             <button onClick={() => setIsModalOpen(false)} style={closeBtnStyle}><X size={20} /></button>
                         </div>
 
@@ -319,7 +325,8 @@ export default function SuperAdminRoleManagement() {
                                 <input required type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={inputStyle} placeholder="admin@paysigur.com" />
                             </div>
 
-                            {editingAdmin && (
+                            {/* Edit password field disabled */}
+                            {/* {editingAdmin && (
                                 <div style={formGroupStyle}>
                                     <label style={labelStyle}>New Password (Optional)</label>
                                     <div style={passwordInputWrapperStyle}>
@@ -340,7 +347,7 @@ export default function SuperAdminRoleManagement() {
                                     </div>
                                     <div style={passHintStyle}>Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character.</div>
                                 </div>
-                            )}
+                            )} */}
 
                             <div style={formGroupStyle}>
                                 <label style={labelStyle}>Network Status</label>
@@ -352,7 +359,7 @@ export default function SuperAdminRoleManagement() {
 
                             <div style={submitRowStyle}>
                                 <button type="button" onClick={() => setIsModalOpen(false)} style={cancelBtnStyle}>Cancel</button>
-                                <button type="submit" style={submitBtnStyle}>{editingAdmin ? "Save" : "Add"}</button>
+                                <button type="submit" style={submitBtnStyle}>Add</button>
                             </div>
                         </form>
                     </div>

@@ -347,9 +347,14 @@ function UniqueProductPaymentContent() {
                         <h1 className="gradient-text" style={{ fontSize: '26px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" }}>
                             Complete Your Payment
                         </h1>
-                        <p style={{ color: '#6B7C93', fontSize: '15px', marginBottom: 20 }}>
+                        <p style={{ color: '#6B7C93', fontSize: '15px', marginBottom: product?.notes ? '8px' : '20px' }}>
                             {product ? product.name : 'Secure Transaction'}
                         </p>
+                        {product?.notes && (
+                            <p style={{ color: '#4b5563', fontSize: '13px', marginBottom: '20px', fontStyle: 'italic' }}>
+                                Note: {product.notes}
+                            </p>
+                        )}
 
                         {/* Merchant Identity */}
                         <div style={{

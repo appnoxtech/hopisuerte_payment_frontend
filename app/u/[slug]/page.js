@@ -292,6 +292,12 @@ export default function UserPaymentPage() {
                                                     {product.description}
                                                 </div>
                                             )}
+
+                                            {product.notes && (
+                                                <div style={{ fontSize: 11, color: '#4b5563', marginTop: '4px', fontStyle: 'italic' }}>
+                                                    Note: {product.notes}
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

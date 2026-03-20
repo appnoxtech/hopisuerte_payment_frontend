@@ -218,6 +218,18 @@ export default function Home() {
                                           {product.description}
                                       </div>
                                   )}
+                                  {product.notes && (
+                                      <div style={{ 
+                                        fontSize: 11, 
+                                        color: '#4B5563', 
+                                        fontWeight: 600, 
+                                        marginTop: 4,
+                                        fontStyle: 'italic',
+                                        lineHeight: 1.3
+                                      }}>
+                                          Note: {product.notes}
+                                      </div>
+                                  )}
                               </div>
                               
                               {/* Selection Indicator */}
