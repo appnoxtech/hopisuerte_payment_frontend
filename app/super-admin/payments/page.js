@@ -11,7 +11,8 @@ import {
     CreditCard,
     ArrowUpRight,
     ArrowLeft,
-    MessageCircle
+    MessageCircle,
+    Receipt
 } from 'lucide-react';
 import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
@@ -32,6 +33,25 @@ export default function GlobalPayments() {
     const [view, setView] = useState('summary'); // 'summary' or 'detailed'
     const [searchQuery, setSearchQuery] = useState('');
     const [displayCurrency, setDisplayCurrency] = useState('USD');
+    const [activeWaMenu, setActiveWaMenu] = useState(null);
+    const [sharingId, setSharingId] = useState(null);
+
+    const handleShareReceipt = async (p) => {
+        setSharingId(p.id);
+        try {
+            const response = await api.post('/payments/share-whatsapp', { 
+                payment_id: p.stripe_payment_intent_id 
+            }, getSuperAdminHeaders());
+            
+            showToast(response.data.message || 'Receipt shared via WhatsApp!', 'success');
+        } catch (err) {
+            console.error('WhatsApp Sharing failed', err);
+            showToast(err.response?.data?.message || 'Failed to share receipt via WhatsApp.', 'error');
+        } finally {
+            setSharingId(null);
+            setActiveWaMenu(null);
+        }
+    };
 
     const fetchPayments = async (isManual = false) => {
         setLoading(true);
@@ -254,15 +274,50 @@ export default function GlobalPayments() {
                                             <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 Customer: {p.customer_name} ({p.customer_phone})
                                                 {p.customer_phone && (
-                                                    <a 
-                                                        href={`https://wa.me/${p.customer_phone.replace(/\D/g, '')}`} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                        style={{ color: '#25D366', display: 'flex', alignItems: 'center' }}
-                                                        title="Message on WhatsApp"
-                                                    >
-                                                        <MessageCircle size={14} />
-                                                    </a>
+                                                    <div style={{ position: 'relative' }}>
+                                                        <button 
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setActiveWaMenu(activeWaMenu === p.id ? null : p.id)
+                                                            }}
+                                                            style={{ 
+                                                                background: 'none', 
+                                                                border: 'none', 
+                                                                padding: 0, 
+                                                                cursor: 'pointer',
+                                                                color: '#25D366', 
+                                                                display: 'flex', 
+                                                                alignItems: 'center' 
+                                                            }}
+                                                            title="WhatsApp Options"
+                                                        >
+                                                            <MessageCircle size={15} />
+                                                        </button>
+                                                        
+                                                        {activeWaMenu === p.id && (
+                                                            <div style={waMenuStyle}>
+                                                                <a 
+                                                                    href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) 
+                                                                        ? `https://wa.me/${p.customer_phone.replace(/\D/g, '')}` 
+                                                                        : `https://web.whatsapp.com/send?phone=${p.customer_phone.replace(/\D/g, '')}`} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer"
+                                                                    style={waMenuItemStyle}
+                                                                >
+                                                                    <MessageCircle size={14} />
+                                                                    <span>Chat on WhatsApp</span>
+                                                                </a>
+                                                                <button 
+                                                                    onClick={() => handleShareReceipt(p)}
+                                                                    disabled={sharingId === p.id}
+                                                                    style={{ ...waMenuItemStyle, border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}
+                                                                >
+                                                                    <Receipt size={14} />
+                                                                    <span>{sharingId === p.id ? 'Attaching PDF...' : 'Share PDF Receipt'}</span>
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 )}
                                             </div>
                                             {p.notes && (
@@ -413,3 +468,34 @@ const dotStyle = { width: '4px', height: '4px', borderRadius: '50%' };
 const dateTextStyle = { fontSize: '11px', color: '#a1a1aa', fontWeight: '800' };
 
 const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase' };
+
+const waMenuStyle = {
+    position: 'absolute',
+    top: '100%',
+    left: '0',
+    zIndex: 10,
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '12px',
+    padding: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    boxShadow: '0 8px 16px rgba(0, 20, 100, 0.08)',
+    minWidth: '160px',
+    marginTop: '6px'
+};
+
+const waMenuItemStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '10px 12px',
+    fontSize: '13px',
+    color: '#1A1F36',
+    fontWeight: '600',
+    textDecoration: 'none',
+    borderRadius: '8px',
+    transition: 'all 0.2s',
+    '&:hover': { background: '#F8FAFC' } // Note: CSS-in-JS pseudo-classes don't work inline like this but I'll add a class if needed.
+};
