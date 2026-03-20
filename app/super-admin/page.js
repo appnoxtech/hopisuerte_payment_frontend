@@ -109,7 +109,7 @@ export default function SuperAdminDashboard() {
                     color="#10B981"
                 />
                 <StatCard title="Active Transactions" value={stats?.total_transactions || 0} icon={Zap} color="#6366F1" />
-                <StatCard title="Platform Health" value={stats?.success_rate || 0} unit="%" icon={TrendingUp} color="#8B5CF6" />
+                <StatCard title="Success Rate" value={stats?.success_rate || 0} unit="%" icon={TrendingUp} color="#8B5CF6" />
             </section>
 
             <section style={mainGridStyle}>
