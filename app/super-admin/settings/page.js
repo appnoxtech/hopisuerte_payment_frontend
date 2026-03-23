@@ -21,7 +21,8 @@ export default function SuperAdminSettings() {
     const [saving, setSaving] = useState(false);
 
     const [settings, setSettings] = useState({
-        fee_percentage: 10.00
+        fee_percentage: 10.00,
+        apply_fee_to_all_products: false
     });
 
     useEffect(() => {
@@ -32,9 +33,10 @@ export default function SuperAdminSettings() {
         try {
             const res = await api.get('/super-admin/settings');
             if (res.data) {
-                setSettings({
+                setSettings(prev => ({
+                    ...prev,
                     fee_percentage: res.data.fee_percentage || 10.00
-                });
+                }));
             }
         } catch (err) {
             showToast('Could not load changes', 'error');
@@ -99,6 +101,24 @@ export default function SuperAdminSettings() {
                             <div style={inputSuffixStyle}>%</div>
                         </div>
                         <p style={hintTextStyle}>This fee is added to the base amount entered by customers across all currencies.</p>
+                        
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '20px', padding: '16px', background: '#FEF2F2', border: '1px solid #FCA5A5', borderRadius: '12px' }}>
+                            <input 
+                                type="checkbox" 
+                                id="applyGlobalFee" 
+                                checked={settings.apply_fee_to_all_products} 
+                                onChange={(e) => setSettings({ ...settings, apply_fee_to_all_products: e.target.checked })}
+                                style={{ marginTop: '3px', cursor: 'pointer', width: '18px', height: '18px', accentColor: '#DC2626', flexShrink: 0 }} 
+                            />
+                            <div>
+                                <label htmlFor="applyGlobalFee" style={{ display: 'block', fontSize: '14px', fontWeight: '800', color: '#991B1B', cursor: 'pointer', marginBottom: '4px' }}>
+                                    Apply this global processing fee to all products
+                                </label>
+                                <p style={{ fontSize: '12px', color: '#B91C1C', margin: 0, fontWeight: '500', lineHeight: 1.4 }}>
+                                    Warning: This will permanently overwrite and erase any custom fee percentages currently set on individual products. They will inherit this new global fee.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
