@@ -36,7 +36,8 @@ export default function UserPaymentPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
-    const [feePercentage, setFeePercentage] = useState(10); // Default to 10%
+    const [feePercentage, setFeePercentage] = useState(10); // Active fee for current calculation
+    const [globalFeePercentage, setGlobalFeePercentage] = useState(10); // Global fallback
 
     useEffect(() => {
         if (!slug) return;
@@ -46,6 +47,7 @@ export default function UserPaymentPage() {
                 setProducts(res.data.products);
                 if (res.data.fee_percentage !== undefined && res.data.fee_percentage !== null) {
                     setFeePercentage(res.data.fee_percentage);
+                    setGlobalFeePercentage(res.data.fee_percentage);
                 }
                 if (res.data.products.length > 0) {
                     setSelectedProduct(res.data.products[0]);
@@ -57,6 +59,17 @@ export default function UserPaymentPage() {
                 setLoading(false);
             });
     }, [slug]);
+
+    useEffect(() => {
+        if (selectedProduct) {
+            // Priority: Product Individual Fee > Global Setting
+            const targetFee = (selectedProduct.fee_percentage !== null && selectedProduct.fee_percentage !== undefined)
+                ? Number(selectedProduct.fee_percentage)
+                : Number(globalFeePercentage);
+
+            setFeePercentage(targetFee);
+        }
+    }, [selectedProduct, globalFeePercentage]);
 
     const handleStartPayment = async (e) => {
         e.preventDefault();
@@ -361,8 +374,8 @@ export default function UserPaymentPage() {
                                     </div>
 
                                 </div>
-                                <div style={{ marginTop: '8px', fontSize: '12px', color: '#0070E0', fontWeight: 'bold' }}>
-                                    A {feePercentage}% exchange and processing fee will be added to your total amount.
+                                <div style={{ marginTop: '8px', fontSize: '12px', color: '#0070E0', fontWeight: 'bold', fontStyle: 'italic' }}>
+                                    * A {feePercentage}% exchange and processing fee will be added to your total amount.
                                 </div>
                             </div>
                              {/* customer form */}
@@ -409,8 +422,7 @@ export default function UserPaymentPage() {
                                     <input
                                         style={inputStyle}
                                         type="email"
-                                        required
-                                        placeholder="Email Address"
+                                        placeholder="Email Address (Optional)"
                                         value={customer.email}
                                         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                     />
@@ -470,7 +482,7 @@ export default function UserPaymentPage() {
                                     opacity: !selectedProduct || !amount || submitting ? 0.5 : 1
                                 }}
                             >
-                                {submitting ? 'Processing...' : `Pay ${amount ? (parseFloat(amount) * 1.1).toFixed(2) : '0.00'} ${currency}`}
+                                {submitting ? 'Processing...' : `Pay ${amount ? (parseFloat(amount) * (1 + feePercentage / 100)).toFixed(2) : '0.00'} ${currency}`}
                             </button>
 
                         </form>

@@ -425,8 +425,8 @@ function UniqueProductPaymentContent() {
                                             />
                                         </div>
                                     </div>
-                                    <div style={{ marginTop: '8px', fontSize: '13px', color: '#0070E0', fontWeight: '500' }}>
-                                        A {feePercentage}% exchange and processing fee will be added to your total amount.
+                                    <div style={{ marginTop: '8px', fontSize: '13px', color: '#0070E0', fontWeight: '500', fontStyle: 'italic' }}>
+                                        * A {feePercentage}% exchange and processing fee will be added to your total amount.
                                     </div>
                                 </div>
                             )}
@@ -449,8 +449,7 @@ function UniqueProductPaymentContent() {
                                     <input
                                         style={inputStyle}
                                         type="email"
-                                        required
-                                        placeholder="Email Address"
+                                        placeholder="Email Address (Optional)"
                                         value={customer.email}
                                         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                     />
@@ -512,7 +511,7 @@ function UniqueProductPaymentContent() {
                             >
                                 {submitting
                                     ? "Processing..."
-                                    : `Pay ${amount ? (parseFloat(amount) * 1.1).toFixed(2) : '0.00'} ${currency}`
+                                    : `Pay ${amount ? (parseFloat(amount) * (1 + feePercentage / 100)).toFixed(2) : '0.00'} ${currency}`
                                 }
                             </button>
 

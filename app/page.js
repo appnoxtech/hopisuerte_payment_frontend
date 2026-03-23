@@ -128,7 +128,7 @@ export default function Home() {
             {/* Product */}
             <div style={fieldStyle}>
               <label style={labelStyle}>Select Service or Product</label>
-              
+
               <div style={{ position: 'relative', marginBottom: '12px' }}>
                 <input
                   type="text"
@@ -140,112 +140,100 @@ export default function Home() {
               </div>
 
               <div
-                  style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 12,
-                      maxHeight: '320px',
-                      overflowY: 'auto',
-                      padding: '4px',
-                      margin: '-4px',
-                      // Custom scrollbar can be added via globals.css but inline we just rely on browser default for now
-                  }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  maxHeight: '320px',
+                  overflowY: 'auto',
+                  padding: '4px',
+                  margin: '-4px',
+                  // Custom scrollbar can be added via globals.css but inline we just rely on browser default for now
+                }}
               >
-                  {filteredProducts.length === 0 ? (
-                      <div style={{ textAlign: 'center', padding: '20px', color: '#6B7C93', fontSize: '14px', fontStyle: 'italic' }}>
-                          No products found matching your search.
-                      </div>
-                  ) : (
-                      filteredProducts.map(product => (
+                {filteredProducts.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#6B7C93', fontSize: '14px', fontStyle: 'italic' }}>
+                    No products found matching your search.
+                  </div>
+                ) : (
+                  filteredProducts.map(product => (
+                    <div
+                      key={product.id}
+                      onClick={() => setSelectedProduct(product)}
+                      style={{
+                        padding: 16,
+                        borderRadius: 16,
+                        border: selectedProduct?.id === product.id
+                          ? '2px solid #0070E0'
+                          : '1px solid #E3E8EF',
+                        cursor: 'pointer',
+                        background: selectedProduct?.id === product.id
+                          ? '#F0F7FF'
+                          : '#FFFFFF',
+                        transition: 'all 0.2s ease',
+                        boxShadow: selectedProduct?.id === product.id ? '0 4px 12px rgba(0, 112, 224, 0.15)' : '0 1px 2px rgba(0,0,0,0.05)'
+                      }}
+                    >
                       <div
-                          key={product.id}
-                          onClick={() => setSelectedProduct(product)}
-                          style={{
-                              padding: 16,
-                              borderRadius: 16,
-                              border: selectedProduct?.id === product.id
-                                  ? '2px solid #0070E0'
-                                  : '1px solid #E3E8EF',
-                              cursor: 'pointer',
-                              background: selectedProduct?.id === product.id
-                                  ? '#F0F7FF'
-                                  : '#FFFFFF',
-                              transition: 'all 0.2s ease',
-                              boxShadow: selectedProduct?.id === product.id ? '0 4px 12px rgba(0, 112, 224, 0.15)' : '0 1px 2px rgba(0,0,0,0.05)'
-                          }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '14px'
+                        }}
                       >
-                          <div
-                              style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '14px'
-                              }}
-                          >
-                              {product.image_url ? (
-                                  <img 
-                                    src={product.image_url} 
-                                    alt={product.name} 
-                                    style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover', border: '1px solid #E3E8EF', flexShrink: 0 }} 
-                                  />
-                              ) : (
-                                  <div style={{ width: 48, height: 48, borderRadius: 12, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E3E8EF', color: '#0070E0', fontWeight: '800', flexShrink: 0, fontSize: '18px' }}>
-                                      {product.name.charAt(0)}
-                                  </div>
-                              )}
-                              <div style={{ flex: 1, overflow: 'hidden' }}>
-                                  <div style={{ 
-                                    fontWeight: 700,
-                                    color: selectedProduct?.id === product.id ? '#001c64' : '#1A1F36',
-                                    fontSize: 15,
-                                    marginBottom: product.description ? 4 : 0,
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
-                                  }}>
-                                      {product.name}
-                                  </div>
-                                  {product.description && (
-                                      <div style={{ 
-                                        fontSize: 13, 
-                                        color: '#6B7C93', 
-                                        fontWeight: 500, 
-                                        lineHeight: 1.4,
-                                        display: '-webkit-box',
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: 'vertical',
-                                        overflow: 'hidden'
-                                      }}>
-                                          {product.description}
-                                      </div>
-                                  )}
-                                  {product.notes && (
-                                      <div style={{ 
-                                        fontSize: 11, 
-                                        color: '#4B5563', 
-                                        fontWeight: 600, 
-                                        marginTop: 4,
-                                        fontStyle: 'italic',
-                                        lineHeight: 1.3
-                                      }}>
-                                          Note: {product.notes}
-                                      </div>
-                                  )}
-                              </div>
-                              
-                              {/* Selection Indicator */}
-                              <div style={{
-                                  width: 20,
-                                  height: 20,
-                                  borderRadius: '50%',
-                                  border: selectedProduct?.id === product.id ? '6px solid #0070E0' : '2px solid #E3E8EF',
-                                  background: '#FFF',
-                                  transition: 'all 0.2s ease',
-                                  flexShrink: 0
-                              }} />
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover', border: '1px solid #E3E8EF', flexShrink: 0 }}
+                          />
+                        ) : (
+                          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E3E8EF', color: '#0070E0', fontWeight: '800', flexShrink: 0, fontSize: '18px' }}>
+                            {product.name.charAt(0)}
                           </div>
+                        )}
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                          <div style={{
+                            fontWeight: 700,
+                            color: selectedProduct?.id === product.id ? '#001c64' : '#1A1F36',
+                            fontSize: 15,
+                            marginBottom: product.description ? 4 : 0,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>
+                            {product.name}
+                          </div>
+                          {product.description && (
+                            <div style={{
+                              fontSize: 13,
+                              color: '#6B7C93',
+                              fontWeight: 500,
+                              lineHeight: 1.4,
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden'
+                            }}>
+                              {product.description}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Selection Indicator */}
+                        <div style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: '50%',
+                          border: selectedProduct?.id === product.id ? '6px solid #0070E0' : '2px solid #E3E8EF',
+                          background: '#FFF',
+                          transition: 'all 0.2s ease',
+                          flexShrink: 0
+                        }} />
                       </div>
+                    </div>
                   ))
-                  )}
+                )}
               </div>
             </div>
 
@@ -284,6 +272,23 @@ export default function Home() {
 
               </div>
             </div>
+
+            {selectedProduct?.notes && (
+              <div style={{ 
+                marginBottom: '20px', 
+                fontSize: '13px', 
+                color: '#4B5563', 
+                fontWeight: '600', 
+                fontStyle: 'italic', 
+                padding: '12px 16px', 
+                background: '#F8FAFC', 
+                borderRadius: '12px', 
+                border: '1px solid #E3E8EF',
+                lineHeight: 1.4
+              }}>
+                * Note: {selectedProduct.notes}
+              </div>
+            )}
 
             <button type="submit" style={submitStyle}>
               Continue to Payment

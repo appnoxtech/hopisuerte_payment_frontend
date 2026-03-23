@@ -48,7 +48,8 @@ export default function SuperAdminProducts() {
         active: true,
         stripe_account: 1,
         image_url: null,
-        image_file: null // to hold the new file temporarily
+        image_file: null, // to hold the new file temporarily
+        fee_percentage: ''
     });
 
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -116,7 +117,8 @@ export default function SuperAdminProducts() {
                 active: !!product.active,
                 stripe_account: product.stripe_account || 1,
                 image_url: product.image_url || null,
-                image_file: null
+                image_file: null,
+                fee_percentage: product.fee_percentage !== null ? product.fee_percentage : ''
             });
         } else {
             setEditingProduct(null);
@@ -128,7 +130,8 @@ export default function SuperAdminProducts() {
                 active: true,
                 stripe_account: 1,
                 image_url: null,
-                image_file: null
+                image_file: null,
+                fee_percentage: ''
             });
         }
         setIsModalOpen(true);
@@ -146,7 +149,8 @@ export default function SuperAdminProducts() {
                     description: formData.description,
                     notes: formData.notes,
                     active: formData.active,
-                    stripe_account: formData.stripe_account
+                    stripe_account: formData.stripe_account,
+                    fee_percentage: formData.fee_percentage === '' ? null : formData.fee_percentage
                 });
                 productId = editingProduct.id;
             } else {
@@ -156,7 +160,8 @@ export default function SuperAdminProducts() {
                     description: formData.description,
                     notes: formData.notes,
                     active: formData.active,
-                    stripe_account: formData.stripe_account
+                    stripe_account: formData.stripe_account,
+                    fee_percentage: formData.fee_percentage === '' ? null : formData.fee_percentage
                 });
                 productId = res.data.id;
             }
@@ -430,6 +435,20 @@ export default function SuperAdminProducts() {
                                         onChange={(val) => setFormData({ ...formData, stripe_account: val })}
                                         placeholder="Select Account"
                                     />
+                                </div>
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Processing Fee % (Optional)</label>
+                                    <input 
+                                        type="number" 
+                                        step="0.01" 
+                                        min="0" 
+                                        max="100" 
+                                        placeholder="Use service default" 
+                                        value={formData.fee_percentage} 
+                                        onChange={(e) => setFormData({ ...formData, fee_percentage: e.target.value })} 
+                                        style={modalInputStyle} 
+                                    />
+                                    <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>Leave empty to use the global platform default.</p>
                                 </div>
                                 <div style={inputGroupStyle}>
                                     <label style={labelStyle}>Product Image</label>
