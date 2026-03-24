@@ -39,23 +39,28 @@ export default function AdminDashboard() {
     const [displayCurrency, setDisplayCurrency] = useState('USD');
     const [activeWaMenu, setActiveWaMenu] = useState(null);
     const [sharingId, setSharingId] = useState(null);
-
-    const handleShareReceipt = async (p) => {
-        setSharingId(p.id);
-        try {
-            const response = await api.post('/payments/share-whatsapp', { 
-                payment_id: p.stripe_payment_intent_id 
-            });
-            
-            showToast(response.data.message || 'Receipt shared via WhatsApp!', 'success');
-        } catch (err) {
-            console.error('WhatsApp Sharing failed', err);
-            showToast(err.response?.data?.message || 'Failed to share receipt via WhatsApp.', 'error');
-        } finally {
-            setSharingId(null);
-            setActiveWaMenu(null);
-        }
+ 
+    const handleDownloadReceipt = (p) => {
+        const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/payments/receipt-download?payment_id=${p.stripe_payment_intent_id}`;
+        window.open(url, '_blank');
     };
+
+     const handleShareReceipt = async (p) => {
+         setSharingId(p.id);
+         try {
+             const response = await api.post('/payments/share-whatsapp', { 
+                 payment_id: p.stripe_payment_intent_id 
+             });
+             
+             showToast(response.data.message || 'Receipt shared via WhatsApp!', 'success');
+         } catch (err) {
+             console.error('WhatsApp Sharing failed', err);
+             showToast(err.response?.data?.message || 'Failed to share receipt via WhatsApp.', 'error');
+         } finally {
+             setSharingId(null);
+             setActiveWaMenu(null);
+         }
+     };
 
     useEffect(() => {
         fetchPayments();
@@ -232,17 +237,21 @@ export default function AdminDashboard() {
                                 </tr>
                             ) : (
                                 filteredPayments.map((p) => (
-                                    <tr key={p.id} style={trStyle}>
+                                    <tr key={p.id} style={{
+                                        ...trStyle,
+                                        position: activeWaMenu === p.id ? 'relative' : 'static',
+                                        zIndex: activeWaMenu === p.id ? 50 : 1
+                                    }}>
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={customerCellWrapper}>
                                                 <div style={avatarCircleStyle}>{p.customer_name?.[0] || 'C'}</div>
-                                                <div style={{ overflow: 'hidden' }}>
+                                                <div style={{ flex: 1 }}>
                                                     <div style={primaryTextStyle}>{p.customer_name}</div>
                                                     <div style={secondaryTextStyle}>{p.customer_email}</div>
                                                     <div style={{ ...secondaryTextStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                         {p.customer_phone}
                                                         {p.customer_phone && (
-                                                        <div style={{ position: 'relative' }}>
+                                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                             <button 
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
@@ -255,11 +264,33 @@ export default function AdminDashboard() {
                                                                     cursor: 'pointer',
                                                                     color: '#25D366', 
                                                                     display: 'flex', 
-                                                                    alignItems: 'center' 
+                                                                    alignItems: 'center',
+                                                                    transition: 'transform 0.2s ease-in-out'
                                                                 }}
-                                                                title="WhatsApp Options"
+                                                                title="WhatsApp Receipt Sharing"
+                                                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                                                             >
                                                                 <MessageCircle size={15} />
+                                                            </button>
+
+                                                            <button 
+                                                                onClick={() => handleDownloadReceipt(p)}
+                                                                style={{ 
+                                                                    background: 'none', 
+                                                                    border: 'none', 
+                                                                    padding: 0, 
+                                                                    cursor: 'pointer',
+                                                                    color: '#6B7C93', 
+                                                                    display: 'flex', 
+                                                                    alignItems: 'center',
+                                                                    transition: 'transform 0.2s ease-in-out'
+                                                                }}
+                                                                title="Download Receipt PDF"
+                                                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                            >
+                                                                <FileText size={15} />
                                                             </button>
                                                             
                                                             {activeWaMenu === p.id && (
@@ -275,6 +306,8 @@ export default function AdminDashboard() {
                                                                         <MessageCircle size={14} />
                                                                         <span>Chat on WhatsApp</span>
                                                                     </a>
+                                                                    {/* Temporarily disabled: Twilio WhatsApp PDF Sharing */}
+                                                                    {/* 
                                                                     <button 
                                                                         onClick={() => handleShareReceipt(p)}
                                                                         disabled={sharingId === p.id}
@@ -283,6 +316,7 @@ export default function AdminDashboard() {
                                                                         <Receipt size={14} />
                                                                         <span>{sharingId === p.id ? 'Attaching PDF...' : 'Share PDF Receipt'}</span>
                                                                     </button>
+                                                                    */}
                                                                 </div>
                                                             )}
                                                         </div>
@@ -524,7 +558,8 @@ const tableContainerStyle = {
     background: '#FFFFFF',
     border: '1px solid #E3E8EF',
     borderRadius: '24px',
-    overflow: 'hidden',
+    // overflow: 'hidden', // Disabled to prevent clipping of absolute menus like WhatsApp sharing
+    position: 'relative',
     boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)',
 };
 
@@ -643,25 +678,25 @@ const waMenuStyle = {
     background: '#FFFFFF',
     border: '1px solid #E3E8EF',
     borderRadius: '12px',
-    padding: '8px',
+    padding: '6px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
-    boxShadow: '0 8px 16px rgba(0, 20, 100, 0.08)',
-    minWidth: '160px',
+    gap: '2px',
+    boxShadow: '0 8px 32px rgba(0, 20, 100, 0.12)',
+    minWidth: '180px',
     marginTop: '6px'
 };
 
 const waMenuItemStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
-    padding: '10px 12px',
+    gap: '8px',
+    padding: '8px 12px',
     fontSize: '13px',
     color: '#1A1F36',
     fontWeight: '600',
     textDecoration: 'none',
     borderRadius: '8px',
     transition: 'all 0.2s',
-    '&:hover': { background: '#F8FAFC' }
+    whiteSpace: 'nowrap'
 };

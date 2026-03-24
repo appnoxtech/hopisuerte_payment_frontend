@@ -12,7 +12,8 @@ import {
     ArrowUpRight,
     ArrowLeft,
     MessageCircle,
-    Receipt
+    Receipt,
+    FileText
 } from 'lucide-react';
 import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
@@ -36,13 +37,18 @@ export default function GlobalPayments() {
     const [activeWaMenu, setActiveWaMenu] = useState(null);
     const [sharingId, setSharingId] = useState(null);
 
+    const handleDownloadReceipt = (p) => {
+        const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/payments/receipt-download?payment_id=${p.stripe_payment_intent_id}`;
+        window.open(url, '_blank');
+    };
+
     const handleShareReceipt = async (p) => {
         setSharingId(p.id);
         try {
-            const response = await api.post('/payments/share-whatsapp', { 
-                payment_id: p.stripe_payment_intent_id 
+            const response = await api.post('/payments/share-whatsapp', {
+                payment_id: p.stripe_payment_intent_id
             }, getSuperAdminHeaders());
-            
+
             showToast(response.data.message || 'Receipt shared via WhatsApp!', 'success');
         } catch (err) {
             console.error('WhatsApp Sharing failed', err);
@@ -162,7 +168,7 @@ export default function GlobalPayments() {
                 <div style={searchBoxStyle}>
                     <Search style={searchIconStyle} size={14} />
                     <input
-                        placeholder={view === 'summary' ? "Search merchant..." : "Search..."}
+                        placeholder={view === 'summary' ? "Search Merchant..." : "Search..."}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         style={filterInputStyle}
@@ -268,46 +274,74 @@ export default function GlobalPayments() {
                                 </tr>
                             ) : (
                                 (activeMerchant ? activeMerchant.payments : payments).map((p) => (
-                                    <tr key={p.id} style={trStyle}>
+                                    <tr key={p.id} style={{
+                                        ...trStyle,
+                                        position: activeWaMenu === p.id ? 'relative' : 'static',
+                                        zIndex: activeWaMenu === p.id ? 50 : 1
+                                    }}>
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={{ fontSize: '14px', color: '#1a1f36', fontWeight: '600' }}>{p.product?.user?.name || 'Direct'}</div>
                                             <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 Customer: {p.customer_name} ({p.customer_phone})
                                                 {p.customer_phone && (
-                                                    <div style={{ position: 'relative' }}>
-                                                        <button 
+                                                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 setActiveWaMenu(activeWaMenu === p.id ? null : p.id)
                                                             }}
-                                                            style={{ 
-                                                                background: 'none', 
-                                                                border: 'none', 
-                                                                padding: 0, 
+                                                            style={{
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                padding: 0,
                                                                 cursor: 'pointer',
-                                                                color: '#25D366', 
-                                                                display: 'flex', 
-                                                                alignItems: 'center' 
+                                                                color: '#25D366',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                transition: 'transform 0.2s ease-in-out'
                                                             }}
-                                                            title="WhatsApp Options"
+                                                            title="WhatsApp Receipt Sharing"
+                                                            onMouseEnter={(e) => e.target.closest('button').style.transform = 'scale(1.1)'}
+                                                            onMouseLeave={(e) => e.target.closest('button').style.transform = 'scale(1)'}
                                                         >
                                                             <MessageCircle size={15} />
                                                         </button>
-                                                        
+
+                                                        <button
+                                                            onClick={() => handleDownloadReceipt(p)}
+                                                            style={{
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                padding: 0,
+                                                                cursor: 'pointer',
+                                                                color: '#6B7C93',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                transition: 'transform 0.2s ease-in-out'
+                                                            }}
+                                                            title="Download Receipt PDF"
+                                                            onMouseEnter={(e) => e.target.closest('button').style.transform = 'scale(1.1)'}
+                                                            onMouseLeave={(e) => e.target.closest('button').style.transform = 'scale(1)'}
+                                                        >
+                                                            <FileText size={15} />
+                                                        </button>
+
                                                         {activeWaMenu === p.id && (
                                                             <div style={waMenuStyle}>
-                                                                <a 
-                                                                    href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) 
-                                                                        ? `https://wa.me/${p.customer_phone.replace(/\D/g, '')}` 
-                                                                        : `https://web.whatsapp.com/send?phone=${p.customer_phone.replace(/\D/g, '')}`} 
-                                                                    target="_blank" 
+                                                                <a
+                                                                    href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+                                                                        ? `https://wa.me/${p.customer_phone.replace(/\D/g, '')}`
+                                                                        : `https://web.whatsapp.com/send?phone=${p.customer_phone.replace(/\D/g, '')}`}
+                                                                    target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     style={waMenuItemStyle}
                                                                 >
                                                                     <MessageCircle size={14} />
                                                                     <span>Chat on WhatsApp</span>
                                                                 </a>
-                                                                <button 
+                                                                {/* Temporarily disabled: Twilio WhatsApp PDF Sharing */}
+                                                                {/* 
+                                                                <button
                                                                     onClick={() => handleShareReceipt(p)}
                                                                     disabled={sharingId === p.id}
                                                                     style={{ ...waMenuItemStyle, border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}
@@ -315,19 +349,20 @@ export default function GlobalPayments() {
                                                                     <Receipt size={14} />
                                                                     <span>{sharingId === p.id ? 'Attaching PDF...' : 'Share PDF Receipt'}</span>
                                                                 </button>
+                                                                */}
                                                             </div>
                                                         )}
                                                     </div>
                                                 )}
                                             </div>
                                             {p.notes && (
-                                                <div style={{ 
-                                                    fontSize: '11px', 
-                                                    color: '#0070E0', 
-                                                    marginTop: '6px', 
-                                                    background: '#F0F7FF', 
-                                                    padding: '4px 8px', 
-                                                    borderRadius: '6px', 
+                                                <div style={{
+                                                    fontSize: '11px',
+                                                    color: '#0070E0',
+                                                    marginTop: '6px',
+                                                    background: '#F0F7FF',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '6px',
                                                     display: 'inline-block',
                                                     border: '1px solid rgba(0, 112, 224, 0.1)',
                                                     fontWeight: '600'
@@ -421,30 +456,30 @@ const searchIconStyle = { position: 'absolute', left: 12, top: '50%', transform:
 const filterInputStyle = { width: '100%', background: '#FFFFFF', border: '1px solid #E3E8EF', borderRadius: '10px', padding: '10px 12px 10px 36px', color: '#1A1F36', fontSize: '14px', outline: 'none', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' };
 const countBadgeWrap = { fontSize: '12px', fontWeight: '600', color: '#6B7C93', marginLeft: 'auto' };
 
-const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E3E8EF', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
+const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E3E8EF', /* overflow: 'hidden', */ position: 'relative', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
 
-const thStyle = { 
-    paddingTop: '16px', 
-    paddingBottom: '16px', 
-    paddingLeft: '16px', 
-    paddingRight: '16px', 
-    fontSize: '12px', 
-    fontWeight: '700', 
-    color: '#6B7C93', 
-    textTransform: 'uppercase', 
-    letterSpacing: '0.05em', 
-    textAlign: 'left', 
-    borderBottom: '1px solid #E3E8EF' 
+const thStyle = {
+    paddingTop: '16px',
+    paddingBottom: '16px',
+    paddingLeft: '16px',
+    paddingRight: '16px',
+    fontSize: '12px',
+    fontWeight: '700',
+    color: '#6B7C93',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    textAlign: 'left',
+    borderBottom: '1px solid #E3E8EF'
 };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
-const tdStyle = { 
-    paddingTop: '20px', 
-    paddingBottom: '20px', 
-    paddingLeft: '16px', 
-    paddingRight: '16px' 
+const tdStyle = {
+    paddingTop: '20px',
+    paddingBottom: '20px',
+    paddingLeft: '16px',
+    paddingRight: '16px'
 };
 const tdCenterStyle = { ...tdStyle, textAlign: 'center' };
 
@@ -477,25 +512,25 @@ const waMenuStyle = {
     background: '#FFFFFF',
     border: '1px solid #E3E8EF',
     borderRadius: '12px',
-    padding: '8px',
+    padding: '6px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px',
-    boxShadow: '0 8px 16px rgba(0, 20, 100, 0.08)',
-    minWidth: '160px',
+    gap: '2px',
+    boxShadow: '0 8px 32px rgba(0, 20, 100, 0.12)',
+    minWidth: '180px',
     marginTop: '6px'
 };
 
 const waMenuItemStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
-    padding: '10px 12px',
+    gap: '8px',
+    padding: '8px 12px',
     fontSize: '13px',
     color: '#1A1F36',
     fontWeight: '600',
     textDecoration: 'none',
     borderRadius: '8px',
     transition: 'all 0.2s',
-    '&:hover': { background: '#F8FAFC' } // Note: CSS-in-JS pseudo-classes don't work inline like this but I'll add a class if needed.
+    whiteSpace: 'nowrap'
 };

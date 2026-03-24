@@ -6,9 +6,10 @@ import api from '@/utils/api';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from '@/components/CheckoutForm';
+import QrPayment from '@/components/QrPayment';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CreditCard, QrCode } from 'lucide-react';
 
 // Dynamic Stripe initialized via component state on intent creation
 
@@ -246,6 +247,20 @@ function UniqueProductPaymentContent() {
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [feePercentage, setFeePercentage] = useState(10);
+    const [paymentMethod, setPaymentMethod] = useState(null); // null | 'card' | 'qr'
+    const [qrPaymentData, setQrPaymentData] = useState(null); // { payment_link_url, payment_id }
+
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    const formatAmount = (val) => {
+        const num = parseFloat(val);
+        if (isNaN(num)) return '0.00';
+        if (mounted) {
+            return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        return num.toFixed(2);
+    };
 
     useEffect(() => {
         if (!uniqueId) return;
@@ -283,8 +298,13 @@ function UniqueProductPaymentContent() {
             return;
         }
 
-        setSubmitting(true);
+        // Show payment method selector
+        setPaymentMethod('choosing');
+    };
 
+    const handleSelectCard = async () => {
+        setPaymentMethod('card');
+        setSubmitting(true);
         try {
             const res = await api.post('/payments/intent', {
                 product_id: product.id,
@@ -303,9 +323,31 @@ function UniqueProductPaymentContent() {
                 : process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_1_KEY;
 
             setStripePromise(loadStripe(pk));
-
         } catch {
             alert("Payment initialization failed");
+            setPaymentMethod(null);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleSelectQr = async () => {
+        setPaymentMethod('qr');
+        setSubmitting(true);
+        try {
+            const res = await api.post('/payments/create-link', {
+                product_id: product.id,
+                amount: parseFloat(amount),
+                currency: currency.toUpperCase(),
+                customer_name: customer.name,
+                customer_email: customer.email,
+                customer_phone: customer.phone ? `${dialCode}${customer.phone}` : '',
+                notes: customer.notes
+            });
+            setQrPaymentData(res.data);
+        } catch {
+            alert("Failed to generate QR code");
+            setPaymentMethod(null);
         } finally {
             setSubmitting(false);
         }
@@ -321,8 +363,8 @@ function UniqueProductPaymentContent() {
 
             {/* Back Button - Top Left of Screen */}
             <div style={{ position: 'absolute', left: 40, top: 40, zIndex: 50 }}>
-                {clientSecret ? (
-                    <button onClick={() => setClientSecret(null)} style={backLinkStyle} type="button">
+                {(clientSecret || paymentMethod) ? (
+                    <button onClick={() => { setClientSecret(null); setPaymentMethod(null); setQrPaymentData(null); }} style={backLinkStyle} type="button">
                         <ArrowLeft size={14} />
                         Back
                     </button>
@@ -391,8 +433,7 @@ function UniqueProductPaymentContent() {
                         </div>
                     </div>
 
-                    {!clientSecret ? (
-
+                    {!paymentMethod ? (
                         <form onSubmit={handleStartPayment}>
 
                             {/* Amount - only show if not pre-filled from home page */}
@@ -413,6 +454,8 @@ function UniqueProductPaymentContent() {
                                                 value={amount}
                                                 onChange={(e) => setAmount(e.target.value)}
                                                 style={{ ...inputStyle, paddingLeft: 38 }}
+                                                className="no-spinner"
+                                                onWheel={(e) => e.target.blur()}
                                             />
                                         </div>
                                         <div style={{ width: 100, opacity: isCurrencyLocked ? 0.6 : 1, pointerEvents: isCurrencyLocked ? 'none' : 'auto' }}>
@@ -485,23 +528,31 @@ function UniqueProductPaymentContent() {
                             </div>
 
                             {/* Payment Summary Breakdown */}
-                            {amount && !isNaN(amount) && parseFloat(amount) > 0 && (
-                                <div style={{ marginBottom: 24, padding: '16px 20px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
-                                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B', fontWeight: '700' }}>Payment Summary</h4>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: 8, color: '#475569' }}>
-                                        <span>Entered Amount:</span>
-                                        <span style={{ fontWeight: '500' }}>{currency} {parseFloat(amount).toFixed(2)}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: 16, color: '#475569' }}>
-                                        <span>Processing Fee:</span>
-                                        <span style={{ fontWeight: '500' }}>{currency} {(parseFloat(amount) * (feePercentage / 100)).toFixed(2)}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', paddingTop: 16, borderTop: '1px solid #CBD5E1', color: '#0F172A', fontWeight: '800' }}>
-                                        <span>Total Payable Amount:</span>
-                                        <span>{currency} {(parseFloat(amount) * (1 + feePercentage / 100)).toFixed(2)}</span>
-                                    </div>
-                                </div>
-                            )}
+                            {(() => {
+                                const rawAmount = parseFloat(amount);
+                                if (!isNaN(rawAmount) && rawAmount > 0) {
+                                    const calcFee = rawAmount * (feePercentage / 100);
+                                    const calcTotal = rawAmount + calcFee;
+                                    return (
+                                        <div style={{ marginBottom: 24, padding: '16px 20px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                            <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', color: '#1E293B', fontWeight: '700' }}>Payment Summary</h4>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: 8, color: '#475569' }}>
+                                                <span>Entered Amount:</span>
+                                                <span className="notranslate" style={{ fontWeight: '500' }}>{currency} {formatAmount(rawAmount)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: 16, color: '#475569' }}>
+                                                <span>Processing Fee:</span>
+                                                <span className="notranslate" style={{ fontWeight: '500' }}>{currency} {formatAmount(calcFee)}</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '18px', paddingTop: 16, borderTop: '1px solid #CBD5E1', color: '#0F172A', fontWeight: '800' }}>
+                                                <span>Total Payable Amount:</span>
+                                                <span className="notranslate" suppressHydrationWarning>{currency} {formatAmount(calcTotal)}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()}
 
                             {/* Button */}
                             <button
@@ -511,19 +562,112 @@ function UniqueProductPaymentContent() {
                             >
                                 {submitting
                                     ? "Processing..."
-                                    : `Pay ${amount ? (parseFloat(amount) * (1 + feePercentage / 100)).toFixed(2) : '0.00'} ${currency}`
+                                    : `Continue to Payment`
                                 }
                             </button>
 
                         </form>
 
-                    ) : (
+                    ) : paymentMethod === 'choosing' ? (
+                        /* Payment Method Selection */
+                        <div>
+                            {/* Payment Summary */}
+                            {(() => {
+                                const rawAmount = parseFloat(amount);
+                                if (!isNaN(rawAmount) && rawAmount > 0) {
+                                    const calcTotal = rawAmount * (1 + feePercentage / 100);
+                                    return (
+                                        <div style={{ marginBottom: 24, padding: '16px 20px', background: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', color: '#0F172A', fontWeight: '800' }}>
+                                                <span>Total Payable Amount:</span>
+                                                <span className="notranslate" suppressHydrationWarning>{currency} {formatAmount(calcTotal)}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()}
+
+                            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#001C64', marginBottom: 16, textAlign: 'center' }}>
+                                Choose Payment Method
+                            </h3>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                <button
+                                    onClick={handleSelectCard}
+                                    disabled={submitting}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 14,
+                                        padding: '18px 20px',
+                                        background: '#FFFFFF',
+                                        border: '2px solid #E3E8EF',
+                                        borderRadius: 16,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        textAlign: 'left',
+                                        opacity: submitting ? 0.6 : 1,
+                                    }}
+                                >
+                                    <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F0F7FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <CreditCard size={22} color="#0070E0" />
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 15, fontWeight: 700, color: '#001C64' }}>Pay with Card</div>
+                                        <div style={{ fontSize: 12, color: '#6B7C93', marginTop: 2 }}>Credit or debit card</div>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={handleSelectQr}
+                                    disabled={submitting}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 14,
+                                        padding: '18px 20px',
+                                        background: '#FFFFFF',
+                                        border: '2px solid #E3E8EF',
+                                        borderRadius: 16,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        textAlign: 'left',
+                                        opacity: submitting ? 0.6 : 1,
+                                    }}
+                                >
+                                    <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <QrCode size={22} color="#16a34a" />
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 15, fontWeight: 700, color: '#001C64' }}>Pay via QR Code</div>
+                                        <div style={{ fontSize: 12, color: '#6B7C93', marginTop: 2 }}>Scan with your phone camera</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                    ) : paymentMethod === 'card' && clientSecret ? (
 
                         <Elements stripe={stripePromise} options={{ clientSecret }}>
                             <CheckoutForm amount={amount} currency={currency} />
                         </Elements>
 
-                    )}
+                    ) : paymentMethod === 'qr' && qrPaymentData ? (
+
+                        <QrPayment
+                            paymentLinkUrl={qrPaymentData.payment_link_url}
+                            paymentId={qrPaymentData.payment_id}
+                            amount={qrPaymentData.total_amount}
+                            currency={currency}
+                        />
+
+                    ) : paymentMethod ? (
+                        /* Payment method selected, waiting for API response */
+                        <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                            <p style={{ color: '#6B7C93', fontWeight: 600 }}>Setting up payment...</p>
+                        </div>
+                    ) : null}
 
                 </div>
 

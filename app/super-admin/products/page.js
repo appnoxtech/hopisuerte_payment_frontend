@@ -255,7 +255,7 @@ export default function SuperAdminProducts() {
                 <div style={searchBoxStyle}>
                     <Search style={searchIconStyle} size={14} />
                     <input
-                        placeholder="Search product..."
+                        placeholder="Search Product..."
                         value={filterName}
                         onChange={(e) => setFilterName(e.target.value)}
                         style={filterInputStyle}
@@ -438,15 +438,15 @@ export default function SuperAdminProducts() {
                                 </div>
                                 <div style={inputGroupStyle}>
                                     <label style={labelStyle}>Processing Fee % (Optional)</label>
-                                    <input 
-                                        type="number" 
-                                        step="0.01" 
-                                        min="0" 
-                                        max="100" 
-                                        placeholder="Use service default" 
-                                        value={formData.fee_percentage} 
-                                        onChange={(e) => setFormData({ ...formData, fee_percentage: e.target.value })} 
-                                        style={modalInputStyle} 
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="100"
+                                        placeholder="Use service default"
+                                        value={formData.fee_percentage}
+                                        onChange={(e) => setFormData({ ...formData, fee_percentage: e.target.value })}
+                                        style={modalInputStyle}
                                     />
                                     <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>Leave empty to use the global platform default.</p>
                                 </div>

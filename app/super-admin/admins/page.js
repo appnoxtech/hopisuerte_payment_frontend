@@ -81,13 +81,13 @@ export default function SuperAdminRoleManagement() {
         //         status: admin.status
         //     });
         // } else {
-            setEditingAdmin(null);
-            setFormData({
-                name: '',
-                email: '',
-                password: '',
-                status: 'active'
-            });
+        setEditingAdmin(null);
+        setFormData({
+            name: '',
+            email: '',
+            password: '',
+            status: 'active'
+        });
         // }
         setIsModalOpen(true);
         setIsPasswordVisible(false); // Reset visibility on open
@@ -101,8 +101,8 @@ export default function SuperAdminRoleManagement() {
             //     await api.put(`/super-admin/admins/${editingAdmin.id}`, formData);
             //     showToast('Super Admin profile updated', 'success');
             // } else {
-                await api.post('/super-admin/admins', formData);
-                showToast('Super Admin created successfully', 'success');
+            await api.post('/super-admin/admins', formData);
+            showToast('Super Admin created successfully', 'success');
             // }
             setIsModalOpen(false);
             fetchAdmins();
@@ -192,7 +192,7 @@ export default function SuperAdminRoleManagement() {
                     <div style={searchWrapStyle}>
                         <Search size={14} style={searchIconStyle} />
                         <input
-                            placeholder="Search administrators..."
+                            placeholder="Search Administrators..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={searchInputStyle}

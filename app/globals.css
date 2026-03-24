@@ -267,6 +267,10 @@ h6 {
   animation: shake 0.4s ease-in-out;
 }
 
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -320,14 +324,27 @@ h6 {
     transform: translateX(20px) scale(0.95);
   }
 }
-/* Hide spin-buttons for input type="number" */
+/* Hide spin-buttons for all number inputs with .no-spinner class */
 .no-spinner::-webkit-inner-spin-button,
 .no-spinner::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  appearance: none;
-  margin: 0;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
 }
+
 .no-spinner {
-  -moz-appearance: textfield;
-  appearance: textfield;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+/* Fallback for all number inputs if class is missed */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+}
+input[type=number] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
 }
