@@ -94,6 +94,11 @@ function ResetPasswordContent() {
                         border-radius: 24px;
                         padding: 40px;
                         box-shadow: 0 25px 50px -12px rgba(0, 28, 100, 0.2);
+                        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    }
+                    .login-card:hover {
+                        transform: translateY(-8px) scale(1.01);
+                        box-shadow: 0 40px 80px -20px rgba(0, 28, 100, 0.15);
                     }
                     @keyframes spin { to { transform: rotate(360deg); } }
                     @keyframes fadeInUp {
@@ -223,7 +228,7 @@ function ResetPasswordContent() {
             <div style={glowBottomStyle} />
 
             <div style={containerStyle}>
-                <div style={cardStyle}>
+                <div style={cardStyle} className="transition-all duration-300 hover:scale-[1.01] hover:-translate-y-1 hover:shadow-2xl hover:border-blue-500/10">
                     <div style={headerScope}>
                         <div style={iconWrapper}>
                             <svg width="24" height="24" fill="none" stroke="#0070E0" viewBox="0 0 24 24">

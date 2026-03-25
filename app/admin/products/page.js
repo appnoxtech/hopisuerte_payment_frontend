@@ -75,7 +75,7 @@ export default function ProductManagement() {
                         const isExpanded = expandedProductId === product.id;
 
                         return (
-                            <div key={product.id} style={productCardStyle}>
+                            <div key={product.id} style={productCardStyle} className="bg-white border border-[#E3E8EF] shadow-sm transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/50 cursor-default">
                                 <div style={cardHeaderStyle}>
                                     <div style={{
                                         ...statusBadgeStyle,
@@ -216,14 +216,11 @@ const productGridStyle = {
 };
 
 const productCardStyle = {
-    background: '#FFFFFF',
-    border: '1px solid #E3E8EF',
     borderRadius: '24px',
     padding: '28px',
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)',
     transition: 'all 0.3s'
 };
 

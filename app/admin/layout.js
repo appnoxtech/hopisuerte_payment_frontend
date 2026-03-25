@@ -121,12 +121,14 @@ export default function AdminLayout({ children }) {
                                     color: active ? '#FFF' : 'rgba(255, 255, 255, 0.6)',
                                     border: `1px solid ${active ? '#0070E0' : 'transparent'}`,
                                 }}
+                                className="transition-all duration-200 hover:bg-white/10 hover:text-white group"
                             >
                                 <Icon
                                     size={18}
                                     style={{ opacity: active ? 1 : 0.6 }}
+                                    className="transition-opacity group-hover:opacity-100"
                                 />
-                                <span>{item.name}</span>
+                                <span className="transition-colors group-hover:text-white">{item.name}</span>
                                 {active && <div style={activeIndicatorStyle} />}
                             </Link>
                         );
@@ -147,7 +149,7 @@ export default function AdminLayout({ children }) {
                             <p style={userBadgeStyle}>{user?.slug || ''}</p>
                         </div>
                     </div>
-                    <button onClick={handleLogout} style={logoutBtnStyle}>
+                    <button onClick={handleLogout} style={logoutBtnStyle} className="hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] transition-all">
                         <LogOut size={16} />
                         <span>Logout</span>
                     </button>

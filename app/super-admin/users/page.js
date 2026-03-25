@@ -229,7 +229,11 @@ export default function UserManagement() {
                             <span style={miniStatLabelStyle}>Active</span>
                         </div>
                     </div>
-                    <button onClick={() => handleOpenModal()} style={addBtnStyle}>
+                    <button 
+                        onClick={() => handleOpenModal()} 
+                        style={addBtnStyle}
+                        className="transition-all duration-200 hover:brightness-110 active:scale-95 hover:shadow-lg"
+                    >
                         <UserPlus size={16} />
                         <span>Create Merchant</span>
                     </button>
@@ -348,6 +352,7 @@ export default function UserManagement() {
                                             <button
                                                 onClick={() => handleOpenModal(user)}
                                                 style={editPhotoBtnStyle}
+                                                className="transition-all duration-200 hover:bg-[#F0F7FF] hover:border-[#0070E0] hover:shadow-md active:scale-90"
                                                 title="Edit Merchant"
                                             >
                                                 <Edit2 size={14} />
@@ -355,6 +360,7 @@ export default function UserManagement() {
                                             <button
                                                 onClick={() => handleDeleteUser(user.id, user.name)}
                                                 style={deleteBtnStyle}
+                                                className="transition-all duration-200 hover:bg-[#FEF2F2] hover:border-[#EF4444] hover:shadow-md active:scale-90"
                                                 title="Revoke Permission"
                                             >
                                                 <Trash2 size={14} />
@@ -372,7 +378,7 @@ export default function UserManagement() {
 
             {showModal && (
                 <div style={modalOverlayStyle}>
-                    <div style={modalCardStyle}>
+                    <div style={modalCardStyle} className="transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-blue-500/20">
 
 
                         <div style={modalHeaderStyle}>

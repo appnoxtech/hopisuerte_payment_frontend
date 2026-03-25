@@ -77,7 +77,7 @@ export default function SuperAdminSettings() {
 
             <form onSubmit={handleSave} style={formStyle}>
                 {/* Fee Configuration */}
-                <div style={sectionCardStyle}>
+                <div style={sectionCardStyle} className="bg-white border border-[#E3E8EF] transition-all duration-300 hover:shadow-xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/20">
                     <div style={sectionHeaderStyle}>
                         <div style={iconBoxStyle}><Percent size={20} color="#0070E0" /></div>
                         <div>
@@ -123,7 +123,7 @@ export default function SuperAdminSettings() {
                 </div>
 
                 {/* Stripe Gateway Management */}
-                <div style={sectionCardStyle}>
+                <div style={sectionCardStyle} className="bg-white border border-[#E3E8EF] transition-all duration-300 hover:shadow-xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/20">
                     <div style={sectionHeaderStyle}>
                         <div style={iconBoxStyle}><CreditCard size={20} color="#0070E0" /></div>
                         <div>
@@ -140,10 +140,20 @@ export default function SuperAdminSettings() {
 
                 {/* Footer Actions */}
                 <div style={footerAreaStyle}>
-                    <button type="button" onClick={fetchSettings} style={resetBtnStyle}>
+                    <button 
+                        type="button" 
+                        onClick={fetchSettings} 
+                        style={resetBtnStyle}
+                        className="transition-all duration-200 hover:bg-[#F1F5F9] hover:border-[#0070E0] hover:text-[#0070E0] active:scale-95"
+                    >
                         <RefreshCcw size={16} /> <span>Revert Changes</span>
                     </button>
-                    <button type="submit" disabled={saving} style={saveBtnStyle}>
+                    <button 
+                        type="submit" 
+                        disabled={saving} 
+                        style={saveBtnStyle}
+                        className="transition-all duration-200 hover:brightness-110 active:scale-95 hover:shadow-lg"
+                    >
                         {saving ? <div style={spinnerSmall} /> : <Save size={18} />}
                         <span>Save Changes</span>
                     </button>
@@ -164,7 +174,7 @@ const pageSubtitleStyle = { fontSize: '14px', color: '#6B7C93', fontWeight: '500
 
 const formStyle = { display: 'flex', flexDirection: 'column', gap: '24px' };
 
-const sectionCardStyle = { background: '#FFFFFF', border: '1px solid #E3E8EF', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
+const sectionCardStyle = { borderRadius: '24px', padding: '32px' };
 const sectionHeaderStyle = { display: 'flex', gap: '16px', alignItems: 'flex-start', marginBottom: '32px', position: 'relative' };
 const iconBoxStyle = { width: '44px', height: '44px', background: '#F0F7FF', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(0, 112, 224, 0.1)' };
 const sectionTitleStyle = { fontSize: '18px', fontWeight: '800', color: '#1A1F36', marginBottom: '4px', fontFamily: "'Outfit', sans-serif" };

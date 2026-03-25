@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   /* Sky Blue & White Professional Palette */
   --bg-primary: #FFFFFF;
@@ -93,12 +95,31 @@ h6 {
   padding: 24px;
 }
 
-.pro-card:hover {
-  box-shadow: var(--shadow-xl);
+/* Active Hover Utilities are handled by Tailwind classes in components */
+
+/* Hover Utilities */
+.hover-lift {
+  transition: all 0.2s ease-in-out;
+}
+.hover-lift:hover {
   transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Layout Utilities */
+.hover-glow:hover {
+  box-shadow: 0 0 15px var(--primary-glow);
+  border-color: var(--primary);
+}
+
+.interactive-item {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.interactive-item:hover {
+  background: var(--bg-secondary) !important;
+  color: var(--primary) !important;
+}
+
 .dashboard-container {
   max-width: 1400px;
   margin: 0 auto;

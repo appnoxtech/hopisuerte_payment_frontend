@@ -24,7 +24,7 @@ export default function SuccessPage() {
                 </div>
 
                 {/* Card */}
-                <div style={cardStyle}>
+                <div style={cardStyle} className="transition-all duration-300 hover:scale-[1.01] hover:-translate-y-1 hover:shadow-2xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/30">
                     {/* Success Icon */}
                     <div style={iconWrap}>
                         <CheckCircle2 size={48} strokeWidth={2.5} />

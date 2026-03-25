@@ -68,7 +68,7 @@ export default function GlobalPayments() {
                 showToast('Synced Successfully', 'success');
             }
         } catch (err) {
-            showToast('Nexus ledger synchronization failed', 'error');
+            showToast('Synchronization failed', 'error');
         } finally {
             setLoading(false);
         }
@@ -151,7 +151,12 @@ export default function GlobalPayments() {
                             History
                         </button>
                     </div>
-                    <button onClick={() => fetchPayments(true)} style={refreshBtnStyle}>
+                    <button
+                        onClick={() => fetchPayments(true)}
+                        style={refreshBtnStyle}
+                        onMouseEnter={refreshBtnHoverStyle}
+                        onMouseLeave={refreshBtnLeaveStyle}
+                    >
                         <RefreshCcw size={14} />
                     </button>
                 </div>
@@ -160,7 +165,11 @@ export default function GlobalPayments() {
             {/* Quick Filter Row */}
             <div style={filterRowStyle}>
                 {selectedMerchantId && (
-                    <button onClick={() => { setSelectedMerchantId(null); setView('summary'); }} style={backBtnStyle}>
+                    <button
+                        onClick={() => { setSelectedMerchantId(null); setView('summary'); }}
+                        style={backBtnStyle}
+                        className="transition-all duration-200 hover:bg-[#F0F7FF] hover:border-[#0070E0] hover:shadow-md active:scale-95"
+                    >
                         <ArrowLeft size={14} />
                         <span>Back to Summary</span>
                     </button>
@@ -243,6 +252,7 @@ export default function GlobalPayments() {
                                             <button
                                                 onClick={() => { setSelectedMerchantId(merchant.id); setView('detailed'); }}
                                                 style={historyBtnStyle}
+                                                className="transition-all duration-200 hover:bg-[#F0F7FF] hover:border-[#0070E0] hover:shadow-md active:scale-95"
                                             >
                                                 <span>Details</span>
                                                 <ArrowUpRight size={12} />
@@ -274,11 +284,16 @@ export default function GlobalPayments() {
                                 </tr>
                             ) : (
                                 (activeMerchant ? activeMerchant.payments : payments).map((p) => (
-                                    <tr key={p.id} style={{
-                                        ...trStyle,
-                                        position: activeWaMenu === p.id ? 'relative' : 'static',
-                                        zIndex: activeWaMenu === p.id ? 50 : 1
-                                    }}>
+                                    <tr
+                                        key={p.id}
+                                        style={{
+                                            ...trStyle,
+                                            position: activeWaMenu === p.id ? 'relative' : 'static',
+                                            zIndex: activeWaMenu === p.id ? 50 : 1
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                                    >
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={{ fontSize: '14px', color: '#1a1f36', fontWeight: '600' }}>{p.product?.user?.name || 'Direct'}</div>
                                             <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -327,13 +342,15 @@ export default function GlobalPayments() {
                                                         </button>
 
                                                         {activeWaMenu === p.id && (
-                                                            <div style={waMenuStyle}>
+                                                            <div style={waMenuStyle} className="transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30">
                                                                 <a
                                                                     href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
                                                                         ? `https://wa.me/${p.customer_phone.replace(/\D/g, '')}`
                                                                         : `https://web.whatsapp.com/send?phone=${p.customer_phone.replace(/\D/g, '')}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
+                                                                    onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F7FF'; e.currentTarget.style.color = '#0070E0'; }}
+                                                                    onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#1A1F36'; }}
                                                                     style={waMenuItemStyle}
                                                                 >
                                                                     <MessageCircle size={14} />
@@ -448,6 +465,9 @@ const headerActionsStyle = { display: 'flex', alignItems: 'center', gap: '16px' 
 const viewToggleStyle = { display: 'flex', background: '#FFFFFF', padding: '4px', borderRadius: '12px', border: '1px solid #E3E8EF', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' };
 const toggleBtnStyle = { padding: '8px 16px', borderRadius: '8px', border: 'none', fontSize: '12px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' };
 const refreshBtnStyle = { width: '36px', height: '36px', borderRadius: '10px', background: '#FFFFFF', border: '1px solid #E3E8EF', color: '#6B7C93', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' };
+const refreshBtnHoverStyle = (e) => { e.currentTarget.style.borderColor = '#0070E0'; e.currentTarget.style.color = '#0070E0'; e.currentTarget.style.background = '#F0F7FF'; };
+const refreshBtnLeaveStyle = (e) => { e.currentTarget.style.borderColor = '#E3E8EF'; e.currentTarget.style.color = '#6B7C93'; e.currentTarget.style.background = '#FFFFFF'; };
+
 
 const filterRowStyle = { display: 'flex', alignItems: 'center', gap: '16px', paddingBottom: '4px' };
 const backBtnStyle = { display: 'flex', alignItems: 'center', gap: 8, background: '#FFFFFF', border: '1px solid #E3E8EF', padding: '10px 16px', borderRadius: '10px', color: '#0070E0', fontSize: '13px', fontWeight: '600', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' };
@@ -495,6 +515,9 @@ const amountTextStyle = { fontSize: '16px', fontWeight: '700', color: '#1A1F36' 
 
 const countBadgeStyle = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', background: '#F7F9FC', borderRadius: '8px', fontSize: '13px', color: '#4A5568', fontWeight: '600', border: '1px solid #E3E8EF' };
 const historyBtnStyle = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#FFFFFF', border: '1px solid #E3E8EF', borderRadius: '10px', color: '#0070E0', fontSize: '13px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' };
+const btnGlowHoverStyle = (e) => { e.currentTarget.style.boxShadow = '0 0 0 4px rgba(0, 112, 224, 0.1)'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.borderColor = '#0070E0'; };
+const btnGlowLeaveStyle = (e) => { e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = '#E3E8EF'; };
+
 
 const idTextStyle = { fontSize: '9px', fontFamily: 'monospace', color: '#3f3f46', background: 'rgba(255, 255, 255, 0.01)', padding: '2px 6px', borderRadius: '4px', fontWeight: '900' };
 const productBadgeStyle = { fontSize: '11px', color: '#52525b', fontWeight: '700' };

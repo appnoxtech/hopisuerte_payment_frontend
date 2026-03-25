@@ -362,24 +362,36 @@ function UniqueProductPaymentContent() {
             <div style={glowStyle} />
 
             {/* Back Button - Top Left of Screen */}
-            <div style={{ position: 'absolute', left: 40, top: 40, zIndex: 50 }}>
-                {(clientSecret || paymentMethod) ? (
-                    <button onClick={() => { setClientSecret(null); setPaymentMethod(null); setQrPaymentData(null); }} style={backLinkStyle} type="button">
-                        <ArrowLeft size={14} />
-                        Back
-                    </button>
-                ) : (
-                    <Link href="/" style={backLinkStyle}>
-                        <ArrowLeft size={14} />
-                        Back
-                    </Link>
-                )}
-            </div>
+                <div style={{ position: 'absolute', left: 40, top: 40, zIndex: 50 }}>
+                    {(clientSecret || paymentMethod) ? (
+                        <button 
+                            onClick={() => { setClientSecret(null); setPaymentMethod(null); setQrPaymentData(null); }} 
+                            style={backLinkStyle} 
+                            type="button"
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F7FF'; e.currentTarget.style.color = '#0070E0'; e.currentTarget.style.borderColor = '#0070E0'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.color = '#6B7C93'; e.currentTarget.style.borderColor = '#E3E8EF'; }}
+                        >
+                            <ArrowLeft size={14} />
+                            Back
+                        </button>
+                    ) : (
+                        <Link 
+                            href="/" 
+                            style={backLinkStyle}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F7FF'; e.currentTarget.style.color = '#0070E0'; e.currentTarget.style.borderColor = '#0070E0'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.color = '#6B7C93'; e.currentTarget.style.borderColor = '#E3E8EF'; }}
+                        >
+                            <ArrowLeft size={14} />
+                            Back
+                        </Link>
+                    )}
+                </div>
 
             <div style={{ width: '100%', maxWidth: 640, position: 'relative', zIndex: 10 }}>
 
                 {/* Card */}
-                <div style={cardStyle}>
+                {/* Card */}
+                <div style={cardStyle} className="transition-all duration-300 hover:scale-[1.01] hover:-translate-y-1 hover:shadow-2xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/30">
                     <div style={{ marginBottom: 28, textAlign: 'center' }}>
                         {product?.image_url && (
                             <div style={{ marginBottom: 20 }}>
@@ -559,6 +571,8 @@ function UniqueProductPaymentContent() {
                                 type="submit"
                                 disabled={submitting || !amount}
                                 style={submitStyle}
+                                onMouseEnter={(e) => { if(!submitting) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 112, 224, 0.4)'; e.currentTarget.style.background = '#005BBB'; }}}
+                                onMouseLeave={(e) => { if(!submitting) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 112, 224, 0.2)'; e.currentTarget.style.background = '#0070E0'; }}}
                             >
                                 {submitting
                                     ? "Processing..."
@@ -609,6 +623,8 @@ function UniqueProductPaymentContent() {
                                         textAlign: 'left',
                                         opacity: submitting ? 0.6 : 1,
                                     }}
+                                    onMouseEnter={(e) => { if(!submitting) { e.currentTarget.style.borderColor = '#0070E0'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(0, 112, 224, 0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
+                                    onMouseLeave={(e) => { if(!submitting) { e.currentTarget.style.borderColor = '#E3E8EF'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}}
                                 >
                                     <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F0F7FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <CreditCard size={22} color="#0070E0" />
@@ -635,6 +651,8 @@ function UniqueProductPaymentContent() {
                                         textAlign: 'left',
                                         opacity: submitting ? 0.6 : 1,
                                     }}
+                                    onMouseEnter={(e) => { if(!submitting) { e.currentTarget.style.borderColor = '#0070E0'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(0, 112, 224, 0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
+                                    onMouseLeave={(e) => { if(!submitting) { e.currentTarget.style.borderColor = '#E3E8EF'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}}
                                 >
                                     <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <QrCode size={22} color="#16a34a" />

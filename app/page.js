@@ -105,15 +105,15 @@ export default function Home() {
           <Image
             src="/paysigur.png"
             alt="Paysigur"
-            width={300}
-            height={90}
+            width={160}
+            height={48}
             priority
             style={{ objectFit: 'contain' }}
           />
         </div>
 
         {/* Payment Card */}
-        <div style={cardStyle}>
+        <div style={cardStyle} className="bg-white border border-[#E3E8EF] shadow-md">
           <div style={{ marginBottom: 24, textAlign: 'center' }}>
             <h1 className="gradient-text" style={{ fontSize: '28px', fontWeight: '800', marginBottom: '8px', letterSpacing: '-0.02em' }}>
               Secure Payment
@@ -322,11 +322,8 @@ const containerStyle = {
 };
 
 const cardStyle = {
-  background: '#FFFFFF',
-  border: '1px solid #E3E8EF',
   borderRadius: 24,
   padding: '40px',
-  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
 };
 
 const fieldStyle = {

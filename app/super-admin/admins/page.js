@@ -159,7 +159,12 @@ export default function SuperAdminRoleManagement() {
                     <p style={pageSubtitleStyle}>Govern super administrative roles and audit platform activity.</p>
                 </div>
                 {activeTab === 'admins' && currentUser?.id === 1 && (
-                    <button onClick={() => handleOpenModal()} style={actionCreateBtnStyle}>
+                    <button 
+                        onClick={() => handleOpenModal()} 
+                        style={actionCreateBtnStyle}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 112, 224, 0.3)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 112, 224, 0.2)'; }}
+                    >
                         <Plus size={16} />
                         <span>Add Super Admin</span>
                     </button>
@@ -171,6 +176,8 @@ export default function SuperAdminRoleManagement() {
                 <button
                     onClick={() => setActiveTab('admins')}
                     style={activeTab === 'admins' ? activeTabBtnStyle : inactiveTabBtnStyle}
+                    onMouseEnter={(e) => { if(activeTab !== 'admins') e.currentTarget.style.background = '#F8FAFC'; }}
+                    onMouseLeave={(e) => { if(activeTab !== 'admins') e.currentTarget.style.background = 'transparent'; }}
                 >
                     <Users size={16} />
                     <span>Administrators</span>
@@ -179,6 +186,8 @@ export default function SuperAdminRoleManagement() {
                     <button
                         onClick={() => setActiveTab('logs')}
                         style={activeTab === 'logs' ? activeTabBtnStyle : inactiveTabBtnStyle}
+                        onMouseEnter={(e) => { if(activeTab !== 'logs') e.currentTarget.style.background = '#F8FAFC'; }}
+                        onMouseLeave={(e) => { if(activeTab !== 'logs') e.currentTarget.style.background = 'transparent'; }}
                     >
                         <Activity size={16} />
                         <span>Audit Log</span>
@@ -205,7 +214,11 @@ export default function SuperAdminRoleManagement() {
                             const isOriginal = admin.id === 1;
 
                             return (
-                                <div key={admin.id} style={cardStyle}>
+                                <div 
+                                    key={admin.id} 
+                                    style={cardStyle}
+                                    className="bg-white border border-[#E3E8EF] shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#0070E0] hover:bg-[#F0F7FF]/50 group cursor-default"
+                                >
                                     <div style={cardHeaderStyle}>
                                         <div style={{ ...statusPillStyle, background: admin.status === 'active' ? '#ECFDF5' : '#FEF2F2', color: admin.status === 'active' ? '#10B981' : '#EF4444' }}>
                                             <div style={{ ...dotStyle, background: 'currentColor' }} />
@@ -264,7 +277,7 @@ export default function SuperAdminRoleManagement() {
                     </div>
                 </>
             ) : (
-                <div style={logTableWrapStyle}>
+                <div style={logTableWrapStyle} className="transition-all duration-300 hover:shadow-xl hover:border-blue-400/20">
                     <table style={tableStyle}>
                         <thead>
                             <tr style={thRowStyle}>
@@ -280,7 +293,12 @@ export default function SuperAdminRoleManagement() {
                                 </tr>
                             ) : (
                                 logs.map(log => (
-                                    <tr key={log.id} style={trStyle}>
+                                    <tr 
+                                        key={log.id} 
+                                        style={trStyle}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                    >
                                         <td style={tdTimeStyle}>
                                             <div style={timeTagStyle}>
                                                 <Clock size={12} />
@@ -308,7 +326,7 @@ export default function SuperAdminRoleManagement() {
             {/* Modal */}
             {isModalOpen && (
                 <div style={modalOverlayStyle}>
-                    <div style={modalCardStyle}>
+                    <div style={modalCardStyle} className="transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-blue-500/20">
                         <div style={modalHeaderStyle}>
                             <h2 style={modalTitleStyle}>Add Details</h2>
                             <button onClick={() => setIsModalOpen(false)} style={closeBtnStyle}><X size={20} /></button>
@@ -399,7 +417,7 @@ const searchIconStyle = { position: 'absolute', left: 14, top: '50%', transform:
 const searchInputStyle = { width: '100%', padding: '12px 14px 12px 40px', background: '#FFFFFF', border: '1px solid #E3E8EF', borderRadius: '12px', outline: 'none', fontSize: '14px', color: '#1A1F36', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' };
 
 const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' };
-const cardStyle = { background: '#FFFFFF', border: '1px solid #E3E8EF', borderRadius: '24px', padding: '24px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)', transition: 'all 0.3s ease' };
+const cardStyle = { borderRadius: '24px', padding: '24px', display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease' };
 const cardHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' };
 const statusPillStyle = { display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '100px', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' };
 const dotStyle = { width: '6px', height: '6px', borderRadius: '50%' };

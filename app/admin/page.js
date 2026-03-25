@@ -237,11 +237,16 @@ export default function AdminDashboard() {
                                 </tr>
                             ) : (
                                 filteredPayments.map((p) => (
-                                    <tr key={p.id} style={{
-                                        ...trStyle,
-                                        position: activeWaMenu === p.id ? 'relative' : 'static',
-                                        zIndex: activeWaMenu === p.id ? 50 : 1
-                                    }}>
+                                    <tr 
+                                        key={p.id} 
+                                        style={{
+                                            ...trStyle,
+                                            position: activeWaMenu === p.id ? 'relative' : 'static',
+                                            zIndex: activeWaMenu === p.id ? 50 : 1
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#F8FAFC'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                                    >
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
                                             <div style={customerCellWrapper}>
                                                 <div style={avatarCircleStyle}>{p.customer_name?.[0] || 'C'}</div>
@@ -294,13 +299,15 @@ export default function AdminDashboard() {
                                                             </button>
                                                             
                                                             {activeWaMenu === p.id && (
-                                                                <div style={waMenuStyle}>
+                                                                <div style={waMenuStyle} className="transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30">
                                                                     <a 
                                                                         href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) 
                                                                         ? `https://wa.me/${p.customer_phone.replace(/\D/g, '')}` 
                                                                         : `https://web.whatsapp.com/send?phone=${p.customer_phone.replace(/\D/g, '')}`} 
                                                                         target="_blank" 
                                                                         rel="noopener noreferrer"
+                                                                        onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F7FF'; e.currentTarget.style.color = '#0070E0'; }}
+                                                                        onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#1A1F36'; }}
                                                                         style={waMenuItemStyle}
                                                                     >
                                                                         <MessageCircle size={14} />
@@ -389,7 +396,10 @@ export default function AdminDashboard() {
 
 function StatCard({ title, value, unit, color, icon }) {
     return (
-        <div style={statCardStyle}>
+        <div 
+            style={statCardStyle}
+            className="bg-white border border-[#E3E8EF] shadow-sm transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/50 cursor-default"
+        >
             <div style={{ ...statIconScope, background: `${color}10`, borderColor: `${color}20`, color }}>
                 {icon}
             </div>
@@ -456,8 +466,6 @@ const statsGridStyle = {
 };
 
 const statCardStyle = {
-    background: '#FFFFFF',
-    border: '1px solid #E3E8EF',
     borderRadius: '24px',
     padding: '24px',
     display: 'flex',
@@ -465,7 +473,8 @@ const statCardStyle = {
     gap: '20px',
     position: 'relative',
     overflow: 'hidden',
-    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    cursor: 'default',
 };
 
 const statIconScope = {
@@ -591,8 +600,10 @@ const thCenterStyle = {
 
 const trStyle = {
     borderBottom: '1px solid #E3E8EF',
-    transition: 'background 0.2s'
+    transition: 'background 0.2s',
+    cursor: 'default',
 };
+const trHoverStyle = { background: '#F8FAFC' };
 
 const tdStyle = {
     padding: '16px'

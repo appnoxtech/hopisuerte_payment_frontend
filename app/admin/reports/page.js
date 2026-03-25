@@ -96,7 +96,7 @@ export default function ReportsPage() {
 
             <div style={mainGridStyle}>
                 {/* Export Controls */}
-                <div style={cardStyle}>
+                <div style={cardStyle} className="bg-white border border-[#E3E8EF] transition-all duration-300 hover:shadow-xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/20">
                     <div style={cardHeaderStyle}>
                         <div style={iconWrapStyle}><Filter size={20} color="#0070E0" /></div>
                         <div>
@@ -129,6 +129,7 @@ export default function ReportsPage() {
                         <button
                             onClick={() => handleDownload('csv')}
                             style={{ ...btnStyle, background: '#F0F7FF', color: '#0070E0', border: '1px solid #0070E0' }}
+                            className="transition-all duration-200 hover:brightness-105 active:scale-95 hover:shadow-lg"
                             disabled={!!downloadingType}
                         >
                             {downloadingType === 'csv' ? <Loader2 size={18} className="spin" /> : <FileText size={18} />}
@@ -137,6 +138,7 @@ export default function ReportsPage() {
                         <button
                             onClick={() => handleDownload('pdf')}
                             style={{ ...btnStyle, background: '#0070E0', color: '#FFF' }}
+                            className="transition-all duration-200 hover:brightness-110 active:scale-95 hover:shadow-lg"
                             disabled={!!downloadingType}
                         >
                             {downloadingType === 'pdf' ? <Loader2 size={18} className="spin" /> : <Download size={18} />}
@@ -195,14 +197,11 @@ const subtitleStyle = { fontSize: '13px', color: '#6B7C93', fontWeight: '500' };
 const mainGridStyle = { display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '32px', alignItems: 'start' };
 
 const cardStyle = {
-    background: '#FFFFFF',
     borderRadius: '24px',
     padding: '32px',
-    border: '1px solid #E3E8EF',
     display: 'flex',
     flexDirection: 'column',
     gap: '32px',
-    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
 };
 
 const cardHeaderStyle = { display: 'flex', gap: '20px', alignItems: 'center' };

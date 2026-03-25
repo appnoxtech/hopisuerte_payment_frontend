@@ -74,6 +74,11 @@ export default function AdminForgotPassword() {
                     border-radius: 24px;
                     padding: 40px;
                     box-shadow: 0 25px 50px -12px rgba(0, 28, 100, 0.2);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .login-card:hover {
+                    transform: translateY(-8px) scale(1.01);
+                    box-shadow: 0 40px 80px -20px rgba(0, 28, 100, 0.15);
                 }
                 @media (max-width: 480px) {
                     .login-card {

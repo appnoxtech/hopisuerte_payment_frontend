@@ -244,7 +244,11 @@ export default function SuperAdminProducts() {
                     <h1 style={titleStyle}>Product Inventory</h1>
                     <p style={subtitleStyle}>Manage and monitor global product listings</p>
                 </div>
-                <button onClick={() => handleOpenModal()} style={addBtnStyle}>
+                <button
+                    onClick={() => handleOpenModal()}
+                    style={addBtnStyle}
+                    className="transition-all duration-200 hover:brightness-110 active:scale-95 hover:shadow-lg"
+                >
                     <Plus size={16} />
                     <span>Create Product</span>
                 </button>
@@ -334,7 +338,8 @@ export default function SuperAdminProducts() {
                                         <td style={tdStyle}>
                                             <button
                                                 onClick={() => setExpandedProductId(isExpanded ? null : product.id)}
-                                                style={{ ...viewBtnStyle, background: isExpanded ? '#F0F7FF' : '#FFFFFF', color: isExpanded ? '#0070E0' : '#6B7C93', borderColor: isExpanded ? '#0070E0' : '#E2E8F0' }}
+                                                style={viewBtnStyle}
+                                                className="transition-all duration-200 hover:bg-[#F0F7FF] hover:border-[#0070E0] hover:shadow-md"
                                             >
                                                 <LinkIcon size={12} />
                                                 <span>{isExpanded ? 'Collapse' : 'Get Links'}</span>
@@ -374,10 +379,18 @@ export default function SuperAdminProducts() {
                                         </td>
                                         <td style={{ ...tdStyle, paddingRight: '24px', textAlign: 'right' }}>
                                             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                                                <button onClick={() => handleOpenModal(product)} style={actionBtnStyle}>
+                                                <button
+                                                    onClick={() => handleOpenModal(product)}
+                                                    style={actionBtnStyle}
+                                                    className="transition-all duration-200 hover:bg-[#F0F7FF] hover:border-[#0070E0] hover:shadow-md active:scale-90"
+                                                >
                                                     <Edit2 size={12} color="#0070E0" />
                                                 </button>
-                                                <button onClick={() => handleDelete(product.id)} style={actionBtnStyle}>
+                                                <button
+                                                    onClick={() => handleDelete(product.id)}
+                                                    style={actionBtnStyle}
+                                                    className="transition-all duration-200 hover:bg-[#FEF2F2] hover:border-[#EF4444] hover:shadow-md active:scale-90"
+                                                >
                                                     <Trash2 size={12} color="#EF4444" />
                                                 </button>
                                             </div>
@@ -393,7 +406,7 @@ export default function SuperAdminProducts() {
             {/* Product Configuration Modal */}
             {isModalOpen && (
                 <div style={modalOverlayStyle}>
-                    <div style={modalCardStyle}>
+                    <div style={modalCardStyle} className="transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-blue-500/20">
                         <div style={modalHeaderStyle}>
                             <div>
                                 <h2 style={modalTitleStyle}>{editingProduct ? "Edit Product" : "New Product"}</h2>
@@ -429,7 +442,7 @@ export default function SuperAdminProducts() {
                                     <CustomDropdown
                                         options={[
                                             { label: 'Stripe Account 1 (Primary)', value: 1 },
-                                            { label: 'Stripe Account 2 (Failover)', value: 2 },
+                                            { label: 'Stripe Account 2 (Secondary)', value: 2 },
                                         ]}
                                         value={formData.stripe_account}
                                         onChange={(val) => setFormData({ ...formData, stripe_account: val })}
@@ -477,7 +490,7 @@ export default function SuperAdminProducts() {
             {/* Audit History Modal */}
             {isPaymentModalOpen && (
                 <div style={modalOverlayStyle}>
-                    <div style={{ ...modalCardStyle, maxWidth: '1000px', width: '95%' }}>
+                    <div style={{ ...modalCardStyle, maxWidth: '1000px', width: '95%' }} className="transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-blue-500/20">
                         <div style={modalHeaderStyle}>
                             <div>
                                 <h3 style={{ fontSize: 13, color: '#6B7C93', fontWeight: '700', textTransform: 'uppercase', marginBottom: 4 }}>Audit Trail</h3>

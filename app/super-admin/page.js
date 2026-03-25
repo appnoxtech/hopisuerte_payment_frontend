@@ -55,7 +55,7 @@ export default function SuperAdminDashboard() {
     }
 
     const StatCard = ({ title, value, unit = '', color = '#0070E0', icon: Icon, extra = null }) => (
-        <div style={cardStyle}>
+        <div style={cardStyle} className="bg-white border border-[#E2E8F0] shadow-sm transition-all duration-300 hover:scale-[1.05] hover:-translate-y-2 hover:shadow-2xl hover:border-[#0070E0] hover:bg-[#F0F7FF]/50 group cursor-default">
             <div style={cardHeaderStyle}>
                 <div style={cardLabelStyle}>{title}</div>
                 <div style={{ ...iconWrapperSmall, color: color, background: `${color}10` }}>
@@ -113,14 +113,14 @@ export default function SuperAdminDashboard() {
             </section>
 
             <section style={mainGridStyle}>
-                {/* Control Nodes */}                <div style={nodesCardStyle}>
+                {/* Control Nodes */}                <div style={nodesCardStyle} className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-400/20">
                     <div style={sectionHeaderStyle}>
                         <h3 style={sectionTitleStyle}>Management Terminals</h3>
                         <p style={sectionSubStyle}>Administrative access to platform modules</p>
                     </div>
 
                     <div style={nodeListStyle}>
-                        <Link href="/super-admin/users" style={nodeItemStyle}>
+                        <Link href="/super-admin/users" style={nodeItemStyle} className="bg-[#F7F9FC] border border-[#E3E8EF] transition-all hover:bg-[#F0F7FF]/50 hover:border-[#0070E0] hover:scale-[1.02]">
                             <div style={{ ...nodeIconBox, background: '#F0F7FF', color: '#0070E0' }}><Users size={20} /></div>
                             <div style={{ flex: 1 }}>
                                 <div style={nodeNameStyle}>Merchants</div>
@@ -129,7 +129,7 @@ export default function SuperAdminDashboard() {
                             <ArrowUpRight size={16} color="#A0AEC0" />
                         </Link>
 
-                        <Link href="/super-admin/payments" style={nodeItemStyle}>
+                        <Link href="/super-admin/payments" style={nodeItemStyle} className="bg-[#F7F9FC] border border-[#E3E8EF] transition-all hover:bg-[#F0F7FF]/50 hover:border-[#0070E0] hover:scale-[1.02]">
                             <div style={{ ...nodeIconBox, background: '#ECFDF5', color: '#10B981' }}><CreditCard size={20} /></div>
                             <div style={{ flex: 1 }}>
                                 <div style={nodeNameStyle}>Total Transactions</div>
@@ -138,7 +138,7 @@ export default function SuperAdminDashboard() {
                             <ArrowUpRight size={16} color="#A0AEC0" />
                         </Link>
 
-                        <Link href="/super-admin/products" style={nodeItemStyle}>
+                        <Link href="/super-admin/products" style={nodeItemStyle} className="bg-[#F7F9FC] border border-[#E3E8EF] transition-all hover:bg-[#F0F7FF]/50 hover:border-[#0070E0] hover:scale-[1.02]">
                             <div style={{ ...nodeIconBox, background: '#F5F3FF', color: '#6366F1' }}><Activity size={20} /></div>
                             <div style={{ flex: 1 }}>
                                 <div style={nodeNameStyle}>Inventory & Services</div>
@@ -220,8 +220,6 @@ const statGridStyle = {
 };
 
 const cardStyle = {
-    background: '#FFFFFF',
-    border: '1px solid #E3E8EF',
     borderRadius: '16px',
     padding: '24px',
     display: 'flex',
@@ -229,7 +227,6 @@ const cardStyle = {
     gap: '12px',
     position: 'relative',
     overflow: 'hidden',
-    boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)'
 };
 
 const iconWrapperSmall = {
@@ -327,9 +324,7 @@ const nodeItemStyle = {
     alignItems: 'center',
     gap: '20px',
     padding: '20px',
-    background: '#F7F9FC',
     borderRadius: '16px',
-    border: '1px solid #E3E8EF',
     textDecoration: 'none',
     transition: 'all 0.2s ease',
 };
