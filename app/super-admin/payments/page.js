@@ -13,7 +13,8 @@ import {
     ArrowLeft,
     MessageCircle,
     Receipt,
-    FileText
+    FileText,
+    Edit2
 } from 'lucide-react';
 import { formatLocalTime } from '@/utils/date';
 import CustomDropdown from '@/components/CustomDropdown';
@@ -25,6 +26,57 @@ const getSuperAdminHeaders = () => ({
 });
 
 import { useToast } from '@/context/ToastContext';
+
+const AssignmentField = ({ payment, onAssign }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [value, setValue] = useState(payment.assigned_admin || '');
+
+    useEffect(() => {
+        setValue(payment.assigned_admin || '');
+    }, [payment.assigned_admin]);
+
+    const handleBlur = () => {
+        setIsEditing(false);
+        if (value !== (payment.assigned_admin || '')) {
+            onAssign(value);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleBlur();
+        }
+    };
+
+    if (isEditing) {
+        return (
+            <input
+                autoFocus
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+                style={assignmentInputStyle}
+            />
+        );
+    }
+
+    return (
+        <div
+            onClick={() => setIsEditing(true)}
+            style={assignmentDisplayWrapStyle}
+        >
+            {payment.assigned_admin ? (
+                <div style={assigneeBadgeStyle}>
+                    <span>{payment.assigned_admin}</span>
+                    <Edit2 size={10} style={{ marginLeft: '4px', opacity: 0.6 }} />
+                </div>
+            ) : (
+                <span style={addInitialsStyle}>+ Add note</span>
+            )}
+        </div>
+    );
+};
 
 export default function GlobalPayments() {
     const { showToast } = useToast();
@@ -59,6 +111,20 @@ export default function GlobalPayments() {
         }
     };
 
+    const handleAssignPayment = async (paymentId, adminName) => {
+        try {
+            const response = await api.post(`/super-admin/payments/${paymentId}/assign`, {
+                assigned_admin: adminName
+            }, getSuperAdminHeaders());
+
+            setPayments(prev => prev.map(p => p.id === paymentId ? response.data.payment : p));
+            showToast(response.data.message || 'Transaction assigned!', 'success');
+        } catch (err) {
+            console.error('Assignment failed', err);
+            showToast('Failed to assign transaction.', 'error');
+        }
+    };
+
     const fetchPayments = async (isManual = false) => {
         setLoading(true);
         try {
@@ -76,6 +142,13 @@ export default function GlobalPayments() {
 
     useEffect(() => {
         fetchPayments();
+
+        // Real-time polling (every 30 seconds)
+        const interval = setInterval(() => {
+            fetchPayments();
+        }, 30000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const getGroupedData = () => {
@@ -269,6 +342,7 @@ export default function GlobalPayments() {
                             <tr style={tableHeaderStyle}>
                                 <th style={{ ...thStyle, paddingLeft: '24px' }}>Merchant</th>
                                 <th style={thCenterStyle}>Currency</th>
+                                <th style={thCenterStyle}>Handler Note</th>
                                 <th style={thCenterStyle}>Entered</th>
                                 <th style={thCenterStyle}>Fee</th>
                                 <th style={thCenterStyle}>Total Paid</th>
@@ -392,6 +466,12 @@ export default function GlobalPayments() {
                                             <div style={amountGroupStyle}>
                                                 <span style={amountTextStyle}>{p.currency === 'EUR' ? '€' : (p.currency === 'XCG' ? 'Cg' : '$')}{p.currency}</span>
                                             </div>
+                                        </td>
+                                        <td style={tdCenterStyle}>
+                                            <AssignmentField
+                                                payment={p}
+                                                onAssign={(val) => handleAssignPayment(p.id, val)}
+                                            />
                                         </td>
                                         <td style={tdCenterStyle}>
                                             <div style={amountGroupStyle}>
@@ -556,4 +636,46 @@ const waMenuItemStyle = {
     borderRadius: '8px',
     transition: 'all 0.2s',
     whiteSpace: 'nowrap'
+};
+
+const assignmentInputStyle = {
+    width: '100px',
+    padding: '4px 8px',
+    fontSize: '12px',
+    borderRadius: '6px',
+    border: '1px solid #0070E0',
+    outline: 'none',
+    textAlign: 'center',
+    background: '#F0F7FF'
+};
+
+const assignmentDisplayWrapStyle = {
+    cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '30px'
+};
+
+const assigneeBadgeStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    background: '#F0F7FF',
+    color: '#0070E0',
+    padding: '4px 10px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: '700',
+    border: '1px solid rgba(0, 112, 224, 0.2)',
+    transition: 'all 0.2s'
+};
+
+const addInitialsStyle = {
+    fontSize: '11px',
+    color: '#6B7C93',
+    fontWeight: '600',
+    background: '#F8FAFC',
+    padding: '4px 8px',
+    borderRadius: '6px',
+    border: '1px dashed #E3E8EF'
 };
