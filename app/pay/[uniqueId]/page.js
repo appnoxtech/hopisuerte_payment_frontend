@@ -21,6 +21,7 @@ function UniqueProductPaymentContent() {
 
     const urlAmount = searchParams.get('amount');
     const urlCurrency = searchParams.get('currency');
+    const urlNotes = searchParams.get('notes');
 
     const [product, setProduct] = useState(null);
     const [amount, setAmount] = useState(urlAmount || '');
@@ -38,7 +39,7 @@ function UniqueProductPaymentContent() {
         name: '',
         email: '',
         phone: '',
-        notes: ''
+        notes: urlNotes || ''
     });
 
     const [dialCode, setDialCode] = useState('+1');
@@ -474,13 +475,6 @@ function UniqueProductPaymentContent() {
                                         />
                                     </div>
 
-                                    <textarea
-                                        rows={2}
-                                        style={{ ...inputStyle, resize: 'none' }}
-                                        placeholder="Notes (Optional)"
-                                        value={customer.notes}
-                                        onChange={(e) => setCustomer({ ...customer, notes: e.target.value })}
-                                    />
 
                                 </div>
                             </div>

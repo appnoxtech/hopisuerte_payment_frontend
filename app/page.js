@@ -13,6 +13,7 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [amount, setAmount] = useState('');
+  const [notes, setNotes] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [loading, setLoading] = useState(true);
 
@@ -77,7 +78,7 @@ export default function Home() {
     }
 
     const identifier = selectedProduct.slug || selectedProduct.unique_payment_id;
-    router.push(`/pay/${identifier}-${currency.toLowerCase()}?amount=${amount}`);
+    router.push(`/pay/${identifier}-${currency.toLowerCase()}?amount=${amount}&notes=${encodeURIComponent(notes)}`);
   };
 
   if (loading) return <div style={msgStyle}>Initializing Paysigur Portal...</div>;
@@ -247,6 +248,18 @@ export default function Home() {
                   ))
                   )}
               </div>
+            </div>
+
+            {/* Notes */}
+            <div style={fieldStyle}>
+              <label style={labelStyle}>Notes (Optional)</label>
+              <textarea
+                rows={2}
+                placeholder="Any special instructions or notes..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                style={{ ...inputStyle, resize: 'none' }}
+              />
             </div>
 
             {/* Amount */}
