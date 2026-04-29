@@ -528,13 +528,6 @@ function UniqueProductPaymentContent() {
                                         />
                                     </div>
 
-                                    <textarea
-                                        rows={2}
-                                        style={{ ...inputStyle, resize: 'none' }}
-                                        placeholder="Notes (Optional)"
-                                        value={customer.notes}
-                                        onChange={(e) => setCustomer({ ...customer, notes: e.target.value })}
-                                    />
 
                                 </div>
                             </div>
