@@ -15,6 +15,20 @@ import { ArrowLeft, CreditCard, QrCode } from 'lucide-react';
 
 import CustomDropdown from '@/components/CustomDropdown';
 
+const EXCHANGE_RATES = {
+    USD: 1.0,
+    EUR: 0.92,
+    XCG: 1.80
+};
+
+const convertAmount = (amount, fromCurrency, toCurrency) => {
+    const from = (fromCurrency || 'USD').toUpperCase();
+    const to = (toCurrency || 'USD').toUpperCase();
+    const fromRate = EXCHANGE_RATES[from] ?? 1.0;
+    const toRate = EXCHANGE_RATES[to] ?? 1.0;
+    return Number((amount * (toRate / fromRate)).toFixed(2));
+};
+
 function UniqueProductPaymentContent() {
 
     const { uniqueId } = useParams();
@@ -276,6 +290,14 @@ function UniqueProductPaymentContent() {
                 if (data.fee_percentage) {
                     setFeePercentage(data.fee_percentage);
                 }
+                // For fixed-amount products, pre-set and lock the amount
+                if (data.product?.amount_type === 'fixed' && data.product?.amount) {
+                    const prodAmt = parseFloat(data.product.amount);
+                    const prodCurr = data.product.currency || 'USD';
+                    const targetCurr = data.prefilled_currency || urlCurrency || 'USD';
+                    const converted = convertAmount(prodAmt, prodCurr, targetCurr);
+                    setAmount(String(converted));
+                }
                 setLoading(false);
             })
             .catch(() => {
@@ -288,9 +310,14 @@ function UniqueProductPaymentContent() {
     const handleStartPayment = async (e) => {
         e.preventDefault();
 
-        if (!product || !amount || isNaN(amount) || parseFloat(amount) < 0.50) {
-            alert("Amount must be greater than 0.50");
-            return;
+        const isFixed = product?.amount_type === 'fixed';
+
+        if (!isFixed) {
+            // Open amount: validate user-entered amount
+            if (!product || !amount || isNaN(amount) || parseFloat(amount) < 0.50) {
+                alert("Amount must be greater than 0.50");
+                return;
+            }
         }
 
         if (!customer.phone) {
@@ -448,43 +475,83 @@ function UniqueProductPaymentContent() {
                     {!paymentMethod ? (
                         <form onSubmit={handleStartPayment}>
 
-                            {/* Amount - only show if not pre-filled from home page */}
-                            {!isAmountPreFilled && (
+                            {/* Amount field – conditional based on product amount_type */}
+                            {product?.amount_type === 'fixed' ? (
+                                /* Fixed Amount – read-only display */
                                 <div style={{ marginBottom: 20 }}>
                                     <label style={labelStyle}>Amount</label>
-                                    <div style={{ display: 'flex', gap: 10 }}>
-                                        <div style={{ position: 'relative', flex: 1 }}>
-                                            <span style={currencySymbol}>
-                                                {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
-                                            </span>
-                                            <input
-                                                type="number"
-                                                min="0.50"
-                                                step="0.01"
-                                                required
-                                                placeholder="0.00"
-                                                value={amount}
-                                                onChange={(e) => setAmount(e.target.value)}
-                                                style={{ ...inputStyle, paddingLeft: 38 }}
-                                                className="no-spinner"
-                                                onWheel={(e) => e.target.blur()}
-                                            />
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 12,
+                                        padding: '14px 18px',
+                                        background: '#F0F7FF',
+                                        border: '2px solid #B9DDFF',
+                                        borderRadius: 12,
+                                        boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                                    }}>
+                                        <div style={{
+                                            width: 32, height: 32, borderRadius: 8,
+                                            background: '#E0F0FF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            border: '1px solid #B9DDFF',
+                                        }}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0070E0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                            </svg>
                                         </div>
-                                        <div style={{ width: 100, opacity: isCurrencyLocked ? 0.6 : 1, pointerEvents: isCurrencyLocked ? 'none' : 'auto' }}>
-                                            <CustomDropdown
-                                                options={currencyOptions}
-                                                value={currency}
-                                                onChange={(val) => setCurrency(val)}
-                                                showSearch={false}
-                                                placeholder="USD"
-                                            />
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: '11px', fontWeight: '700', color: '#0070E0', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Fixed Amount</div>
+                                            <div style={{ fontSize: '22px', fontWeight: '800', color: '#001c64', fontFamily: "'Outfit', sans-serif" }}>
+                                                {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}{Number(amount).toFixed(2)} <span style={{ fontSize: '14px', fontWeight: '600', color: '#6B7280' }}>{currency}</span>
+                                            </div>
                                         </div>
+                                        <div style={{ fontSize: '10px', color: '#0070E0', fontWeight: '700', background: '#D1E9FF', padding: '3px 8px', borderRadius: 20 }}>LOCKED</div>
                                     </div>
                                     <div style={{ marginTop: '8px', fontSize: '13px', color: '#0070E0', fontWeight: '500', fontStyle: 'italic' }}>
                                         * A {feePercentage}% exchange and processing fee will be added to your total amount.
                                     </div>
                                 </div>
+                            ) : (
+                                /* Open Amount – only show if not pre-filled from home page */
+                                !isAmountPreFilled && (
+                                    <div style={{ marginBottom: 20 }}>
+                                        <label style={labelStyle}>Amount</label>
+                                        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                            <div style={{ position: 'relative', flex: 1 }}>
+                                                <span style={currencySymbol}>
+                                                    {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
+                                                </span>
+                                                <input
+                                                    type="number"
+                                                    min="0.50"
+                                                    step="0.01"
+                                                    required
+                                                    placeholder="0.00"
+                                                    value={amount}
+                                                    onChange={(e) => setAmount(e.target.value)}
+                                                    style={{ ...inputStyle, paddingLeft: 38 }}
+                                                    className="no-spinner"
+                                                    onWheel={(e) => e.target.blur()}
+                                                />
+                                            </div>
+                                            <div style={{ width: 100, opacity: isCurrencyLocked ? 0.6 : 1, pointerEvents: isCurrencyLocked ? 'none' : 'auto' }}>
+                                                <CustomDropdown
+                                                    options={currencyOptions}
+                                                    value={currency}
+                                                    onChange={(val) => setCurrency(val)}
+                                                    showSearch={false}
+                                                    placeholder="USD"
+                                                    toggleStyle={{ padding: '12px 16px', borderRadius: 12 }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div style={{ marginTop: '8px', fontSize: '13px', color: '#0070E0', fontWeight: '500', fontStyle: 'italic' }}>
+                                            * A {feePercentage}% exchange and processing fee will be added to your total amount.
+                                        </div>
+                                    </div>
+                                )
                             )}
+
 
                             {/* Customer */}
                             <div style={{ marginBottom: 20 }}>
@@ -647,8 +714,8 @@ function UniqueProductPaymentContent() {
                                     onMouseEnter={(e) => { if(!submitting) { e.currentTarget.style.borderColor = '#0070E0'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(0, 112, 224, 0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
                                     onMouseLeave={(e) => { if(!submitting) { e.currentTarget.style.borderColor = '#E3E8EF'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}}
                                 >
-                                    <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <QrCode size={22} color="#16a34a" />
+                                    <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F0F7FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <QrCode size={22} color="#0070E0" />
                                     </div>
                                     <div>
                                         <div style={{ fontSize: 15, fontWeight: 700, color: '#001C64' }}>Pay via QR Code</div>

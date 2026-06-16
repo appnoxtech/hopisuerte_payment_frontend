@@ -48,8 +48,10 @@ export default function SuperAdminProducts() {
         active: true,
         stripe_account: 1,
         image_url: null,
-        image_file: null, // to hold the new file temporarily
-        fee_percentage: ''
+        image_file: null,
+        fee_percentage: '',
+        amount_type: 'open',
+        amount: '',
     });
 
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -118,7 +120,9 @@ export default function SuperAdminProducts() {
                 stripe_account: product.stripe_account || 1,
                 image_url: product.image_url || null,
                 image_file: null,
-                fee_percentage: product.fee_percentage !== null ? product.fee_percentage : ''
+                fee_percentage: product.fee_percentage !== null ? product.fee_percentage : '',
+                amount_type: product.amount_type || 'open',
+                amount: product.amount !== null && product.amount !== undefined ? product.amount : '',
             });
         } else {
             setEditingProduct(null);
@@ -131,7 +135,9 @@ export default function SuperAdminProducts() {
                 stripe_account: 1,
                 image_url: null,
                 image_file: null,
-                fee_percentage: ''
+                fee_percentage: '',
+                amount_type: 'open',
+                amount: '',
             });
         }
         setIsModalOpen(true);
@@ -139,30 +145,33 @@ export default function SuperAdminProducts() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Client-side validation for fixed amount
+        if (formData.amount_type === 'fixed' && (!formData.amount || parseFloat(formData.amount) <= 0)) {
+            showToast('Fixed Amount products require a valid amount greater than zero.', 'error');
+            return;
+        }
+
         try {
             let productId = null;
 
+            const payload = {
+                user_id: formData.user_id,
+                name: formData.name,
+                description: formData.description,
+                notes: formData.notes,
+                active: formData.active,
+                stripe_account: formData.stripe_account,
+                fee_percentage: formData.fee_percentage === '' ? null : formData.fee_percentage,
+                amount_type: formData.amount_type,
+                amount: formData.amount_type === 'fixed' ? parseFloat(formData.amount) : null,
+            };
+
             if (editingProduct) {
-                await api.put(`/super-admin/products/${editingProduct.id}`, {
-                    user_id: formData.user_id,
-                    name: formData.name,
-                    description: formData.description,
-                    notes: formData.notes,
-                    active: formData.active,
-                    stripe_account: formData.stripe_account,
-                    fee_percentage: formData.fee_percentage === '' ? null : formData.fee_percentage
-                });
+                await api.put(`/super-admin/products/${editingProduct.id}`, payload);
                 productId = editingProduct.id;
             } else {
-                const res = await api.post('/super-admin/products', {
-                    user_id: formData.user_id,
-                    name: formData.name,
-                    description: formData.description,
-                    notes: formData.notes,
-                    active: formData.active,
-                    stripe_account: formData.stripe_account,
-                    fee_percentage: formData.fee_percentage === '' ? null : formData.fee_percentage
-                });
+                const res = await api.post('/super-admin/products', payload);
                 productId = res.data.id;
             }
 
@@ -320,6 +329,26 @@ export default function SuperAdminProducts() {
                                                             Note: {product.notes.substring(0, 30)}...
                                                         </div>
                                                     )}
+                                                    {/* Pricing badge */}
+                                                    <div style={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        marginTop: '4px',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '20px',
+                                                        fontSize: '10px',
+                                                        fontWeight: '700',
+                                                        letterSpacing: '0.03em',
+                                                        ...(product.amount_type === 'fixed'
+                                                            ? { background: 'rgba(0,112,224,0.08)', color: '#0070E0', border: '1px solid rgba(0,112,224,0.2)' }
+                                                            : { background: 'rgba(107,124,147,0.06)', color: '#6B7C93', border: '1px solid rgba(107,124,147,0.15)' }
+                                                        )
+                                                    }}>
+                                                        {product.amount_type === 'fixed'
+                                                            ? `Fixed – $${Number(product.amount).toFixed(2)}`
+                                                            : 'Open Amount'
+                                                        }
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -463,6 +492,82 @@ export default function SuperAdminProducts() {
                                     />
                                     <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>Leave empty to use the global platform default.</p>
                                 </div>
+
+                                {/* ── Amount Type ── */}
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Amount Type</label>
+                                    <div style={{ display: 'flex', gap: 10 }}>
+                                        <button
+                                            type="button"
+                                            id="amount-type-open"
+                                            onClick={() => setFormData({ ...formData, amount_type: 'open', amount: '' })}
+                                            style={{
+                                                flex: 1,
+                                                padding: '12px 16px',
+                                                borderRadius: 12,
+                                                border: formData.amount_type === 'open' ? '2px solid #0070E0' : '1px solid #E3E8EF',
+                                                background: formData.amount_type === 'open' ? '#F0F7FF' : '#F8FAFC',
+                                                color: formData.amount_type === 'open' ? '#0070E0' : '#6B7C93',
+                                                fontWeight: formData.amount_type === 'open' ? '700' : '500',
+                                                fontSize: '13px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                            }}
+                                        >
+                                            Open Amount
+                                        </button>
+                                        <button
+                                            type="button"
+                                            id="amount-type-fixed"
+                                            onClick={() => setFormData({ ...formData, amount_type: 'fixed' })}
+                                            style={{
+                                                flex: 1,
+                                                padding: '12px 16px',
+                                                borderRadius: 12,
+                                                border: formData.amount_type === 'fixed' ? '2px solid #0070E0' : '1px solid #E3E8EF',
+                                                background: formData.amount_type === 'fixed' ? '#F0F7FF' : '#F8FAFC',
+                                                color: formData.amount_type === 'fixed' ? '#0070E0' : '#6B7C93',
+                                                fontWeight: formData.amount_type === 'fixed' ? '700' : '500',
+                                                fontSize: '13px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                            }}
+                                        >
+                                            Fixed Amount
+                                        </button>
+                                    </div>
+                                    <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>
+                                        {formData.amount_type === 'fixed'
+                                            ? 'Customer will see a pre-set amount and cannot change it.'
+                                            : 'Customer enters any amount at checkout.'}
+                                    </p>
+                                </div>
+
+                                {/* ── Fixed Amount Field (conditional) ── */}
+                                {formData.amount_type === 'fixed' && (
+                                    <div style={inputGroupStyle}>
+                                        <label style={labelStyle}>Fixed Amount <span style={{ color: '#EF4444' }}>*</span></label>
+                                        <div style={{ position: 'relative' }}>
+                                            <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#0070E0', fontWeight: '700', fontSize: '15px', zIndex: 1 }}>$</span>
+                                            <input
+                                                id="product-fixed-amount"
+                                                type="number"
+                                                step="0.01"
+                                                min="0.01"
+                                                placeholder="0.00"
+                                                required={formData.amount_type === 'fixed'}
+                                                value={formData.amount}
+                                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                                style={{ ...modalInputStyle, paddingLeft: 34, borderColor: '#0070E0', background: '#F0F7FF' }}
+                                                onWheel={(e) => e.target.blur()}
+                                            />
+                                        </div>
+                                        <p style={{ fontSize: '11px', color: '#0070E0', marginLeft: 4, fontWeight: '600' }}>
+                                            Customers will always be charged this exact amount.
+                                        </p>
+                                    </div>
+                                )}
+
                                 <div style={inputGroupStyle}>
                                     <label style={labelStyle}>Product Image</label>
                                     {formData.image_url && !formData.image_file && (

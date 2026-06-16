@@ -8,6 +8,20 @@ import { useRouter } from 'next/navigation';
 
 import CustomDropdown from '@/components/CustomDropdown';
 
+const EXCHANGE_RATES = {
+  USD: 1.0,
+  EUR: 0.92,
+  XCG: 1.80
+};
+
+const convertAmount = (amount, fromCurrency, toCurrency) => {
+  const from = (fromCurrency || 'USD').toUpperCase();
+  const to = (toCurrency || 'USD').toUpperCase();
+  const fromRate = EXCHANGE_RATES[from] ?? 1.0;
+  const toRate = EXCHANGE_RATES[to] ?? 1.0;
+  return Number((amount * (toRate / fromRate)).toFixed(2));
+};
+
 export default function Home() {
   const router = useRouter();
   const [products, setProducts] = useState([]);
@@ -43,6 +57,27 @@ export default function Home() {
       })
       .catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      if (selectedProduct.amount_type === 'fixed') {
+        if (selectedProduct.currency) {
+          setCurrency(selectedProduct.currency.toUpperCase());
+        }
+      } else {
+        setAmount('');
+      }
+    }
+  }, [selectedProduct]);
+
+  useEffect(() => {
+    if (selectedProduct && selectedProduct.amount_type === 'fixed') {
+      const prodAmt = selectedProduct.amount ? parseFloat(selectedProduct.amount) : 0;
+      const prodCurr = selectedProduct.currency || 'USD';
+      const converted = convertAmount(prodAmt, prodCurr, currency);
+      setAmount(String(converted));
+    }
+  }, [selectedProduct, currency]);
 
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -254,10 +289,13 @@ export default function Home() {
             <div style={fieldStyle}>
               <label style={labelStyle}>Payment Amount</label>
 
-              <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
 
                 <div style={{ position: 'relative', flex: 1 }}>
-                  <span style={currencySymbol}>
+                  <span style={{
+                    ...currencySymbol,
+                    color: selectedProduct?.amount_type === 'fixed' ? '#0070E0' : '#6B7C93'
+                  }}>
                     {currency === 'EUR' ? '€' : (currency === 'XCG' ? 'Cg' : '$')}
                   </span>
 
@@ -269,7 +307,18 @@ export default function Home() {
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    style={{ ...inputStyle, paddingLeft: 38 }}
+                    readOnly={selectedProduct?.amount_type === 'fixed'}
+                    style={{
+                      ...inputStyle,
+                      paddingLeft: 38,
+                      ...(selectedProduct?.amount_type === 'fixed' ? {
+                        background: '#F0F7FF',
+                        borderColor: '#B9DDFF',
+                        color: '#001C64',
+                        fontWeight: '700',
+                        cursor: 'not-allowed'
+                      } : {})
+                    }}
                   />
                 </div>
 
@@ -280,10 +329,19 @@ export default function Home() {
                     onChange={(val) => setCurrency(val)}
                     showSearch={false}
                     placeholder="USD"
+                    toggleStyle={{ padding: '12px 16px', borderRadius: 12 }}
                   />
                 </div>
 
               </div>
+              {selectedProduct?.amount_type === 'fixed' && (
+                <div style={{ marginTop: '8px', fontSize: '12px', color: '#0070E0', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0070E0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  Fixed amount for this product.
+                </div>
+              )}
             </div>
 
             {selectedProduct?.notes && (

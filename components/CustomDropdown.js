@@ -11,7 +11,8 @@ export default function CustomDropdown({
     placeholder = "Select option",
     showSearch = true,
     className = "",
-    style = {}
+    style = {},
+    toggleStyle: customToggleStyle = {}
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -176,6 +177,7 @@ export default function CustomDropdown({
                 style={{
                     ...toggleStyle,
                     borderColor: isOpen ? '#0070E0' : '#E2E8F0',
+                    ...customToggleStyle
                 }}
             >
                 <div style={{
