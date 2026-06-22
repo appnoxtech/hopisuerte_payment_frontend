@@ -258,8 +258,8 @@ export default function UserManagement() {
 
 
 
-            {/* Main Data Perspective */}
             <div style={tableContainerStyle}>
+                <div style={tableScrollWrapperStyle}>
                 <table style={tableStyle}>
                     <thead>
                         <tr style={tableHeaderRowStyle}>
@@ -372,6 +372,7 @@ export default function UserManagement() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
 
@@ -545,8 +546,28 @@ const filterInputStyle = { width: '100%', background: '#FFFFFF', border: '1px so
 
 const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E3E8EF', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
+const tableScrollWrapperStyle = {
+    overflowY: 'auto',
+    maxHeight: '65vh',
+    borderRadius: '16px',
+};
+
 const tableHeaderRowStyle = { background: '#F8FAFC', borderBottom: '1px solid #E3E8EF' };
-const thStyle = { padding: '16px 24px', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left' };
+const thStyle = { 
+    padding: '16px 24px', 
+    fontSize: '12px', 
+    fontWeight: '700', 
+    color: '#6B7C93', 
+    textTransform: 'uppercase', 
+    letterSpacing: '0.05em', 
+    textAlign: 'left',
+    position: 'sticky',
+    top: 0,
+    background: '#F8FAFC',
+    zIndex: 10,
+    boxShadow: '0 1px 0 #E3E8EF',
+    whiteSpace: 'nowrap'
+};
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
 const tdStyle = { padding: '20px 24px' };

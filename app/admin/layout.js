@@ -47,6 +47,9 @@ export default function AdminLayout({ children }) {
         if (!loading && !user && !publicPaths.includes(pathname)) {
             router.push('/admin/login');
         }
+        if (!loading && user && user.role === 'admin' && !publicPaths.includes(pathname)) {
+            router.push('/super-admin');
+        }
     }, [user, loading, pathname, router]);
 
     if (publicPaths.includes(pathname)) {

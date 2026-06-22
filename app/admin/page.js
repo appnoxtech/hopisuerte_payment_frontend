@@ -31,11 +31,16 @@ export default function AdminDashboard() {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Stats and Pagination states
+    const [stats, setStats] = useState(null);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const [perPage, setPerPage] = useState(10);
+
     // Filter states
     const [filterCustomer, setFilterCustomer] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
-    const [filterDate, setFilterDate] = useState('');
-    const [sortOrder, setSortOrder] = useState('desc');
     const [displayCurrency, setDisplayCurrency] = useState('USD');
     const [activeWaMenu, setActiveWaMenu] = useState(null);
     const [sharingId, setSharingId] = useState(null);
@@ -63,9 +68,13 @@ export default function AdminDashboard() {
      };
 
     useEffect(() => {
-        fetchPayments();
         fetchUser();
+        fetchStats();
     }, []);
+
+    useEffect(() => {
+        fetchPayments();
+    }, [page, filterCustomer, filterStatus]);
 
     const fetchUser = async () => {
         try {
@@ -74,10 +83,29 @@ export default function AdminDashboard() {
         } catch (err) { }
     };
 
-    const fetchPayments = async () => {
+    const fetchStats = async () => {
         try {
-            const response = await api.get('/admin/payments');
-            setPayments(response.data);
+            const response = await api.get('/admin/stats');
+            setStats(response.data);
+        } catch (err) {
+            console.error('Failed to fetch stats', err);
+        }
+    };
+
+    const fetchPayments = async () => {
+        setLoading(true);
+        try {
+            const response = await api.get('/admin/payments', {
+                params: {
+                    page: page,
+                    per_page: perPage,
+                    search: filterCustomer,
+                    status: filterStatus
+                }
+            });
+            setPayments(response.data.data || []);
+            setTotalPages(response.data.last_page || 1);
+            setTotalItems(response.data.total || 0);
         } catch (err) {
             console.error('Failed to fetch payments', err);
         } finally {
@@ -85,44 +113,32 @@ export default function AdminDashboard() {
         }
     };
 
-    if (loading) {
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
+    };
+
+    const handleSearchChange = (val) => {
+        setFilterCustomer(val);
+        setPage(1);
+    };
+
+    const handleStatusChange = (val) => {
+        setFilterStatus(val);
+        setPage(1);
+    };
+
+    const displayRevenue = stats?.revenue?.[displayCurrency] || 0;
+    const displaySuccessCount = stats?.success_count || 0;
+
+    if (loading && payments.length === 0) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
                 <div style={{ width: 32, height: 32, borderRadius: '50%', borderTop: '2px solid #0070E0', borderBottom: '2px solid rgba(0, 112, 224, 0.1)', animation: 'spin 1s linear infinite' }} />
             </div>
         );
     }
-
-    const successfulPayments = payments.filter(p => p.status === 'success');
-
-    const totals = successfulPayments.reduce((acc, p) => {
-        const cur = (p.currency || 'USD').toUpperCase();
-        if (acc.hasOwnProperty(cur)) {
-            acc[cur] += Number(p.total_paid_amount ?? p.amount);
-        }
-        return acc;
-    }, { USD: 0, EUR: 0, XCG: 0 });
-
-    const filteredPayments = payments.filter(p => {
-        const matchesCustomer = (p.customer_name?.toLowerCase().includes(filterCustomer.toLowerCase())) ||
-            (p.customer_email?.toLowerCase().includes(filterCustomer.toLowerCase()));
-        const matchesStatus = filterStatus === '' || p.status === filterStatus;
-
-        let matchesDate = true;
-        if (filterDate) {
-            const pDate = new Date(p.created_at).toISOString().split('T')[0];
-            matchesDate = pDate === filterDate;
-        }
-
-        return matchesCustomer && matchesStatus && matchesDate;
-    }).sort((a, b) => {
-        const dateA = new Date(a.created_at).getTime();
-        const dateB = new Date(b.created_at).getTime();
-        if (dateA === dateB) {
-            return sortOrder === 'desc' ? b.id - a.id : a.id - b.id;
-        }
-        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
-    });
 
     return (
         <div style={pageContainerStyle}>
@@ -131,14 +147,13 @@ export default function AdminDashboard() {
                 <div>
                     <h1 style={titleStyle}>{user?.name || ''}'s Dashboard</h1>
                 </div>
-
             </div>
 
             {/* Performance Metrics */}
             <div style={statsGridStyle}>
                 <StatCard
                     title="Payment Successful"
-                    value={successfulPayments.length}
+                    value={displaySuccessCount}
                     color="#10B981"
                     icon={<CheckCircle2 size={18} />}
                 />
@@ -161,7 +176,7 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                     }
-                    value={totals[displayCurrency].toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                    value={displayRevenue.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
                     unit={displayCurrency === 'USD' ? '$' : (displayCurrency === 'EUR' ? '€' : 'Cg')}
                     color="#001c64"
                     icon={displayCurrency === 'USD' ? <DollarSign size={18} /> : <div style={{ fontWeight: '900', fontSize: '15px' }}>{displayCurrency === 'EUR' ? '€' : 'Cg'}</div>}
@@ -182,7 +197,7 @@ export default function AdminDashboard() {
                             <input
                                 placeholder="Search..."
                                 value={filterCustomer}
-                                onChange={(e) => setFilterCustomer(e.target.value)}
+                                onChange={(e) => handleSearchChange(e.target.value)}
                                 style={filterInputStyle}
                             />
                         </div>
@@ -190,23 +205,15 @@ export default function AdminDashboard() {
                             <CustomDropdown
                                 options={statusOptions}
                                 value={filterStatus}
-                                onChange={setFilterStatus}
+                                onChange={handleStatusChange}
                                 placeholder="Status"
                             />
                         </div>
-                        {/* <div style={{ position: 'relative' }}>
-                            <Calendar style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#52525b', pointerEvents: 'none' }} size={12} />
-                            <input
-                                type="date"
-                                value={filterDate}
-                                onChange={(e) => setFilterDate(e.target.value)}
-                                style={dateInputStyle}
-                            />
-                        </div> */}
                     </div>
                 </div>
 
                 <div style={tableContainerStyle}>
+                    <div style={tableScrollWrapperStyle}>
                     <table style={tableStyle}>
                         <thead>
                             <tr style={tableHeaderStyle}>
@@ -217,26 +224,22 @@ export default function AdminDashboard() {
                                 <th style={{ ...thStyle, textAlign: 'center' }}>Fee</th>
                                 <th style={{ ...thStyle, textAlign: 'right' }}>Total Paid</th>
                                 <th style={thCenterStyle}>Status</th>
-                                <th
-                                    onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                                    style={{ ...thStyle, textAlign: 'right', paddingRight: '16px', cursor: 'pointer' }}
-                                >
+                                <th style={{ ...thStyle, textAlign: 'right', paddingRight: '16px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4 }}>
                                         Date
-                                        {sortOrder === 'desc' ? <ArrowDown size={10} /> : <ArrowUp size={10} />}
                                     </div>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredPayments.length === 0 ? (
+                            {payments.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" style={emptyStateStyle}>
+                                    <td colSpan="8" style={emptyStateStyle}>
                                         No data found
                                     </td>
                                 </tr>
                             ) : (
-                                filteredPayments.map((p) => (
+                                payments.map((p) => (
                                     <tr 
                                         key={p.id} 
                                         style={{
@@ -248,103 +251,92 @@ export default function AdminDashboard() {
                                         onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                                     >
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
-                                            <div style={customerCellWrapper}>
-                                                <div style={avatarCircleStyle}>{p.customer_name?.[0] || 'C'}</div>
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={primaryTextStyle}>{p.customer_name}</div>
-                                                    <div style={secondaryTextStyle}>{p.customer_email}</div>
-                                                    <div style={{ ...secondaryTextStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                        {p.customer_phone}
-                                                        {p.customer_phone && (
-                                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                            <button 
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setActiveWaMenu(activeWaMenu === p.id ? null : p.id)
-                                                                }}
-                                                                style={{ 
-                                                                    background: 'none', 
-                                                                    border: 'none', 
-                                                                    padding: 0, 
-                                                                    cursor: 'pointer',
-                                                                    color: '#25D366', 
-                                                                    display: 'flex', 
-                                                                    alignItems: 'center',
-                                                                    transition: 'transform 0.2s ease-in-out'
-                                                                }}
-                                                                title="WhatsApp Receipt Sharing"
-                                                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                                                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                                            >
-                                                                <MessageCircle size={15} />
-                                                            </button>
-
-                                                            <button 
-                                                                onClick={() => handleDownloadReceipt(p)}
-                                                                style={{ 
-                                                                    background: 'none', 
-                                                                    border: 'none', 
-                                                                    padding: 0, 
-                                                                    cursor: 'pointer',
-                                                                    color: '#6B7C93', 
-                                                                    display: 'flex', 
-                                                                    alignItems: 'center',
-                                                                    transition: 'transform 0.2s ease-in-out'
-                                                                }}
-                                                                title="Download Receipt PDF"
-                                                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                                                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                                            >
-                                                                <FileText size={15} />
-                                                            </button>
-                                                            
-                                                            {activeWaMenu === p.id && (
-                                                                <div style={waMenuStyle} className="transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30">
-                                                                    <a 
-                                                                        href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) 
-                                                                        ? `https://wa.me/${p.customer_phone.replace(/\D/g, '')}` 
-                                                                        : `https://web.whatsapp.com/send?phone=${p.customer_phone.replace(/\D/g, '')}`} 
-                                                                        target="_blank" 
-                                                                        rel="noopener noreferrer"
-                                                                        onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F7FF'; e.currentTarget.style.color = '#0070E0'; }}
-                                                                        onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#1A1F36'; }}
-                                                                        style={waMenuItemStyle}
-                                                                    >
-                                                                        <MessageCircle size={14} />
-                                                                        <span>Chat on WhatsApp</span>
-                                                                    </a>
-                                                                    {/* Temporarily disabled: Twilio WhatsApp PDF Sharing */}
-                                                                    {/* 
-                                                                    <button 
-                                                                        onClick={() => handleShareReceipt(p)}
-                                                                        disabled={sharingId === p.id}
-                                                                        style={{ ...waMenuItemStyle, border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}
-                                                                    >
-                                                                        <Receipt size={14} />
-                                                                        <span>{sharingId === p.id ? 'Attaching PDF...' : 'Share PDF Receipt'}</span>
-                                                                    </button>
-                                                                    */}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                                                <div style={customerCellWrapper}>
+                                                    <div style={avatarCircleStyle}>{p.customer_name?.[0] || 'C'}</div>
+                                                    <div>
+                                                        <div style={primaryTextStyle}>{p.customer_name}</div>
+                                                        <div style={secondaryTextStyle}>{p.customer_email}</div>
+                                                        {p.customer_phone && <div style={secondaryTextStyle}>{p.customer_phone}</div>}
+                                                        {p.notes && (
+                                                            <div style={{ 
+                                                                fontSize: '11px', 
+                                                                color: '#0070E0', 
+                                                                marginTop: '6px', 
+                                                                background: '#F0F7FF', 
+                                                                padding: '4px 8px', 
+                                                                borderRadius: '6px', 
+                                                                display: 'inline-block',
+                                                                border: '1px solid rgba(0, 112, 224, 0.1)',
+                                                                fontWeight: '600'
+                                                            }}>
+                                                                Note: {p.notes}
+                                                            </div>
                                                         )}
                                                     </div>
-                                                    {p.notes && (
-                                                        <div style={{ 
-                                                            fontSize: '11px', 
-                                                            color: '#0070E0', 
-                                                            marginTop: '6px', 
-                                                            background: '#F0F7FF', 
-                                                            padding: '4px 8px', 
-                                                            borderRadius: '6px', 
-                                                            display: 'inline-block',
-                                                            border: '1px solid rgba(0, 112, 224, 0.1)',
-                                                            fontWeight: '600'
-                                                        }}>
-                                                            Note: {p.notes}
-                                                        </div>
-                                                    )}
                                                 </div>
+                                                {p.customer_phone && (
+                                                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                                                        <button 
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setActiveWaMenu(activeWaMenu === p.id ? null : p.id)
+                                                            }}
+                                                            style={{ 
+                                                                background: 'none', 
+                                                                border: 'none', 
+                                                                padding: 0, 
+                                                                cursor: 'pointer',
+                                                                color: '#25D366', 
+                                                                display: 'flex', 
+                                                                alignItems: 'center',
+                                                                transition: 'transform 0.2s ease-in-out'
+                                                            }}
+                                                            title="WhatsApp Receipt Sharing"
+                                                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                        >
+                                                            <MessageCircle size={15} />
+                                                        </button>
+
+                                                        <button 
+                                                            onClick={() => handleDownloadReceipt(p)}
+                                                            style={{ 
+                                                                background: 'none', 
+                                                                border: 'none', 
+                                                                padding: 0, 
+                                                                cursor: 'pointer',
+                                                                color: '#6B7C93', 
+                                                                display: 'flex', 
+                                                                alignItems: 'center',
+                                                                transition: 'transform 0.2s ease-in-out'
+                                                            }}
+                                                            title="Download Receipt PDF"
+                                                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                                                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                        >
+                                                            <FileText size={15} />
+                                                        </button>
+                                                        
+                                                        {activeWaMenu === p.id && (
+                                                            <div style={waMenuStyle} className="transition-all duration-300 hover:shadow-2xl hover:border-blue-500/30">
+                                                                <a 
+                                                                    href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) 
+                                                                    ? `https://wa.me/${p.customer_phone.replace(/\D/g, '')}` 
+                                                                    : `https://web.whatsapp.com/send?phone=${p.customer_phone.replace(/\D/g, '')}`} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer"
+                                                                    onMouseEnter={(e) => { e.currentTarget.style.background = '#F0F7FF'; e.currentTarget.style.color = '#0070E0'; }}
+                                                                    onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#1A1F36'; }}
+                                                                    style={waMenuItemStyle}
+                                                                >
+                                                                    <MessageCircle size={14} />
+                                                                    <span>Chat on WhatsApp</span>
+                                                                </a>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         </td>
                                         <td style={tdStyle}>
@@ -388,6 +380,40 @@ export default function AdminDashboard() {
                             )}
                         </tbody>
                     </table>
+                    </div>
+
+                    {/* Pagination Bar */}
+                    {totalPages > 1 && (
+                        <div style={paginationContainerStyle}>
+                            <div style={{ fontSize: '13px', color: '#6B7C93', fontWeight: '500' }}>
+                                Showing page {page} of {totalPages} ({totalItems} total transactions)
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button 
+                                    onClick={() => handlePageChange(page - 1)}
+                                    disabled={page === 1}
+                                    style={{
+                                        ...paginationButtonStyle,
+                                        opacity: page === 1 ? 0.5 : 1,
+                                        cursor: page === 1 ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    Previous
+                                </button>
+                                <button 
+                                    onClick={() => handlePageChange(page + 1)}
+                                    disabled={page === totalPages}
+                                    style={{
+                                        ...paginationButtonStyle,
+                                        opacity: page === totalPages ? 0.5 : 1,
+                                        cursor: page === totalPages ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </section>
         </div>
@@ -417,6 +443,29 @@ function StatCard({ title, value, unit, color, icon }) {
 // ──────────────────────────────────────────────
 // STYLES DEFINITION
 // ──────────────────────────────────────────────
+
+const paginationContainerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 24px',
+    borderTop: '1px solid #E3E8EF',
+    background: '#F8FAFC',
+    borderBottomLeftRadius: '24px',
+    borderBottomRightRadius: '24px'
+};
+
+const paginationButtonStyle = {
+    padding: '8px 16px',
+    background: '#FFFFFF',
+    border: '1px solid #E3E8EF',
+    borderRadius: '10px',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#0070E0',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+};
 
 const pageContainerStyle = {
     display: 'flex',
@@ -579,6 +628,12 @@ const tableStyle = {
     textAlign: 'left'
 };
 
+const tableScrollWrapperStyle = {
+    overflowY: 'auto',
+    maxHeight: '65vh',
+    borderRadius: '24px',
+};
+
 const tableHeaderStyle = {
     background: '#F8FAFC',
     borderBottom: '1px solid #E3E8EF'
@@ -590,7 +645,13 @@ const thStyle = {
     fontWeight: '700',
     color: '#64748B',
     textTransform: 'uppercase',
-    letterSpacing: '0.05em'
+    letterSpacing: '0.05em',
+    position: 'sticky',
+    top: 0,
+    background: '#F8FAFC',
+    zIndex: 10,
+    boxShadow: '0 1px 0 #E3E8EF',
+    whiteSpace: 'nowrap'
 };
 
 const thCenterStyle = {
@@ -684,7 +745,8 @@ const emptyStateStyle = {
 const waMenuStyle = {
     position: 'absolute',
     top: '100%',
-    left: '0',
+    right: '0',
+    left: 'auto',
     zIndex: 10,
     background: '#FFFFFF',
     border: '1px solid #E3E8EF',

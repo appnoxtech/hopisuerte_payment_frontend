@@ -99,12 +99,14 @@ export default function ProductManagement() {
                                     )}
                                     <h3 style={{ ...productTitleStyle, marginBottom: 0 }}>{product.name}</h3>
                                 </div>
-                                <p style={productDescStyle}>{product.description || "Authorized gateway link."}</p>
-                                {product.notes && (
-                                    <p style={{ ...productDescStyle, color: '#0070E0', fontSize: '13px', fontStyle: 'italic', marginTop: '-16px' }}>
-                                        {product.notes}
-                                    </p>
-                                )}
+                                <div style={{ flex: 1 }}>
+                                    <p style={productDescStyle}>{product.description || "Authorized gateway link."}</p>
+                                    {product.notes && (
+                                        <p style={{ ...productDescStyle, color: '#0070E0', fontSize: '13px', fontStyle: 'italic', marginTop: '-16px' }}>
+                                            {product.notes}
+                                        </p>
+                                    )}
+                                </div>
 
                                 <button
                                     onClick={() => setExpandedProductId(isExpanded ? null : product.id)}

@@ -48,6 +48,15 @@ export default function AdminLogin() {
 
             const response = await api.post('/login', { email, password });
 
+            // We must check the user's role to prevent super admins from logging in as merchants
+            const userRole = response.data.user?.role;
+            if (userRole === 'admin') {
+                showToast('Super Admin accounts must use the Super Admin portal.', 'error');
+                setError('Super Admin accounts must use the Super Admin portal.');
+                setLoading(false);
+                return;
+            }
+
             localStorage.setItem('auth_token', response.data.access_token);
 
             showToast('Login successfully', 'success');
@@ -146,7 +155,7 @@ export default function AdminLogin() {
                 <div className="login-card">
 
                     <h1 style={titleStyle}>
-                        Admin Login
+                        Merchant Login
                     </h1>
 
                     <p style={subtitleStyle}>

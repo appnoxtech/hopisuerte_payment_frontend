@@ -278,6 +278,7 @@ export default function SuperAdminRoleManagement() {
                 </>
             ) : (
                 <div style={logTableWrapStyle} className="transition-all duration-300 hover:shadow-xl hover:border-blue-400/20">
+                    <div style={tableScrollWrapperStyle}>
                     <table style={tableStyle}>
                         <thead>
                             <tr style={thRowStyle}>
@@ -320,6 +321,7 @@ export default function SuperAdminRoleManagement() {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             )}
 
@@ -439,10 +441,29 @@ const editBtnStyle = { flex: 1, display: 'flex', alignItems: 'center', justifyCo
 const toggleBtnStyle = { width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' };
 const deleteBtnStyle = { width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FEF2F2', color: '#EF4444', border: '1px solid #FEE2E2', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s' };
 
+const tableScrollWrapperStyle = {
+    overflowY: 'auto',
+    maxHeight: '65vh',
+    borderRadius: '24px',
+};
+
 const logTableWrapStyle = { background: '#FFFFFF', borderRadius: '24px', border: '1px solid #E3E8EF', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const thRowStyle = { background: '#F8FAFC', borderBottom: '1px solid #E3E8EF' };
-const thStyle = { padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em' };
+const thStyle = { 
+    padding: '16px 24px', 
+    textAlign: 'left', 
+    fontSize: '12px', 
+    fontWeight: '700', 
+    color: '#6B7C93', 
+    textTransform: 'uppercase', 
+    letterSpacing: '0.05em',
+    position: 'sticky',
+    top: 0,
+    background: '#F8FAFC',
+    zIndex: 10,
+    boxShadow: '0 1px 0 #E3E8EF'
+};
 const trStyle = { borderBottom: '1px solid #F1F5F9' };
 const tdStyle = { padding: '20px 24px' };
 const tdTimeStyle = { padding: '20px 24px', width: '220px' };

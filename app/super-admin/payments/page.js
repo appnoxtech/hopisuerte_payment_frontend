@@ -262,6 +262,7 @@ export default function GlobalPayments() {
             </div>
 
             <div style={tableContainerStyle}>
+                <div style={tableScrollWrapperStyle}>
                 {view === 'summary' ? (
                     <table style={tableStyle}>
                         <thead>
@@ -369,11 +370,15 @@ export default function GlobalPayments() {
                                         onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                                     >
                                         <td style={{ ...tdStyle, paddingLeft: '24px' }}>
-                                            <div style={{ fontSize: '14px', color: '#1a1f36', fontWeight: '600' }}>{p.product?.user?.name || 'Direct'}</div>
-                                            <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                Customer: {p.customer_name} ({p.customer_phone})
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                                                <div>
+                                                    <div style={{ fontSize: '14px', color: '#1a1f36', fontWeight: '600' }}>{p.product?.user?.name || 'Direct'}</div>
+                                                    <div style={{ fontSize: '12px', color: '#6B7C93', marginTop: '4px' }}>
+                                                        Customer: {p.customer_name} {p.customer_phone && `(${p.customer_phone})`}
+                                                    </div>
+                                                </div>
                                                 {p.customer_phone && (
-                                                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
@@ -430,17 +435,6 @@ export default function GlobalPayments() {
                                                                     <MessageCircle size={14} />
                                                                     <span>Chat on WhatsApp</span>
                                                                 </a>
-                                                                {/* Temporarily disabled: Twilio WhatsApp PDF Sharing */}
-                                                                {/* 
-                                                                <button
-                                                                    onClick={() => handleShareReceipt(p)}
-                                                                    disabled={sharingId === p.id}
-                                                                    style={{ ...waMenuItemStyle, border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}
-                                                                >
-                                                                    <Receipt size={14} />
-                                                                    <span>{sharingId === p.id ? 'Attaching PDF...' : 'Share PDF Receipt'}</span>
-                                                                </button>
-                                                                */}
                                                             </div>
                                                         )}
                                                     </div>
@@ -527,6 +521,7 @@ export default function GlobalPayments() {
                         </tbody>
                     </table>
                 )}
+                </div>
             </div>
         </div>
     );
@@ -558,7 +553,13 @@ const countBadgeWrap = { fontSize: '12px', fontWeight: '600', color: '#6B7C93', 
 
 const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E3E8EF', /* overflow: 'hidden', */ position: 'relative', boxShadow: '0 4px 6px -1px rgba(0, 28, 100, 0.05)' };
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
-const tableHeaderStyle = { background: 'rgba(255, 255, 255, 0.01)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' };
+const tableScrollWrapperStyle = {
+    overflowY: 'auto',
+    maxHeight: '65vh',
+    borderRadius: '16px',
+};
+
+const tableHeaderStyle = { background: '#F8FAFC', borderBottom: '1px solid #E3E8EF' };
 
 const thStyle = {
     paddingTop: '16px',
@@ -571,7 +572,12 @@ const thStyle = {
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     textAlign: 'left',
-    borderBottom: '1px solid #E3E8EF'
+    position: 'sticky',
+    top: 0,
+    background: '#F8FAFC',
+    zIndex: 10,
+    boxShadow: '0 1px 0 #E3E8EF',
+    whiteSpace: 'nowrap'
 };
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
@@ -610,7 +616,8 @@ const emptyStateStyle = { padding: '60px', textAlign: 'center', color: '#3f3f46'
 const waMenuStyle = {
     position: 'absolute',
     top: '100%',
-    left: '0',
+    right: '0',
+    left: 'auto',
     zIndex: 10,
     background: '#FFFFFF',
     border: '1px solid #E3E8EF',

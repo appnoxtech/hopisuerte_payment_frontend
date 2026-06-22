@@ -289,6 +289,7 @@ export default function SuperAdminProducts() {
             </div>
 
             <div style={tableContainerStyle}>
+                <div style={tableScrollWrapperStyle}>
                 <table style={tableStyle}>
                     <thead>
                         <tr style={tableHeaderStyle}>
@@ -430,6 +431,7 @@ export default function SuperAdminProducts() {
                         )}
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {/* Product Configuration Modal */}
@@ -763,7 +765,27 @@ const tableContainerStyle = { background: '#FFFFFF', borderRadius: '16px', borde
 const tableStyle = { width: '100%', borderCollapse: 'collapse' };
 const tableHeaderStyle = { background: '#F8FAFC', borderBottom: '1px solid #E3E8EF' };
 
-const thStyle = { padding: '16px 24px', fontSize: '12px', fontWeight: '700', color: '#6B7C93', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'left', whiteSpace: 'nowrap' };
+const tableScrollWrapperStyle = {
+    overflowY: 'auto',
+    maxHeight: '65vh',
+    borderRadius: '16px',
+};
+
+const thStyle = { 
+    padding: '16px 24px', 
+    fontSize: '12px', 
+    fontWeight: '700', 
+    color: '#6B7C93', 
+    textTransform: 'uppercase', 
+    letterSpacing: '0.05em', 
+    textAlign: 'left', 
+    whiteSpace: 'nowrap',
+    position: 'sticky',
+    top: 0,
+    background: '#F8FAFC',
+    zIndex: 10,
+    boxShadow: '0 1px 0 #E3E8EF'
+};
 const thCenterStyle = { ...thStyle, textAlign: 'center' };
 const trStyle = { borderBottom: '1px solid #F7F9FC', transition: 'background 0.2s ease' };
 const tdStyle = { padding: '20px 24px' };
@@ -879,4 +901,4 @@ const cancelBtnStyle = {
     fontWeight: '600'
 };
 
-const historyTableWrapStyle = { overflowX: 'auto', maxHeight: '60vh', marginTop: 8, background: '#FFF' };
+const historyTableWrapStyle = { overflow: 'auto', maxHeight: '60vh', marginTop: 8, background: '#FFF' };
