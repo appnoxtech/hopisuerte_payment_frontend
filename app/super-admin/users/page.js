@@ -48,11 +48,30 @@ export default function UserManagement() {
         slug: '',
         image_file: null,
         image_url: null,
-        remove_image: false
+        remove_image: false,
+        send_welcome_email: true
     });
     const [formLoading, setFormLoading] = useState(false);
     const fileInputRef = useRef(null);
     const [imageErrors, setImageErrors] = useState(new Set());
+    const [pendingWelcomeEmailMerchant, setPendingWelcomeEmailMerchant] = useState(null);
+    const [sendingEmailId, setSendingEmailId] = useState(null);
+
+    const handleSendWelcomeEmail = async (id) => {
+        setSendingEmailId(id);
+        try {
+            await api.post(`/super-admin/users/${id}/send-welcome-email`, {}, getSuperAdminHeaders());
+            showToast('Welcome email sent successfully', 'success');
+            fetchUsers();
+            if (pendingWelcomeEmailMerchant && pendingWelcomeEmailMerchant.id === id) {
+                setPendingWelcomeEmailMerchant(null);
+            }
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Failed to send welcome email', 'error');
+        } finally {
+            setSendingEmailId(null);
+        }
+    };
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -90,11 +109,12 @@ export default function UserManagement() {
                 slug: user.slug,
                 image_file: null,
                 image_url: user.profile_image_url || null,
-                remove_image: false
+                remove_image: false,
+                send_welcome_email: true
             });
         } else {
             setEditingUser(null);
-            setFormData({ name: '', email: '', slug: '', image_file: null, image_url: null, remove_image: false });
+            setFormData({ name: '', email: '', slug: '', image_file: null, image_url: null, remove_image: false, send_welcome_email: true });
         }
         setShowModal(true);
     };
@@ -102,7 +122,7 @@ export default function UserManagement() {
     const handleCloseModal = () => {
         setShowModal(false);
         setEditingUser(null);
-        setFormData({ name: '', email: '', slug: '', image_file: null, image_url: null, remove_image: false });
+        setFormData({ name: '', email: '', slug: '', image_file: null, image_url: null, remove_image: false, send_welcome_email: true });
     };
 
     const handleSubmit = async (e) => {
@@ -116,12 +136,20 @@ export default function UserManagement() {
                 email: formData.email,
                 slug: formData.slug
             };
+            if (!editingUser) {
+                payload.send_welcome_email = formData.send_welcome_email;
+            }
 
             if (editingUser) {
                 await api.put(`/super-admin/users/${editingUser.id}`, payload, getSuperAdminHeaders());
             } else {
                 const response = await api.post('/super-admin/register-merchant', payload, getSuperAdminHeaders());
                 userId = response.data.id || response.data.user?.id;
+
+                if (!formData.send_welcome_email) {
+                    const registeredUser = response.data.user || { id: userId, name: formData.name, email: formData.email };
+                    setPendingWelcomeEmailMerchant(registeredUser);
+                }
             }
 
             // Handle Profile Image
@@ -256,7 +284,48 @@ export default function UserManagement() {
                 </div> */}
             </div>
 
-
+            {/* Pending Welcome Email Banner */}
+            {pendingWelcomeEmailMerchant && (
+                <div style={welcomeNotificationBannerStyle} className="transition-all duration-300">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={infoIconCircleStyle}>
+                            <Mail size={18} color="#047857" />
+                        </div>
+                        <div>
+                            <div style={{ fontWeight: '700', color: '#064E3B', fontSize: '15px' }}>Merchant Created Successfully</div>
+                            <div style={{ color: '#047857', fontSize: '13px', marginTop: '2px' }}>
+                                Welcome email for <strong>{pendingWelcomeEmailMerchant.name}</strong> ({pendingWelcomeEmailMerchant.email}) was not sent yet.
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <button
+                            onClick={() => handleSendWelcomeEmail(pendingWelcomeEmailMerchant.id)}
+                            disabled={sendingEmailId === pendingWelcomeEmailMerchant.id}
+                            style={bannerActionBtnStyle}
+                            className="transition-all duration-200 hover:brightness-110 active:scale-95"
+                        >
+                            {sendingEmailId === pendingWelcomeEmailMerchant.id ? (
+                                <>
+                                    <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                                    <span>Sending...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Mail size={14} />
+                                    <span>Send Welcome Email</span>
+                                </>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => setPendingWelcomeEmailMerchant(null)}
+                            style={bannerCloseBtnStyle}
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div style={tableContainerStyle}>
                 <div style={tableScrollWrapperStyle}>
@@ -349,6 +418,21 @@ export default function UserManagement() {
                                     </td>
                                     <td style={{ ...tdStyle, textAlign: 'right', paddingRight: '24px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+                                            {!user.welcome_email_sent && (
+                                                <button
+                                                    onClick={() => handleSendWelcomeEmail(user.id)}
+                                                    disabled={sendingEmailId === user.id}
+                                                    style={sendEmailBtnStyle}
+                                                    className="transition-all duration-200 hover:bg-[#F0FDF4] hover:border-[#22C55E] hover:shadow-md active:scale-90"
+                                                    title="Send Welcome Email"
+                                                >
+                                                    {sendingEmailId === user.id ? (
+                                                        <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                                                    ) : (
+                                                        <Mail size={14} />
+                                                    )}
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => handleOpenModal(user)}
                                                 style={editPhotoBtnStyle}
@@ -457,6 +541,20 @@ export default function UserManagement() {
                                         />
                                     </div>
                                 </div>
+
+                                {!editingUser && (
+                                    <div style={checkboxGroupStyle}>
+                                        <label style={checkboxLabelStyle}>
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.send_welcome_email}
+                                                onChange={(e) => setFormData({ ...formData, send_welcome_email: e.target.checked })}
+                                                style={checkboxStyle}
+                                            />
+                                            <span>Send welcome email automatically</span>
+                                        </label>
+                                    </div>
+                                )}
 
                                 {editingUser && (
                                     <div style={inputGroupStyle}>
@@ -742,3 +840,96 @@ const cancelBtnStyle = { padding: "14px 28px", background: '#FFF', color: '#4A55
 
 const errorBannerStyle = { padding: '12px', background: '#FEF2F2', border: '1px solid #FEE2E2', borderRadius: '10px', color: '#EF4444', fontSize: '13px', marginBottom: '16px', fontWeight: '600' };
 const successBannerStyle = { padding: '12px', background: '#ECFDF5', border: '1px solid #D1FAE5', borderRadius: '10px', color: '#10B981', fontSize: '13px', marginBottom: '16px', fontWeight: '600' };
+
+const sendEmailBtnStyle = {
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    background: '#F0FDF4',
+    border: '1px solid #DCFCE7',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#15803D',
+    cursor: 'pointer',
+    transition: 'all 0.2s'
+};
+
+const welcomeNotificationBannerStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    background: '#ECFDF5',
+    border: '1px solid #A7F3D0',
+    borderRadius: '16px',
+    padding: '16px 24px',
+    boxShadow: '0 4px 12px rgba(4, 120, 87, 0.05)',
+    animation: 'slideIn 0.3s ease',
+    marginBottom: '16px'
+};
+
+const infoIconCircleStyle = {
+    width: '36px',
+    height: '36px',
+    borderRadius: '50%',
+    background: '#D1FAE5',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0
+};
+
+const bannerActionBtnStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    background: '#059669',
+    color: '#FFFFFF',
+    border: 'none',
+    padding: '10px 18px',
+    fontSize: '13px',
+    fontWeight: '700',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    boxShadow: '0 2px 4px rgba(5, 150, 105, 0.1)',
+    transition: 'all 0.2s'
+};
+
+const bannerCloseBtnStyle = {
+    background: 'none',
+    border: 'none',
+    color: '#059669',
+    cursor: 'pointer',
+    padding: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.7,
+    transition: 'opacity 0.2s'
+};
+
+const checkboxGroupStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginTop: '4px',
+    marginLeft: '4px'
+};
+
+const checkboxLabelStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#4A5568',
+    cursor: 'pointer',
+    userSelect: 'none'
+};
+
+const checkboxStyle = {
+    width: '18px',
+    height: '18px',
+    cursor: 'pointer',
+    accentColor: '#0070E0'
+};
