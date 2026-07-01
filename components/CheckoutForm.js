@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-export default function CheckoutForm({ amount, currency }) {
+export default function CheckoutForm({ amount, currency, successRedirectUrl, paymentId, isSetupIntent }) {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -19,12 +19,32 @@ export default function CheckoutForm({ amount, currency }) {
 
         setIsLoading(true);
 
-        const { error } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: window.location.origin + '/success',
-            },
-        });
+        let returnUrl;
+        if (successRedirectUrl) {
+            const separator = successRedirectUrl.includes('?') ? '&' : '?';
+            returnUrl = `${successRedirectUrl}${separator}transactionId=${paymentId || ''}`;
+        } else {
+            returnUrl = window.location.origin + '/success';
+        }
+
+        let error;
+        if (isSetupIntent) {
+            const result = await stripe.confirmSetup({
+                elements,
+                confirmParams: {
+                    return_url: returnUrl,
+                },
+            });
+            error = result.error;
+        } else {
+            const result = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: returnUrl,
+                },
+            });
+            error = result.error;
+        }
 
         if (error.type === "card_error" || error.type === "validation_error") {
             setMessage(error.message);

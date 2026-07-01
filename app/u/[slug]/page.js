@@ -35,6 +35,8 @@ export default function UserPaymentPage() {
 
     const [clientSecret, setClientSecret] = useState(null);
     const [stripePromise, setStripePromise] = useState(null);
+    const [paymentId, setPaymentId] = useState(null);
+    const [successRedirectUrl, setSuccessRedirectUrl] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
@@ -42,6 +44,7 @@ export default function UserPaymentPage() {
     const [globalFeePercentage, setGlobalFeePercentage] = useState(10); // Global fallback
     const [paymentMethod, setPaymentMethod] = useState(null); // null | 'choosing' | 'card' | 'qr'
     const [qrPaymentData, setQrPaymentData] = useState(null); // { payment_link_url, payment_id, total_amount }
+    const [isSetupIntent, setIsSetupIntent] = useState(false);
 
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
@@ -112,15 +115,19 @@ export default function UserPaymentPage() {
                 customer_name: customer.name,
                 customer_email: customer.email,
                 customer_phone: customer.phone,
-                notes: customer.notes
+                notes: customer.notes,
+                reference: undefined,
             });
+
             setClientSecret(res.data.clientSecret);
+            setPaymentId(res.data.is_subscription ? res.data.subscription_id : res.data.payment_id);
+            setSuccessRedirectUrl(res.data.success_redirect_url);
+            setIsSetupIntent(res.data.is_setup_intent || false);
             const accountId = res.data.stripe_account || 1;
             const pk = accountId === 2 
                 ? process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_2_KEY 
                 : process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_1_KEY;
             
-            console.log(`Initializing Stripe for Account ${accountId}`);
             setStripePromise(loadStripe(pk));
         } catch {
             alert("Failed to start payment process.");
@@ -141,9 +148,18 @@ export default function UserPaymentPage() {
                 customer_name: customer.name,
                 customer_email: customer.email,
                 customer_phone: customer.phone,
-                notes: customer.notes
+                notes: customer.notes,
+                reference: undefined,
             });
+
+            if (res.data.is_subscription) {
+                const separator = res.data.success_redirect_url.includes('?') ? '&' : '?';
+                window.location.href = `${res.data.success_redirect_url}${separator}subscriptionId=${res.data.subscription_id}`;
+                return;
+            }
+
             setQrPaymentData(res.data);
+            setSuccessRedirectUrl(res.data.success_redirect_url);
         } catch {
             alert("Failed to generate QR code");
             setPaymentMethod(null);
@@ -482,7 +498,8 @@ export default function UserPaymentPage() {
                                     <input
                                         style={inputStyle}
                                         type="email"
-                                        placeholder="Email Address (Optional)"
+                                        required
+                                        placeholder="Email Address"
                                         value={customer.email}
                                         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                     />
@@ -639,6 +656,9 @@ export default function UserPaymentPage() {
                             <CheckoutForm
                                 amount={amount}
                                 currency={currency}
+                                successRedirectUrl={successRedirectUrl}
+                                paymentId={paymentId}
+                                isSetupIntent={isSetupIntent}
                             />
                         </Elements>
                     ) : paymentMethod === 'qr' && qrPaymentData ? (
@@ -647,6 +667,7 @@ export default function UserPaymentPage() {
                             paymentId={qrPaymentData.payment_id}
                             amount={qrPaymentData.total_amount}
                             currency={currency}
+                            successRedirectUrl={successRedirectUrl}
                         />
                     ) : paymentMethod ? (
                         <div style={{ textAlign: 'center', padding: '60px 0', color: '#6B7C93' }}>

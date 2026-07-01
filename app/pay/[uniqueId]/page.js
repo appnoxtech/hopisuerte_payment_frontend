@@ -36,12 +36,14 @@ function UniqueProductPaymentContent() {
 
     const urlAmount = searchParams.get('amount');
     const urlCurrency = searchParams.get('currency');
+    const urlRef = searchParams.get('ref');
 
     const [product, setProduct] = useState(null);
     const [amount, setAmount] = useState(urlAmount || '');
     const [currency, setCurrency] = useState(urlCurrency || 'USD');
     const [isCurrencyLocked, setIsCurrencyLocked] = useState(!!urlCurrency);
     const [isAmountPreFilled, setIsAmountPreFilled] = useState(!!urlAmount);
+    const [successRedirectUrl, setSuccessRedirectUrl] = useState(null);
 
     const currencyOptions = [
         { label: 'USD', value: 'USD' },
@@ -257,12 +259,14 @@ function UniqueProductPaymentContent() {
 
     const [clientSecret, setClientSecret] = useState(null);
     const [stripePromise, setStripePromise] = useState(null);
+    const [paymentId, setPaymentId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [feePercentage, setFeePercentage] = useState(10);
     const [paymentMethod, setPaymentMethod] = useState(null); // null | 'card' | 'qr'
     const [qrPaymentData, setQrPaymentData] = useState(null); // { payment_link_url, payment_id }
+    const [isSetupIntent, setIsSetupIntent] = useState(false);
 
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
@@ -340,10 +344,14 @@ function UniqueProductPaymentContent() {
                 customer_name: customer.name,
                 customer_email: customer.email,
                 customer_phone: customer.phone ? `${dialCode}${customer.phone}` : '',
-                notes: customer.notes
+                notes: customer.notes,
+                reference: urlRef || undefined,
             });
 
             setClientSecret(res.data.clientSecret);
+            setSuccessRedirectUrl(res.data.success_redirect_url);
+            setPaymentId(res.data.is_subscription ? res.data.subscription_id : res.data.payment_id);
+            setIsSetupIntent(res.data.is_setup_intent || false);
             const accountId = res.data.stripe_account || 1;
             const pk = accountId === 2
                 ? process.env.NEXT_PUBLIC_STRIPE_ACCOUNT_2_KEY
@@ -369,9 +377,18 @@ function UniqueProductPaymentContent() {
                 customer_name: customer.name,
                 customer_email: customer.email,
                 customer_phone: customer.phone ? `${dialCode}${customer.phone}` : '',
-                notes: customer.notes
+                notes: customer.notes,
+                reference: urlRef || undefined,
             });
+
+            if (res.data.is_subscription) {
+                const separator = res.data.success_redirect_url.includes('?') ? '&' : '?';
+                window.location.href = `${res.data.success_redirect_url}${separator}subscriptionId=${res.data.subscription_id}`;
+                return;
+            }
+
             setQrPaymentData(res.data);
+            setSuccessRedirectUrl(res.data.success_redirect_url);
         } catch {
             alert("Failed to generate QR code");
             setPaymentMethod(null);
@@ -571,7 +588,8 @@ function UniqueProductPaymentContent() {
                                     <input
                                         style={inputStyle}
                                         type="email"
-                                        placeholder="Email Address (Optional)"
+                                        required
+                                        placeholder="Email Address"
                                         value={customer.email}
                                         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                     />
@@ -728,7 +746,7 @@ function UniqueProductPaymentContent() {
                     ) : paymentMethod === 'card' && clientSecret ? (
 
                         <Elements stripe={stripePromise} options={{ clientSecret }}>
-                            <CheckoutForm amount={amount} currency={currency} />
+                            <CheckoutForm amount={amount} currency={currency} successRedirectUrl={successRedirectUrl} paymentId={paymentId} isSetupIntent={isSetupIntent} />
                         </Elements>
 
                     ) : paymentMethod === 'qr' && qrPaymentData ? (
@@ -738,6 +756,7 @@ function UniqueProductPaymentContent() {
                             paymentId={qrPaymentData.payment_id}
                             amount={qrPaymentData.total_amount}
                             currency={currency}
+                            successRedirectUrl={successRedirectUrl}
                         />
 
                     ) : paymentMethod ? (

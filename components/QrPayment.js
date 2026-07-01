@@ -9,7 +9,7 @@ import { QrCode, ExternalLink, Clock, AlertCircle } from 'lucide-react';
 const POLL_INTERVAL_MS = 2000;
 const EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 
-export default function QrPayment({ paymentLinkUrl, paymentId, amount, currency }) {
+export default function QrPayment({ paymentLinkUrl, paymentId, amount, currency, successRedirectUrl }) {
     const router = useRouter();
     const [expired, setExpired] = useState(false);
     const [status, setStatus] = useState('pending');
@@ -33,7 +33,12 @@ export default function QrPayment({ paymentLinkUrl, paymentId, amount, currency 
                 if (newStatus === 'success') {
                     clearInterval(intervalRef.current);
                     clearTimeout(timerRef.current);
-                    router.push('/success');
+                    if (successRedirectUrl) {
+                        const separator = successRedirectUrl.includes('?') ? '&' : '?';
+                        window.location.href = `${successRedirectUrl}${separator}transactionId=${paymentId || ''}`;
+                    } else {
+                        router.push('/success');
+                    }
                 } else if (newStatus === 'failed') {
                     clearInterval(intervalRef.current);
                     clearTimeout(timerRef.current);

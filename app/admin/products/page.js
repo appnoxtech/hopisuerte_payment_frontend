@@ -106,6 +106,16 @@ export default function ProductManagement() {
                                             {product.notes}
                                         </p>
                                     )}
+                                    {product.billing_interval && (
+                                        <div style={{
+                                            marginTop: 8, fontSize: 12, fontWeight: 600, color: '#0070E0',
+                                            background: '#F0F7FF', borderRadius: 8, padding: '6px 10px',
+                                            display: 'inline-block'
+                                        }}>
+                                            Subscription: Every {product.billing_interval_count} {product.billing_interval}{product.billing_interval_count > 1 ? 's' : ''}
+                                            {product.trial_days > 0 ? ` · ${product.trial_days}-day trial` : ''}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <button

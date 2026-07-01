@@ -11,7 +11,9 @@ import {
     LogOut,
     ShieldCheck,
     BarChart3,
-    Box
+    Box,
+    Webhook,
+    KeyRound
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -83,6 +85,16 @@ export default function AdminLayout({ children }) {
             name: 'Reports',
             href: '/admin/reports',
             icon: BarChart3
+        },
+        {
+            name: 'Webhooks',
+            href: '/admin/webhooks',
+            icon: Webhook
+        },
+        {
+            name: 'API Keys',
+            href: '/admin/api-keys',
+            icon: KeyRound
         }
     ];
 

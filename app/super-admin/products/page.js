@@ -52,6 +52,10 @@ export default function SuperAdminProducts() {
         fee_percentage: '',
         amount_type: 'open',
         amount: '',
+        billing_interval: '',
+        billing_interval_count: 1,
+        trial_days: 0,
+        stripe_price_id: '',
     });
 
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -123,6 +127,10 @@ export default function SuperAdminProducts() {
                 fee_percentage: product.fee_percentage !== null ? product.fee_percentage : '',
                 amount_type: product.amount_type || 'open',
                 amount: product.amount !== null && product.amount !== undefined ? product.amount : '',
+                billing_interval: product.billing_interval || '',
+                billing_interval_count: product.billing_interval_count || 1,
+                trial_days: product.trial_days || 0,
+                stripe_price_id: product.stripe_price_id || '',
             });
         } else {
             setEditingProduct(null);
@@ -138,6 +146,10 @@ export default function SuperAdminProducts() {
                 fee_percentage: '',
                 amount_type: 'open',
                 amount: '',
+                billing_interval: '',
+                billing_interval_count: 1,
+                trial_days: 0,
+                stripe_price_id: '',
             });
         }
         setIsModalOpen(true);
@@ -165,6 +177,10 @@ export default function SuperAdminProducts() {
                 fee_percentage: formData.fee_percentage === '' ? null : formData.fee_percentage,
                 amount_type: formData.amount_type,
                 amount: formData.amount_type === 'fixed' ? parseFloat(formData.amount) : null,
+                billing_interval: formData.billing_interval || null,
+                billing_interval_count: formData.billing_interval ? formData.billing_interval_count : null,
+                trial_days: formData.billing_interval ? formData.trial_days : 0,
+                stripe_price_id: formData.stripe_price_id || null,
             };
 
             if (editingProduct) {
@@ -350,6 +366,17 @@ export default function SuperAdminProducts() {
                                                             : 'Open Amount'
                                                         }
                                                     </div>
+                                                    {product.billing_interval && (
+                                                        <div style={{
+                                                            display: 'inline-flex', alignItems: 'center', gap: 4,
+                                                            marginTop: '4px', padding: '2px 8px', borderRadius: '20px',
+                                                            fontSize: '10px', fontWeight: '700', letterSpacing: '0.03em',
+                                                            background: 'rgba(139,92,246,0.08)', color: '#8B5CF6',
+                                                            border: '1px solid rgba(139,92,246,0.2)',
+                                                        }}>
+                                                            Recurring · Every {product.billing_interval_count} {product.billing_interval}{product.billing_interval_count > 1 ? 's' : ''}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>
@@ -568,6 +595,92 @@ export default function SuperAdminProducts() {
                                             Customers will always be charged this exact amount.
                                         </p>
                                     </div>
+                                )}
+
+                                {/* ── Subscription Toggle ── */}
+                                <div style={{ ...inputGroupStyle, borderTop: '1px solid #E3E8EF', paddingTop: 16 }}>
+                                  <label style={labelStyle}>Subscription</label>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                    <button
+                                      type="button"
+                                      onClick={() => setFormData({
+                                        ...formData,
+                                        billing_interval: formData.billing_interval ? '' : 'monthly',
+                                      })}
+                                      style={{
+                                        padding: '10px 20px', borderRadius: 10,
+                                        border: formData.billing_interval ? '2px solid #0070E0' : '1px solid #E3E8EF',
+                                        background: formData.billing_interval ? '#F0F7FF' : '#F8FAFC',
+                                        color: formData.billing_interval ? '#0070E0' : '#6B7C93',
+                                        fontWeight: 700, fontSize: 13, cursor: 'pointer', transition: 'all 0.2s',
+                                      }}
+                                    >
+                                      {formData.billing_interval ? 'Recurring ON' : 'One-Time Payment'}
+                                    </button>
+                                  </div>
+                                  <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>
+                                    {formData.billing_interval
+                                      ? 'Customers will be charged automatically on each billing cycle.'
+                                      : 'This is a standard one-time payment product.'}
+                                  </p>
+                                </div>
+
+                                {formData.billing_interval && (
+                                  <>
+                                  <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Billing Interval</label>
+                                    <div style={{ display: 'flex', gap: 10 }}>
+                                      <button type="button" onClick={() => setFormData({ ...formData, billing_interval: 'weekly' })}
+                                        style={{
+                                          flex: 1, padding: '12px 16px', borderRadius: 12,
+                                          border: formData.billing_interval === 'weekly' ? '2px solid #0070E0' : '1px solid #E3E8EF',
+                                          background: formData.billing_interval === 'weekly' ? '#F0F7FF' : '#F8FAFC',
+                                          color: formData.billing_interval === 'weekly' ? '#0070E0' : '#6B7C93',
+                                          fontWeight: formData.billing_interval === 'weekly' ? '700' : '500',
+                                          fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s',
+                                        }}>Weekly</button>
+                                      <button type="button" onClick={() => setFormData({ ...formData, billing_interval: 'monthly' })}
+                                        style={{
+                                          flex: 1, padding: '12px 16px', borderRadius: 12,
+                                          border: formData.billing_interval === 'monthly' ? '2px solid #0070E0' : '1px solid #E3E8EF',
+                                          background: formData.billing_interval === 'monthly' ? '#F0F7FF' : '#F8FAFC',
+                                          color: formData.billing_interval === 'monthly' ? '#0070E0' : '#6B7C93',
+                                          fontWeight: formData.billing_interval === 'monthly' ? '700' : '500',
+                                          fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s',
+                                        }}>Monthly</button>
+                                    </div>
+                                  </div>
+                                  <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Interval Count</label>
+                                    <input type="number" min="1"
+                                      value={formData.billing_interval_count}
+                                      onChange={(e) => setFormData({ ...formData, billing_interval_count: parseInt(e.target.value) || 1 })}
+                                      style={modalInputStyle} />
+                                    <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>
+                                      Charge every {formData.billing_interval_count} {formData.billing_interval}{formData.billing_interval_count > 1 ? 's' : ''}.
+                                    </p>
+                                  </div>
+                                  <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Trial Days</label>
+                                    <input type="number" min="0"
+                                      value={formData.trial_days}
+                                      onChange={(e) => setFormData({ ...formData, trial_days: parseInt(e.target.value) || 0 })}
+                                      style={modalInputStyle} />
+                                    <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>
+                                      Free trial period before the first charge.
+                                    </p>
+                                  </div>
+                                  <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Stripe Price ID</label>
+                                    <input placeholder="price_abc123..."
+                                      value={formData.stripe_price_id}
+                                      onChange={(e) => setFormData({ ...formData, stripe_price_id: e.target.value })}
+                                      style={modalInputStyle} />
+                                    <p style={{ fontSize: '11px', color: '#6B7C93', marginLeft: 4 }}>
+                                      The Stripe recurring price ID linked to this subscription. Create it in the Stripe Dashboard first.
+                                    </p>
+                                  </div>
+                                  </>
                                 )}
 
                                 <div style={inputGroupStyle}>
