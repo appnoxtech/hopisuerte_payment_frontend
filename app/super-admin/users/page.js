@@ -49,7 +49,8 @@ export default function UserManagement() {
         image_file: null,
         image_url: null,
         remove_image: false,
-        send_welcome_email: true
+        send_welcome_email: true,
+        success_redirect_url: '',
     });
     const [formLoading, setFormLoading] = useState(false);
     const fileInputRef = useRef(null);
@@ -110,11 +111,12 @@ export default function UserManagement() {
                 image_file: null,
                 image_url: user.profile_image_url || null,
                 remove_image: false,
-                send_welcome_email: true
+                send_welcome_email: true,
+                success_redirect_url: user.success_redirect_url || '',
             });
         } else {
             setEditingUser(null);
-            setFormData({ name: '', email: '', slug: '', image_file: null, image_url: null, remove_image: false, send_welcome_email: true });
+        setFormData({ name: '', email: '', slug: '', image_file: null, image_url: null, remove_image: false, send_welcome_email: true, success_redirect_url: '' });
         }
         setShowModal(true);
     };
@@ -134,7 +136,8 @@ export default function UserManagement() {
             const payload = {
                 name: formData.name,
                 email: formData.email,
-                slug: formData.slug
+                slug: formData.slug,
+                success_redirect_url: formData.success_redirect_url || null,
             };
             if (!editingUser) {
                 payload.send_welcome_email = formData.send_welcome_email;
@@ -574,6 +577,23 @@ export default function UserManagement() {
                                         </p>
                                     </div>
                                 )}
+
+                                <div style={inputGroupStyle}>
+                                    <label style={labelStyle}>Redirect URL After Payment (Optional)</label>
+                                    <div style={inputWrapperStyle}>
+                                        <input
+                                            type="url"
+                                            value={formData.success_redirect_url}
+                                            onChange={(e) => setFormData({ ...formData, success_redirect_url: e.target.value })}
+                                            placeholder="https://example.com/thank-you"
+                                            style={modalInputStyle}
+                                        />
+                                    </div>
+                                    <p style={{ fontSize: 12, color: '#6B7C93', marginTop: 2 }}>
+                                        Customers will be redirected here after successful payment for all products of this merchant.
+                                        Leave empty to use the system success page.
+                                    </p>
+                                </div>
                             </form>
                         </div>
 
