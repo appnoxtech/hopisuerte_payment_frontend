@@ -154,8 +154,8 @@ export default function UserPaymentPage() {
 
             if (res.data.is_subscription) {
                 if (res.data.success_redirect_url) {
-                    const separator = res.data.success_redirect_url.includes('?') ? '&' : '?';
-                    window.location.href = `${res.data.success_redirect_url}${separator}subscriptionId=${res.data.subscription_id}`;
+                    const encodedRedirect = encodeURIComponent(res.data.success_redirect_url);
+                    window.location.href = `${window.location.origin}/success?redirect=${encodedRedirect}&subscriptionId=${res.data.subscription_id}`;
                 } else {
                     window.location.href = `${window.location.origin}/success?subscriptionId=${res.data.subscription_id}`;
                 }

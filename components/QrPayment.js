@@ -34,8 +34,8 @@ export default function QrPayment({ paymentLinkUrl, paymentId, amount, currency,
                     clearInterval(intervalRef.current);
                     clearTimeout(timerRef.current);
                     if (successRedirectUrl) {
-                        const separator = successRedirectUrl.includes('?') ? '&' : '?';
-                        window.location.href = `${successRedirectUrl}${separator}transactionId=${paymentId || ''}`;
+                        const encodedRedirect = encodeURIComponent(successRedirectUrl);
+                        window.location.href = `${window.location.origin}/success?redirect=${encodedRedirect}&transactionId=${paymentId || ''}`;
                     } else {
                         router.push('/success');
                     }

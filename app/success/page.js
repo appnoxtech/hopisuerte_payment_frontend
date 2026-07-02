@@ -1,10 +1,45 @@
 'use client';
 
+import { useEffect, useState, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CheckCircle2, Home, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Home } from 'lucide-react';
 
-export default function SuccessPage() {
+const COUNTDOWN = 3;
+
+function SuccessContent() {
+    const params = useSearchParams();
+    const redirectUrl = params.get('redirect');
+    const transactionId = params.get('transactionId');
+    const subscriptionId = params.get('subscriptionId');
+
+    const [seconds, setSeconds] = useState(COUNTDOWN);
+    const intervalRef = useRef(null);
+
+    useEffect(() => {
+        if (!redirectUrl) return;
+
+        intervalRef.current = setInterval(() => {
+            setSeconds(prev => {
+                if (prev <= 1) {
+                    clearInterval(intervalRef.current);
+
+                    let finalUrl = decodeURIComponent(redirectUrl);
+                    const sep = finalUrl.includes('?') ? '&' : '?';
+                    if (transactionId) finalUrl += `${sep}transactionId=${transactionId}`;
+                    else if (subscriptionId) finalUrl += `${sep}subscriptionId=${subscriptionId}`;
+
+                    window.location.href = finalUrl;
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(intervalRef.current);
+    }, [redirectUrl, transactionId, subscriptionId]);
+
     return (
         <div style={mainStyle}>
             {/* Background Glow */}
@@ -41,16 +76,43 @@ export default function SuccessPage() {
 
                     <div style={dividerStyle} />
 
-                    {/* Buttons */}
-                    <div style={btnWrap}>
-                        <Link
-                            href="/"
-                            style={primaryBtn}
-                        >
-                            <Home size={18} />
-                            <span>Return to Dashboard</span>
-                        </Link>
-                    </div>
+                    {/* Buttons / Redirect countdown */}
+                    {redirectUrl ? (
+                        <div style={countdownWrap}>
+                            <p style={countdownText}>
+                                Redirecting in <strong style={{ color: '#0070E0' }}>{seconds}</strong> second{seconds !== 1 ? 's' : ''}…
+                            </p>
+                            <div style={progressBarTrack}>
+                                <div
+                                    style={{
+                                        ...progressBarFill,
+                                        width: `${(seconds / COUNTDOWN) * 100}%`,
+                                        transition: seconds === COUNTDOWN ? 'none' : 'width 1s linear',
+                                    }}
+                                />
+                            </div>
+                            <button
+                                onClick={() => {
+                                    clearInterval(intervalRef.current);
+                                    let finalUrl = decodeURIComponent(redirectUrl);
+                                    const sep = finalUrl.includes('?') ? '&' : '?';
+                                    if (transactionId) finalUrl += `${sep}transactionId=${transactionId}`;
+                                    else if (subscriptionId) finalUrl += `${sep}subscriptionId=${subscriptionId}`;
+                                    window.location.href = finalUrl;
+                                }}
+                                style={skipBtn}
+                            >
+                                Go now →
+                            </button>
+                        </div>
+                    ) : (
+                        <div style={btnWrap}>
+                            <Link href="/" style={primaryBtn}>
+                                <Home size={18} />
+                                <span>Return to Dashboard</span>
+                            </Link>
+                        </div>
+                    )}
 
                     {/* Status Tracker */}
                     <div style={statusWrap}>
@@ -62,6 +124,16 @@ export default function SuccessPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function SuccessPage() {
+    return (
+        <Suspense fallback={
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F7F9FC' }} />
+        }>
+            <SuccessContent />
+        </Suspense>
     );
 }
 
@@ -160,6 +232,45 @@ const primaryBtn = {
     textDecoration: 'none',
     transition: 'all 0.3s ease',
     boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)'
+};
+
+const countdownWrap = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '14px',
+};
+
+const countdownText = {
+    fontSize: '15px',
+    color: '#6B7C93',
+    fontWeight: '500',
+    margin: 0,
+};
+
+const progressBarTrack = {
+    width: '100%',
+    height: '6px',
+    background: '#E3E8EF',
+    borderRadius: '99px',
+    overflow: 'hidden',
+};
+
+const progressBarFill = {
+    height: '100%',
+    background: 'linear-gradient(90deg, #16a34a, #22c55e)',
+    borderRadius: '99px',
+};
+
+const skipBtn = {
+    background: 'none',
+    border: 'none',
+    color: '#0070E0',
+    fontSize: '14px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    padding: '4px 0',
+    textDecoration: 'underline',
 };
 
 const statusWrap = {

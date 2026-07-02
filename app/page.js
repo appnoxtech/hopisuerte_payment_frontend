@@ -313,7 +313,7 @@ export default function Home() {
                       paddingLeft: 38,
                       ...(selectedProduct?.amount_type === 'fixed' ? {
                         background: '#F0F7FF',
-                        borderColor: '#B9DDFF',
+                        border: '1px solid #B9DDFF',
                         color: '#001C64',
                         fontWeight: '700',
                         cursor: 'not-allowed'

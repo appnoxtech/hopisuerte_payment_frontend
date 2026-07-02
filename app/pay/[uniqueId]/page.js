@@ -383,8 +383,8 @@ function UniqueProductPaymentContent() {
 
             if (res.data.is_subscription) {
                 if (res.data.success_redirect_url) {
-                    const separator = res.data.success_redirect_url.includes('?') ? '&' : '?';
-                    window.location.href = `${res.data.success_redirect_url}${separator}subscriptionId=${res.data.subscription_id}`;
+                    const encodedRedirect = encodeURIComponent(res.data.success_redirect_url);
+                    window.location.href = `${window.location.origin}/success?redirect=${encodedRedirect}&subscriptionId=${res.data.subscription_id}`;
                 } else {
                     window.location.href = `${window.location.origin}/success?subscriptionId=${res.data.subscription_id}`;
                 }
@@ -598,7 +598,7 @@ function UniqueProductPaymentContent() {
                                         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                                     />
 
-                                    <div style={{ display: 'flex', gap: 10 }}>
+                                    <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
                                         <div style={{ width: 110 }}>
                                             <CustomDropdown
                                                 options={countryDialOptions}
@@ -606,6 +606,7 @@ function UniqueProductPaymentContent() {
                                                 onChange={(val) => setDialCode(val)}
                                                 showSearch={true}
                                                 placeholder="+1"
+                                                toggleStyle={{ padding: '12px 14px', borderRadius: 12 }}
                                             />
                                         </div>
                                         <input

@@ -21,8 +21,8 @@ export default function CheckoutForm({ amount, currency, successRedirectUrl, pay
 
         let returnUrl;
         if (successRedirectUrl) {
-            const separator = successRedirectUrl.includes('?') ? '&' : '?';
-            returnUrl = `${successRedirectUrl}${separator}transactionId=${paymentId || ''}`;
+            const encodedRedirect = encodeURIComponent(successRedirectUrl);
+            returnUrl = `${window.location.origin}/success?redirect=${encodedRedirect}&transactionId=${paymentId || ''}`;
         } else {
             returnUrl = window.location.origin + '/success';
         }
