@@ -48,7 +48,12 @@ export default function SuperAdminLayout({ children }) {
         if (isMobile) setIsSidebarOpen(false);
     }, [pathname, isMobile]);
 
-    const publicPaths = ['/super-admin/login', '/super-admin/forgot-password', '/super-admin/reset-password'];
+    const publicPaths = [
+        '/super-admin/login', 
+        '/super-admin/forgot-password', 
+        '/super-admin/reset-password',
+        '/merchant/login'
+    ];
 
     const handleLogout = async () => {
         try {
@@ -62,15 +67,24 @@ export default function SuperAdminLayout({ children }) {
         }
     };
 
+    const normalizedPath = pathname?.replace(/\/$/, '') || '';
+
     useEffect(() => {
-        if (!loading && !publicPaths.includes(pathname)) {
+        if (!loading && !publicPaths.includes(normalizedPath)) {
             if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
                 router.push('/super-admin/login');
             }
         }
-    }, [user, loading, pathname, router]);
+        if (!loading && user && publicPaths.includes(normalizedPath)) {
+            if (user.role === 'admin' || user.role === 'super_admin') {
+                router.push('/super-admin');
+            } else {
+                router.push('/merchant');
+            }
+        }
+    }, [user, loading, normalizedPath, router]);
 
-    if (publicPaths.includes(pathname)) {
+    if (publicPaths.includes(normalizedPath)) {
         return <>{children}</>;
     }
 
@@ -122,7 +136,7 @@ export default function SuperAdminLayout({ children }) {
                 <div style={sidebarHeaderStyle}>
                     <div style={logoWrapperStyle}>
                         <Image
-                            src="/paysigur.png"
+                            src="/logo-full.jpg"
                             alt="Paysigur"
                             width={160}
                             height={80}

@@ -137,7 +137,7 @@ function ResetPasswordContent() {
                     {/* Logo */}
                     <div className="login-logo-wrap">
                         <img
-                            src="/paysigur.png"
+                            src="/logo-full.jpg"
                             alt="Paysigur"
                             style={{ objectFit: 'contain', width: '100%', height: 'auto' }}
                         />

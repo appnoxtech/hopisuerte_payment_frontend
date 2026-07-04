@@ -49,7 +49,7 @@ function SuccessContent() {
                 {/* Logo */}
                 <div style={logoWrap}>
                     <Image
-                        src="/paysigur.png"
+                        src="/logo-full.jpg"
                         alt="Paysigur"
                         width={300}
                         height={90}
@@ -107,9 +107,9 @@ function SuccessContent() {
                         </div>
                     ) : (
                         <div style={btnWrap}>
-                            <Link href="/" style={primaryBtn}>
+                            <Link href="/pay" style={primaryBtn}>
                                 <Home size={18} />
-                                <span>Return to Dashboard</span>
+                                <span>Return to Payment Page</span>
                             </Link>
                         </div>
                     )}

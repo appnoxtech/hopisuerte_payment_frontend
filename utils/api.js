@@ -25,7 +25,7 @@ api.interceptors.request.use((config) => {
         if (pathname.startsWith('/super-admin')) {
             // Strictly use super admin token for super admin routes
             token = superAdminToken;
-        } else if (pathname.startsWith('/admin')) {
+        } else if (pathname.startsWith('/merchant')) {
             // Strictly use auth token for merchant routes
             token = authToken;
         } else {

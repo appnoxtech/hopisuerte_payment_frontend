@@ -28,9 +28,10 @@ export default function AdminLayout({ children }) {
     const pathname = usePathname();
 
     const publicPaths = [
-        '/admin/login',
-        '/admin/forgot-password',
-        '/admin/reset-password'
+        '/merchant/login',
+        '/merchant/forgot-password',
+        '/merchant/reset-password',
+        '/super-admin/login'
     ];
 
     const handleLogout = async () => {
@@ -41,20 +42,29 @@ export default function AdminLayout({ children }) {
             // silent fail
         } finally {
             contextLogout();
-            router.push('/admin/login');
+            router.push('/merchant/login');
         }
     };
 
+    const normalizedPath = pathname?.replace(/\/$/, '') || '';
+
     useEffect(() => {
-        if (!loading && !user && !publicPaths.includes(pathname)) {
-            router.push('/admin/login');
+        if (!loading && !user && !publicPaths.includes(normalizedPath)) {
+            router.push('/merchant/login');
         }
-        if (!loading && user && user.role === 'admin' && !publicPaths.includes(pathname)) {
+        if (!loading && user && user.role === 'admin' && !publicPaths.includes(normalizedPath)) {
             router.push('/super-admin');
         }
-    }, [user, loading, pathname, router]);
+        if (!loading && user && publicPaths.includes(normalizedPath)) {
+            if (user.role === 'admin' || user.role === 'super_admin') {
+                router.push('/super-admin');
+            } else {
+                router.push('/merchant');
+            }
+        }
+    }, [user, loading, normalizedPath, router]);
 
-    if (publicPaths.includes(pathname)) {
+    if (publicPaths.includes(normalizedPath)) {
         return <>{children}</>;
     }
 
@@ -73,27 +83,27 @@ export default function AdminLayout({ children }) {
     const menuItems = [
         {
             name: 'Dashboard',
-            href: '/admin',
+            href: '/merchant',
             icon: LayoutDashboard
         },
         {
             name: 'Products',
-            href: '/admin/products',
+            href: '/merchant/products',
             icon: Box
         },
         {
             name: 'Reports',
-            href: '/admin/reports',
+            href: '/merchant/reports',
             icon: BarChart3
         },
         {
             name: 'Webhooks',
-            href: '/admin/webhooks',
+            href: '/merchant/webhooks',
             icon: Webhook
         },
         {
             name: 'API Keys',
-            href: '/admin/api-keys',
+            href: '/merchant/api-keys',
             icon: KeyRound
         }
     ];
@@ -110,7 +120,7 @@ export default function AdminLayout({ children }) {
                 <div style={sidebarHeaderStyle}>
                     <div style={logoWrapperStyle}>
                         <Image
-                            src="/paysigur.png"
+                            src="/logo-full.jpg"
                             alt="Paysigur"
                             width={160}
                             height={80}

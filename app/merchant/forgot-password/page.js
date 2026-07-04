@@ -2,79 +2,47 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/utils/api';
 import Link from 'next/link';
-import Image from 'next/image';
+import api from '@/utils/api';
 import { validateEmail } from '@/utils/validation';
-import { Eye, EyeOff } from 'lucide-react';
-
 import { useToast } from '@/context/ToastContext';
-import { useUser } from '@/context/UserContext';
 
-export default function AdminLogin() {
+export default function AdminForgotPassword() {
     const { showToast } = useToast();
-    const { refreshUser } = useUser();
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
     const [error, setError] = useState('');
-    const [fieldErrors, setFieldErrors] = useState({ email: '', password: '' });
+    const [fieldErrors, setFieldErrors] = useState({ email: '' });
 
     const router = useRouter();
 
     const validateFields = () => {
-        const errors = { email: '', password: '' };
-
+        const errors = { email: '' };
         errors.email = validateEmail(email);
-
-        if (!password || password.trim() === '') {
-            errors.password = 'Please enter your password.';
-        }
-
         setFieldErrors(errors);
-        return !errors.email && !errors.password;
+        return !errors.email;
     };
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setMessage('');
         setError('');
+        setFieldErrors({ email: '' });
 
         if (!validateFields()) return;
 
         setLoading(true);
 
         try {
-
-            const response = await api.post('/login', { email, password });
-
-            // We must check the user's role to prevent super admins from logging in as merchants
-            const userRole = response.data.user?.role;
-            if (userRole === 'admin') {
-                showToast('Super Admin accounts must use the Super Admin portal.', 'error');
-                setError('Super Admin accounts must use the Super Admin portal.');
-                setLoading(false);
-                return;
-            }
-
-            localStorage.setItem('auth_token', response.data.access_token);
-
-            showToast('Login successfully', 'success');
-            await refreshUser();
-            router.push('/admin');
-
+            await api.post('/password/forgot', { email });
+            showToast('A password reset link has been sent to your email.');
+            setMessage('A password reset link has been sent to your email.');
+            setEmail('');
         } catch (err) {
-
-            if (err.response?.status === 403) {
-                const msg = err.response?.data?.message || 'Your account is disabled.';
-                setError(msg);
-                showToast(msg, 'error');
-            } else {
-                const msg = 'Invalid email or password.';
-                setError(msg);
-                showToast(msg, 'error');
-            }
-
+            const msg = err.response?.data?.message || 'Failed to send reset email. Please check the email address.';
+            setError(msg);
+            showToast(msg, 'error');
         } finally {
             setLoading(false);
         }
@@ -82,7 +50,6 @@ export default function AdminLogin() {
 
     return (
         <div style={mainStyle}>
-
             {/* Responsive Styles */}
             <style>{`
                 .login-container {
@@ -138,29 +105,33 @@ export default function AdminLogin() {
             <div style={glowStyle} />
 
             <div className="login-container">
-
                 {/* Logo */}
                 <div className="login-logo-wrap">
-                    <Image
-                        src="/paysigur.png"
+                    <img
+                        src="/logo-full.jpg"
                         alt="Paysigur"
-                        width={400}
-                        height={120}
-                        priority
                         style={{ objectFit: 'contain', width: '100%', height: 'auto' }}
                     />
                 </div>
 
                 {/* Card */}
                 <div className="login-card">
-
-                    <h1 style={titleStyle}>
-                        Merchant Login
-                    </h1>
+                    <h1 style={titleStyle}>Forgot Password</h1>
 
                     <p style={subtitleStyle}>
-                        Sign in to manage your payments
+                        Enter your email to receive a reset link
                     </p>
+
+                    {message && (
+                        <div style={{
+                            ...messageStyle,
+                            color: '#16a34a',
+                            borderColor: '#bbf7d0',
+                            background: '#f0fdf4'
+                        }}>
+                            {message}
+                        </div>
+                    )}
 
                     {error && (
                         <div style={errorStyle}>
@@ -168,13 +139,10 @@ export default function AdminLogin() {
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {/* Email */}
                         <div>
-                            <label style={labelStyle}>
-                                Email Address
-                            </label>
+                            <label style={labelStyle}>Email Address</label>
 
                             <input
                                 type="email"
@@ -183,10 +151,10 @@ export default function AdminLogin() {
                                     setEmail(e.target.value);
                                     setFieldErrors(prev => ({ ...prev, email: '' }));
                                 }}
-                                placeholder="admin@paysigur.com"
+                                placeholder="merchant@paysigur.com"
                                 style={{
                                     ...inputStyle,
-                                    border: fieldErrors.email ? '1px solid #ef4444' : inputStyle.border
+                                    border: fieldErrors.email ? '1px solid #ef4444' : inputStyle.border,
                                 }}
                             />
 
@@ -197,80 +165,34 @@ export default function AdminLogin() {
                             )}
                         </div>
 
-                        {/* Password */}
-                        <div>
-
-                            <label style={labelStyle}>
-                                Password
-                            </label>
-
-                            <div style={{ position: 'relative' }}>
-
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value);
-                                        setFieldErrors(prev => ({ ...prev, password: '' }));
-                                    }}
-                                    placeholder="••••••••"
-                                    style={{
-                                        ...inputStyle,
-                                        paddingRight: 44,
-                                        border: fieldErrors.password ? '1px solid #ef4444' : inputStyle.border
-                                    }}
-                                />
-
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    style={toggleBtn}
-                                >
-                                    {showPassword
-                                        ? <EyeOff size={18} />
-                                        : <Eye size={18} />
-                                    }
-                                </button>
-
-                            </div>
-
-                            {fieldErrors.password && (
-                                <p style={fieldErrorStyle}>
-                                    {fieldErrors.password}
-                                </p>
-                            )}
-
-                        </div>
-
-                        {/* Button */}
+                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={loading}
-                            style={submitStyle}
+                            style={{
+                                ...submitStyle,
+                                opacity: loading ? 0.7 : 1,
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                            }}
                         >
-                            {loading ? 'Authenticating...' : 'Login'}
+                            {loading ? 'Sending...' : 'Send Reset Link'}
                         </button>
 
                         <div style={{ textAlign: 'center' }}>
-                            <Link href="/admin/forgot-password" style={forgotStyle}>
-                                Forgot your password?
+                            <Link href="/admin/login" style={backLinkStyle}>
+                                ← Back to Login
                             </Link>
                         </div>
-
                     </form>
-
                 </div>
-
-
-
             </div>
-
         </div>
     );
 }
 
-
-/* ---------- STYLES ---------- */
+/* ────────────────────────────────────────────── */
+/*          Reused Styles (same as other pages)    */
+/* ────────────────────────────────────────────── */
 
 const mainStyle = {
     minHeight: '100vh',
@@ -283,12 +205,24 @@ const mainStyle = {
     overflow: 'hidden'
 };
 
+const glowStyle = {
+    position: 'absolute',
+    top: -150,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 600,
+    height: 400,
+    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.05) 0%, transparent 70%)',
+    borderRadius: '50%',
+    zIndex: 0
+};
+
 const titleStyle = {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: 800,
     color: '#001C64',
     textAlign: 'center',
-    letterSpacing: '-0.03em',
+    letterSpacing: '-0.02em',
     fontFamily: "'Outfit', sans-serif"
 };
 
@@ -322,19 +256,8 @@ const inputStyle = {
     transition: 'all 0.2s ease'
 };
 
-const toggleBtn = {
-    position: 'absolute',
-    right: 14,
-    top: '50%',
-    transform: 'translateY(-50%)',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    color: '#6B7C93'
-};
-
 const submitStyle = {
-    marginTop: 12,
+    marginTop: 8,
     padding: '16px',
     background: '#0070E0',
     border: 'none',
@@ -343,15 +266,18 @@ const submitStyle = {
     color: '#FFFFFF',
     fontSize: 16,
     boxShadow: '0 4px 6px -1px rgba(0, 112, 224, 0.2)',
-    transition: 'all 0.2s ease',
-    cursor: 'pointer'
+    transition: 'all 0.2s ease'
 };
 
-const forgotStyle = {
+const backLinkStyle = {
     fontSize: 14,
     color: '#0070E0',
     textDecoration: 'none',
-    fontWeight: 600
+    fontWeight: 600,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8
 };
 
 const fieldErrorStyle = {
@@ -374,14 +300,12 @@ const errorStyle = {
     fontWeight: 600
 };
 
-const glowStyle = {
-    position: 'absolute',
-    top: -150,
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: 600,
-    height: 400,
-    background: 'radial-gradient(circle, rgba(0, 112, 224, 0.05) 0%, transparent 70%)',
-    borderRadius: '50%',
-    zIndex: 0
+const messageStyle = {
+    marginBottom: 24,
+    padding: 14,
+    borderRadius: 12,
+    fontSize: 14,
+    border: '1px solid',
+    textAlign: 'center',
+    fontWeight: 600
 };

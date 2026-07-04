@@ -58,7 +58,7 @@ function ResetPasswordContent() {
             setSuccess(true);
 
             setTimeout(() => {
-                router.push('/admin/login');
+                router.push('/merchant/login');
             }, 3000);
         } catch (err) {
             const msg = err.response?.data?.message || 'Failed to reset password. The link may have expired.';

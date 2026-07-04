@@ -19,8 +19,9 @@ export const UserProvider = ({ children }) => {
 
     const fetchUser = useCallback(async () => {
         const isSuperAdminPath = pathname.startsWith('/super-admin');
-        const isAdminPanelPath = pathname.startsWith('/admin');
-        const isResetPasswordPath = pathname === '/super-admin/reset-password' || pathname === '/admin/reset-password';
+        const isAdminPanelPath = pathname.startsWith('/merchant');
+        const normalizedPath = pathname?.replace(/\/$/, '') || '';
+        const isResetPasswordPath = normalizedPath === '/super-admin/reset-password' || normalizedPath === '/merchant/reset-password';
         
         if ((!isSuperAdminPath && !isAdminPanelPath) || isResetPasswordPath) {
             setLoading(false);
@@ -65,7 +66,7 @@ export const UserProvider = ({ children }) => {
     const logout = useCallback(() => {
         if (pathname.startsWith('/super-admin')) {
             localStorage.removeItem('super_admin_token');
-        } else if (pathname.startsWith('/admin')) {
+        } else if (pathname.startsWith('/merchant')) {
             localStorage.removeItem('auth_token');
         } else {
             localStorage.removeItem('auth_token');
