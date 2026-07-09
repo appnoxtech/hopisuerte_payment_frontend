@@ -492,6 +492,7 @@ export default function ContactPage() {
                         <Link href="/privacy">Privacy Policy</Link>
                         <Link href="/terms">Terms of Service</Link>
                         <Link href="/contact">Contact</Link>
+                        <Link href="/compliance/how-paysigur-works">How PaySigur Works</Link>
                     </div>
                 </footer>
 

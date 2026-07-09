@@ -127,6 +127,7 @@ export default function LandingPage() {
       <a href="#strategic-partners">Strategic Partners</a>
       <a href="#developers">Developers</a>
       <a href="#about">About</a>
+      <a href="/compliance/how-paysigur-works">How PaySigur Works</a>
     </nav>
     <div class="nav-actions">
       <a href="/merchant/login" class="btn-login">Log in</a>
@@ -155,6 +156,7 @@ export default function LandingPage() {
     <a href="#strategic-partners">Strategic Partners</a>
     <a href="#developers">Developers</a>
     <a href="#about">About</a>
+    <a href="/compliance/how-paysigur-works">How PaySigur Works</a>
     <a href="/merchant/login">Log in</a>
     <a href="/contact" class="btn btn-primary">Partner With Us</a>
   </div>
@@ -505,13 +507,17 @@ export default function LandingPage() {
           <li><a href="/contact">Contact Support</a></li>
         </ul>
       </div>
+      <div class="footer-col">
+        <h5>Compliance</h5>
+        <ul>
+          <li><a href="/compliance/how-paysigur-works">How PaySigur Works</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 Paysigur. All rights reserved.</span>
-      <div class="legal-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-      </div>
     </div>
   </div>
 </footer>
