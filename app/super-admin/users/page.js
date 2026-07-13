@@ -573,7 +573,7 @@ export default function UserManagement() {
                                             />
                                         </div>
                                         <p style={{ fontSize: 12, color: '#6B7C93', marginTop: 2 }}>
-                                            Changing the slug will regenerate all product URLs for this merchant safely.
+                                            Changing the merchant slug only affects future products. Existing payment links are permanent and will NOT be updated.
                                         </p>
                                     </div>
                                 )}
