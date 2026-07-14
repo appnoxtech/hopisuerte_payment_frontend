@@ -109,6 +109,7 @@ export default function AdminLayout({ children }) {
     ];
 
     const isActive = (href) => pathname === href;
+    const [hoveredItem, setHoveredItem] = useState(null);
 
     return (
         <div style={layoutStyle}>
@@ -122,10 +123,10 @@ export default function AdminLayout({ children }) {
                         <Image
                             src="/logo-full.jpg"
                             alt="Paysigur"
-                            width={160}
-                            height={80}
+                            width={148}
+                            height={56}
                             priority
-                            style={{ objectFit: 'contain' }}
+                            style={{ objectFit: 'contain', display: 'block' }}
                         />
                     </div>
                 </div>
@@ -135,25 +136,27 @@ export default function AdminLayout({ children }) {
                 <nav style={navContainerStyle}>
                     {menuItems.map((item) => {
                         const active = isActive(item.href);
+                        const hovered = hoveredItem === item.href;
                         const Icon = item.icon;
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
+                                onMouseEnter={() => setHoveredItem(item.href)}
+                                onMouseLeave={() => setHoveredItem(null)}
                                 style={{
                                     ...navItemStyle,
-                                    background: active ? '#0070E0' : 'transparent',
-                                    color: active ? '#FFF' : 'rgba(255, 255, 255, 0.6)',
+                                    background: active || hovered ? '#0070E0' : 'transparent',
+                                    color: active || hovered ? '#FFF' : '#374151',
                                     border: `1px solid ${active ? '#0070E0' : 'transparent'}`,
+                                    transform: hovered && !active ? 'translateX(2px)' : 'none',
                                 }}
-                                className="transition-all duration-200 hover:bg-white/10 hover:text-white group"
                             >
                                 <Icon
                                     size={18}
-                                    style={{ opacity: active ? 1 : 0.6 }}
-                                    className="transition-opacity group-hover:opacity-100"
+                                    style={{ opacity: active || hovered ? 1 : 0.55 }}
                                 />
-                                <span className="transition-colors group-hover:text-white">{item.name}</span>
+                                <span>{item.name}</span>
                                 {active && <div style={activeIndicatorStyle} />}
                             </Link>
                         );
@@ -230,31 +233,38 @@ const overlayGlowStyle = {
 
 const sidebarStyle = {
     width: '260px',
-    background: '#1A1F36',
-    borderRight: '1px solid rgba(255,255,255,0.1)',
+    background: '#FFFFFF',
+    borderRight: '1px solid #E5E7EB',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
     height: '100vh',
     zIndex: 50,
-    boxShadow: '4px 0 24px rgba(0,0,0,0.1)'
+    boxShadow: '2px 0 16px rgba(0,0,0,0.06)'
 };
 
 const sidebarHeaderStyle = {
-    padding: '20px 24px',
+    height: '80px',
+    background: '#FFFFFF',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderBottom: '1px solid #F3F4F6',
+    padding: '0 20px',
 };
 
 const logoWrapperStyle = {
-    // marginBottom: '8px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    width: '100%',
 };
 
 const navDividerStyle = {
-    height: '1px',
-    background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.1) 50%, transparent)',
-    margin: '0 24px 24px'
+    height: '12px',
+    borderTop: '1px solid #F3F4F6',
+    margin: '0 12px',
 };
 
 const navContainerStyle = {
@@ -290,30 +300,30 @@ const activeIndicatorStyle = {
 };
 
 const userFooterStyle = {
-    padding: '24px',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
-    background: 'rgba(0,0,0,0.1)'
+    padding: '16px',
+    borderTop: '1px solid #F3F4F6',
+    background: '#FAFAFA'
 };
 
 const userBriefStyle = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    marginBottom: '16px'
+    marginBottom: '12px'
 };
 
 const userAvatarStyle = {
-    width: '40px',
-    height: '40px',
-    borderRadius: '12px',
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
     background: '#0070E0',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
+    border: '1px solid rgba(0, 112, 224, 0.2)',
     color: '#FFF',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: '700',
-    fontSize: '16px'
+    fontSize: '14px'
 };
 
 const userDetailsStyle = {
@@ -324,7 +334,7 @@ const userDetailsStyle = {
 const userNameStyle = {
     fontSize: '13px',
     fontWeight: '700',
-    color: '#fff',
+    color: '#111827',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis'
@@ -332,7 +342,7 @@ const userNameStyle = {
 
 const userBadgeStyle = {
     fontSize: '11px',
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: '#6B7280',
     fontWeight: '500',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
