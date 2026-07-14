@@ -26,6 +26,7 @@ export default function AdminLayout({ children }) {
 
     const router = useRouter();
     const pathname = usePathname();
+    const [hoveredItem, setHoveredItem] = useState(null);
 
     const publicPaths = [
         '/merchant/login',
@@ -109,7 +110,6 @@ export default function AdminLayout({ children }) {
     ];
 
     const isActive = (href) => pathname === href;
-    const [hoveredItem, setHoveredItem] = useState(null);
 
     return (
         <div style={layoutStyle}>
