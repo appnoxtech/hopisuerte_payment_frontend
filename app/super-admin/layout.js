@@ -31,6 +31,7 @@ export default function SuperAdminLayout({ children }) {
     const pathname = usePathname();
     const [isMobile, setIsMobile] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [hoveredItem, setHoveredItem] = useState(null);
 
     // Responsive detection
     useEffect(() => {
@@ -113,7 +114,6 @@ export default function SuperAdminLayout({ children }) {
     ];
 
     const isActive = (href) => pathname === href;
-    const [hoveredItem, setHoveredItem] = useState(null);
 
     return (
         <div style={layoutStyle}>
